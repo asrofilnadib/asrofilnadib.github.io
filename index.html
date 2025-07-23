@@ -32,7 +32,7 @@
 <body>
 
 <!-- Preloader Area Start -->
-<div class="preloader">
+<!-- <div class="preloader">
     <svg viewBox="0 0 1000 1000" preserveAspectRatio="none">
         <path id="preloaderSvg" d="M0,1005S175,995,500,995s500,5,500,5V0H0Z"></path>
     </svg>
@@ -48,7 +48,7 @@
             <span>g</span>
         </div>
     </div>
-</div>
+</div> -->
 <!-- Preloader Area End -->
 
 
@@ -92,7 +92,13 @@
         </div>
 
         <div class="header-button">
-          <a href="#" class="btn tj-btn-primary">Hire me!</a>
+          <a href="#" class="btn tj-btn-primary" 
+            style="pointer-events: auto; cursor: not-allowed;" 
+            onmouseover="this.style.backgroundColor='#ddd'" 
+            onmouseout="this.style.backgroundColor=''" 
+            onclick="event.preventDefault();">
+            Hire me!
+          </a>
         </div>
 
         <div class="menu-bar d-lg-none">
@@ -775,7 +781,7 @@
             <!-- Testing Report QC -->
             <div class="portfolio-item ci">
               <div class="image-box">
-                <img src="assets/images/testing-report/TABLE.png" alt="">
+                <img src="assets/images/testing-report/DASHBOARD.png" alt="">
               </div>
               <div class="content-box">
                 <h3 class="portfolio-title">Monitoring Request Testing Report</h3>
@@ -784,6 +790,21 @@
                 </p>
                 <i class="flaticon-up-right-arrow"></i>
                 <button data-mfp-src="#portfolio-wrapper-testing-report" class="portfolio-link modal-popup"></button>
+              </div>
+            </div>
+
+            <!-- Investigation Report QC -->
+            <div class="portfolio-item ci">
+              <div class="image-box">
+                <img src="assets/images/investigation-report/pdf.jpg" alt="">
+              </div>
+              <div class="content-box">
+                <h3 class="portfolio-title">Investigation Report</h3>
+                <p>
+                  A web-based application used to digitally document, manage, and follow up on quality-related complaints and investigations for battery products at PT Century Batteries Indonesia.
+                </p>
+                <i class="flaticon-up-right-arrow"></i>
+                <button data-mfp-src="#portfolio-wrapper-investigation-report" class="portfolio-link modal-popup"></button>
               </div>
             </div>
           </div>
@@ -1632,7 +1653,7 @@
   <!-- Testing Report QC -->
   <div id="portfolio-wrapper-testing-report" class="popup_content_area zoom-anim-dialog mfp-hide">
     <div class="popup_modal_img">
-      <img src="./assets/images/testing-report/FORM.png" alt="">
+      <img src="./assets/images/testing-report/DASHBOARD.png" alt="">
     </div>
 
     <div class="popup_modal_content">
@@ -1669,6 +1690,12 @@
       <div class="portfolio_gallery owl-carousel">
         <div class="gallery_item">
           <img src="./assets/images/testing-report/TABLE.png" alt="">
+        </div>
+        <div class="gallery_item">
+          <img src="./assets/images/testing-report/EDIT TABLE.png" alt="">
+        </div>
+        <div class="gallery_item">
+          <img src="./assets/images/testing-report/FORM.png" alt="">
         </div>
       </div>
 
@@ -1715,6 +1742,107 @@
         <div class="navigation_item next-project">
           <a href="#" class="project">
             <div class="nav_project">
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Investigation Report -->
+  <div id="portfolio-wrapper-investigation-report" class="popup_content_area zoom-anim-dialog mfp-hide">
+    <div class="popup_modal_img">
+      <img src="./assets/images/investigation-report/form.png" alt="">
+    </div>
+
+    <div class="popup_modal_content">
+      <div class="portfolio_info">
+        <div class="portfolio_info_text">
+          <h2 class="title">Investigation Report</h2>
+          <div class="desc">
+            <p>
+              A web application that streamlines the documentation and reporting process of quality issues, including role-based input from departments such as Manufacturing, Distributor, and Customer, as well as handling investigation summaries, follow-ups, and digital approvals.
+            </p>
+          </div>
+          <a href="#" class="btn tj-btn-primary">Live Preview <i class="fal fa-arrow-right"></i></a>
+        </div>
+        <div class="portfolio_info_items">
+          <div class="info_item">
+            <div class="key">Category</div>
+            <div class="value">Web Application</div>
+          </div>
+          <div class="info_item">
+            <div class="key">Client</div>
+            <div class="value">PT Century Batteries Indonesia</div>
+          </div>
+          <div class="info_item">
+            <div class="key">Delivery Date</div>
+            <div class="value">10 July, 2025</div>
+          </div>
+          <div class="info_item">
+            <div class="key">Back-end</div>
+            <div class="value"><a href="https://github.com/asrofilnadib">Mohammad Asrofil Nadib</a></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="portfolio_gallery owl-carousel">
+        <div class="gallery_item">
+          <img src="./assets/images/investigation-report/detail.png" alt="">
+        </div>
+        <div class="gallery_item">
+          <img src="./assets/images/investigation-report/pdf.jpg" alt="">
+        </div>
+        <div class="gallery_item">
+          <img src="./assets/images/investigation-report/table.png" alt="">
+        </div>
+      </div>
+
+      <div class="portfolio_description">
+        <h2 class="title">Project Description</h2>
+        <div class="desc">
+          <p>
+            This application was built to simplify and automate the process of handling investigation requests, ranging from customer complaints to internal quality issues. It includes features such as multi-role form inputs, dynamic tables for problem tracking, digital signature exports to PDF, and structured workflows to improve traceability and accountability in issue resolution.
+          </p>
+        </div>
+      </div>
+
+      <div class="portfolio_story_approach">
+        <div class="portfolio_story">
+          <div class="story_title">
+            <h4 class="title">The Story</h4>
+          </div>
+          <div class="story_content">
+            <p>
+              Prior to this system, investigation reports were manually documented in spreadsheets and physical forms, which often led to inconsistency, delayed follow-ups, and lack of centralized visibility. PT Century Batteries Indonesia needed a digital solution to streamline communication between departments, improve documentation accuracy, and enable real-time tracking of each case.
+            </p>
+          </div>
+        </div>
+        <div class="portfolio_approach">
+          <div class="approach_title">
+            <h4 class="title">OUR APPROACH</h4>
+          </div>
+          <div class="approach_content">
+            <p>
+              We designed and implemented a web platform using CodeIgniter 3 and SQL Server that supports dynamic form entries, integrated select2 input, PDF export for signed documents, and role-based access. The system allows fast investigation creation, real-time updates, and complete digital audit trails for QA/RA teams and top management.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="portfolio_navigation">
+        <div class="navigation_item prev-project">
+          <a href="#" class="project">
+            <div class="nav_project">
+              <!-- Previous project preview (optional) -->
+            </div>
+          </a>
+        </div>
+
+        <div class="navigation_item next-project">
+          <a href="#" class="project">
+            <div class="nav_project">
+              <!-- Next project preview (optional) -->
             </div>
           </a>
         </div>
@@ -2261,7 +2389,7 @@
                   </div>
                   <div class="col-12">
                     <div class="form_btn">
-                      <button type="submit" class="btn tj-btn-primary">Send Message</button>
+                      <button type="submit" class="btn tj-btn-primary" disabled>Send Message</button>
                     </div>
                   </div>
                 </div>
