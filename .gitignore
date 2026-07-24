@@ -1,0 +1,51 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# next.js
+.next/
+out/
+build/
+dist/
+
+# env / secrets
+.env
+.env.*
+!.env.example
+
+# debug / logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.log
+
+# typescript / tooling
+*.tsbuildinfo
+next-env.d.ts
+.eslintcache
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# vercel / deploy
+.vercel
+
+# coverage / test
+coverage/
+.nyc_output/
+
+# nested apps (punya repo git sendiri)
+projects/mypas/
+projects/kms-form/
+
+# misc
+*.pem
+*.local
