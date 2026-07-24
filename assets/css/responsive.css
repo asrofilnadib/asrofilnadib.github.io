@@ -87,6 +87,14 @@
 		padding-top: 100px;
 		padding-bottom: 60px;
 	}
+	.portfolio-expand {
+		height: 200px;
+	}
+	.portfolio-expand__label {
+		margin-bottom: 18px;
+		padding: 10px 22px;
+		font-size: 14px;
+	}
 	.portfolio_story_approach .portfolio_approach,
 	.portfolio_story_approach .portfolio_story {
 		gap: 15px;
@@ -698,6 +706,9 @@
 	}
 	.portfolio-box {
 		padding-top: 40px;
+	}
+	.portfolio-expand {
+		height: 180px;
 	}
 	.portfolio-box .portfolio-sizer {
 		width: 100%;

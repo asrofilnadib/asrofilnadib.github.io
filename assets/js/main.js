@@ -142,12 +142,162 @@ Description: Gerold - Personal Portfolio HTML5 Template
 			percentPosition: true,
 		});
 
+		var $portfolioShowcase = $(".portfolio-showcase");
+		var $portfolioExpand = $(".portfolio-expand");
+		var portfolioVisibleCount = 0;
+		var portfolioExpandLocked = false;
+		var PORTFOLIO_INITIAL_ROWS = 2;
+		var PORTFOLIO_EXPAND_ROWS = 1;
+
+		function getPortfolioItemsPerRow() {
+			return window.matchMedia("(max-width: 991px)").matches ? 1 : 2;
+		}
+
+		function getFilteredPortfolioItems() {
+			return $grid.isotope("getFilteredItemElements") || [];
+		}
+
+		function measurePortfolioHeightForCount(itemCount) {
+			var filtered = getFilteredPortfolioItems();
+			var total = filtered.length;
+			if (!total) {
+				return null;
+			}
+
+			var visible = Math.min(Math.max(itemCount, 1), total);
+			var targetItem = filtered[visible - 1];
+			if (!targetItem) {
+				return null;
+			}
+
+			var gridTop = $grid[0].getBoundingClientRect().top + window.scrollY;
+			var itemBottom =
+				targetItem.getBoundingClientRect().top +
+				window.scrollY +
+				targetItem.offsetHeight;
+			var peek = visible < total ? 80 : 0;
+			var height = Math.max(itemBottom - gridTop + peek, 420);
+
+			return {
+				visible: visible,
+				total: total,
+				height: height,
+				isComplete: visible >= total,
+			};
+		}
+
+		function applyPortfolioCollapsedHeight(itemCount) {
+			if (!$portfolioShowcase.length) {
+				return;
+			}
+
+			var measured = measurePortfolioHeightForCount(itemCount);
+			if (!measured) {
+				return;
+			}
+
+			portfolioVisibleCount = measured.visible;
+
+			if (measured.total <= getPortfolioItemsPerRow() * PORTFOLIO_INITIAL_ROWS) {
+				$portfolioShowcase
+					.removeClass("is-collapsed")
+					.addClass("is-fully-expanded")
+					.css("max-height", "");
+				$portfolioExpand.attr("aria-expanded", "true");
+				return;
+			}
+
+			if (measured.isComplete) {
+				$portfolioShowcase
+					.removeClass("is-collapsed")
+					.addClass("is-fully-expanded")
+					.css("max-height", "");
+				$portfolioExpand.attr("aria-expanded", "true");
+				return;
+			}
+
+			$portfolioShowcase
+				.addClass("is-collapsed")
+				.removeClass("is-fully-expanded")
+				.css({
+					"--portfolio-collapsed-height": measured.height + "px",
+					"max-height": measured.height + "px",
+				});
+			$portfolioExpand.attr("aria-expanded", "false");
+		}
+
+		function resetPortfolioCollapse() {
+			portfolioVisibleCount = getPortfolioItemsPerRow() * PORTFOLIO_INITIAL_ROWS;
+			applyPortfolioCollapsedHeight(portfolioVisibleCount);
+		}
+
+		function syncPortfolioCollapseAfterLayout() {
+			if (portfolioExpandLocked || $portfolioShowcase.hasClass("is-fully-expanded")) {
+				return;
+			}
+			applyPortfolioCollapsedHeight(
+				portfolioVisibleCount || getPortfolioItemsPerRow() * PORTFOLIO_INITIAL_ROWS
+			);
+		}
+
+		$grid.on("arrangeComplete", function () {
+			syncPortfolioCollapseAfterLayout();
+		});
+
+		$portfolioExpand.on("click", function () {
+			var filtered = getFilteredPortfolioItems();
+			var total = filtered.length;
+			if (!total || $portfolioShowcase.hasClass("is-fully-expanded")) {
+				return;
+			}
+
+			var perRow = getPortfolioItemsPerRow();
+			var nextCount =
+				(portfolioVisibleCount || perRow * PORTFOLIO_INITIAL_ROWS) +
+				perRow * PORTFOLIO_EXPAND_ROWS;
+
+			portfolioExpandLocked = true;
+			applyPortfolioCollapsedHeight(nextCount);
+
+			window.setTimeout(function () {
+				portfolioExpandLocked = false;
+				$grid.isotope("layout");
+			}, 50);
+		});
+
+		function initPortfolioCollapse() {
+			resetPortfolioCollapse();
+			$grid.isotope("layout");
+		}
+
+		$grid.one("arrangeComplete", initPortfolioCollapse);
+		setTimeout(initPortfolioCollapse, 200);
+		$(window).on("load", function () {
+			initPortfolioCollapse();
+		});
+
+		var portfolioResizeTimer;
+		$(window).on("resize", function () {
+			clearTimeout(portfolioResizeTimer);
+			portfolioResizeTimer = setTimeout(function () {
+				if ($portfolioShowcase.hasClass("is-fully-expanded")) {
+					return;
+				}
+				applyPortfolioCollapsedHeight(
+					portfolioVisibleCount || getPortfolioItemsPerRow() * PORTFOLIO_INITIAL_ROWS
+				);
+				$grid.isotope("layout");
+			}, 150);
+		});
+
 		// filter items on button click
 		$(".filter-button-group").on("click", "button", function () {
 			$(".filter-button-group button").removeClass("active");
 			$(this).addClass("active");
 
 			var filterValue = $(this).attr("data-filter");
+			portfolioVisibleCount = getPortfolioItemsPerRow() * PORTFOLIO_INITIAL_ROWS;
+			$portfolioShowcase.removeClass("is-fully-expanded").addClass("is-collapsed");
 			$grid.isotope({ filter: filterValue });
 		});
 
