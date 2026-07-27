@@ -31,6 +31,7 @@
   <link rel="stylesheet" href="assets/css/photoswipe/photoswipe.css">
   <link rel="stylesheet" href="assets/css/portfolio-photoswipe.css">
   <link rel="stylesheet" href="assets/css/portfolio-gallery.css">
+  <link rel="stylesheet" href="assets/css/works-gantt.css">
 </head>
 
 <body>
@@ -629,6 +630,28 @@
             <p class="wow fadeInUp portfolio-filter-desc" data-wow-delay=".4s" id="portfolio-filter-desc">
               Projects I've delivered for PT Permodalan Nasional Madani (PNM), PT Century Batteries Indonesia (CBI), PT Prakarsa Alam Segar (PAS), and other clients.
             </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="works-timeline wow fadeInUp" data-wow-delay=".45s">
+            <div class="works-timeline-card">
+              <div class="works-timeline-head">
+                <div>
+                  <p class="works-timeline-eyebrow">Commit activity</p>
+                  <h3>Work Timeline</h3>
+                  <p>Bars for consecutive build days, diamonds for single-day pushes — synced with the company filter below.</p>
+                </div>
+                <div class="works-timeline-legend" aria-hidden="true">
+                  <span><i class="legend-bar"></i> Multi-day</span>
+                  <span><i class="legend-diamond"></i> Single day</span>
+                </div>
+              </div>
+              <div id="works-gantt-status" class="works-gantt-status">Loading timeline…</div>
+              <div id="works-gantt" class="works-gantt-host"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -3482,6 +3505,9 @@
 
 <script src="assets/js/main.js"></script>
 <script src="assets/js/commits.js"></script>
+<script src="assets/js/highcharts/highcharts.js"></script>
+<script src="assets/js/highcharts/modules/gantt.js"></script>
+<script src="assets/js/works-gantt.js"></script>
 <script src="assets/js/portfolio-image-zoom.js"></script>
 <script type="module" src="assets/js/portfolio-photoswipe.js"></script>
 <script src="assets/js/svg-pan-zoom.min.js"></script>

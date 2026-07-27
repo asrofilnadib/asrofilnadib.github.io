@@ -1,0 +1,138 @@
+/* Works Timeline Gantt */
+
+.works-timeline {
+	margin: 8px 0 36px;
+}
+
+.works-timeline-card {
+	position: relative;
+	padding: 28px 28px 18px;
+	border-radius: 20px;
+	background:
+		radial-gradient(120% 80% at 0% 0%, rgba(135, 80, 247, 0.18), transparent 55%),
+		radial-gradient(90% 70% at 100% 100%, rgba(88, 166, 255, 0.08), transparent 50%),
+		#12101a;
+	border: 1px solid rgba(135, 80, 247, 0.35);
+	box-shadow:
+		0 20px 60px rgba(0, 0, 0, 0.35),
+		inset 0 1px 0 rgba(255, 255, 255, 0.04);
+	overflow: hidden;
+}
+
+.works-timeline-card::before {
+	content: "";
+	position: absolute;
+	inset: 0 auto auto 0;
+	width: 100%;
+	height: 1px;
+	background: linear-gradient(90deg, transparent, rgba(183, 148, 246, 0.55), transparent);
+	pointer-events: none;
+}
+
+.works-timeline-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-end;
+	gap: 20px;
+	flex-wrap: wrap;
+	margin-bottom: 18px;
+}
+
+.works-timeline-eyebrow {
+	margin: 0 0 6px;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: #b794f6;
+}
+
+.works-timeline-head h3 {
+	margin: 0 0 8px;
+	font-size: clamp(22px, 3vw, 30px);
+	font-weight: 700;
+	color: #f0f6fc;
+	letter-spacing: -0.02em;
+}
+
+.works-timeline-head p {
+	margin: 0;
+	max-width: 520px;
+	font-size: 14px;
+	line-height: 1.55;
+	color: #9aa4b2;
+}
+
+.works-timeline-legend {
+	display: flex;
+	gap: 16px;
+	align-items: center;
+	font-size: 12px;
+	color: #8b949e;
+}
+
+.works-timeline-legend span {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.legend-bar {
+	display: inline-block;
+	width: 28px;
+	height: 8px;
+	border-radius: 999px;
+	background: linear-gradient(90deg, #8750f7, #58a6ff);
+}
+
+.legend-diamond {
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	background: #3fb950;
+	transform: rotate(45deg);
+	border-radius: 2px;
+}
+
+.works-gantt-status {
+	display: none;
+	padding: 28px 12px 36px;
+	text-align: center;
+	font-size: 14px;
+	color: #8b949e;
+}
+
+.works-gantt-status.is-visible {
+	display: block;
+}
+
+.works-gantt-status.is-error {
+	color: #f85149;
+}
+
+.works-gantt-host {
+	width: 100%;
+	min-height: 420px;
+	overflow-x: auto;
+}
+
+.works-gantt-host .highcharts-background {
+	fill: transparent;
+}
+
+.portfolio-item.works-gantt-flash {
+	outline: 2px solid rgba(135, 80, 247, 0.85);
+	outline-offset: 4px;
+	transition: outline-color 0.3s ease;
+}
+
+@media (max-width: 767px) {
+	.works-timeline-card {
+		padding: 22px 16px 12px;
+		border-radius: 16px;
+	}
+
+	.works-gantt-host {
+		min-height: 360px;
+	}
+}

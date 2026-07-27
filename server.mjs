@@ -17,6 +17,7 @@ const require = createRequire(import.meta.url);
 dotenv.config({ path: path.join(__dirname, ".env") });
 
 const commitsHandler = require("./api/commits.js");
+const activityHandler = require("./api/activity.js");
 
 const PORT = Number(process.env.PORT || 3000);
 const ROOT = __dirname;
@@ -53,7 +54,7 @@ function safeJoin(root, reqPath) {
   return full;
 }
 
-function handleCommitsApi(req, res, url) {
+function handleApi(handler, req, res, url) {
   const fakeReq = {
     method: req.method,
     query: Object.fromEntries(url.searchParams.entries()),
@@ -83,7 +84,7 @@ function handleCommitsApi(req, res, url) {
     _nodeRes: res,
   };
 
-  return commitsHandler(fakeReq, fakeRes);
+  return handler(fakeReq, fakeRes);
 }
 
 const server = http.createServer(async (req, res) => {
@@ -91,7 +92,11 @@ const server = http.createServer(async (req, res) => {
     const url = new URL(req.url || "/", `http://${req.headers.host}`);
 
     if (url.pathname === "/api/commits" || url.pathname === "/api/commits.js") {
-      return handleCommitsApi(req, res, url);
+      return handleApi(commitsHandler, req, res, url);
+    }
+
+    if (url.pathname === "/api/activity" || url.pathname === "/api/activity.js") {
+      return handleApi(activityHandler, req, res, url);
     }
 
     let filePath = safeJoin(ROOT, url.pathname === "/" ? "/index.html" : url.pathname);

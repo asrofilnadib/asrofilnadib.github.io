@@ -10,7 +10,8 @@
       "smartlab",
       "lab-eksternal",
       "lab eksternal"
-    ]
+    ],
+    "company": "pas"
   },
   "tms": {
     "title": "TMS",
@@ -20,7 +21,8 @@
     "author": "asrofilnadib",
     "prefixes": [
       "tms"
-    ]
+    ],
+    "company": "pas"
   },
   "ecafe": {
     "title": "E-Cafe Invoice",
@@ -32,7 +34,8 @@
       "ecafe",
       "e-cafe",
       "cafe"
-    ]
+    ],
+    "company": "pas"
   },
   "ga-stock": {
     "title": "Stock Opname GA",
@@ -44,7 +47,8 @@
       "ga-stock",
       "stock-opname",
       "gastock"
-    ]
+    ],
+    "company": "pas"
   },
   "scada": {
     "title": "SCADA to Tablet",
@@ -54,7 +58,8 @@
     "author": "asrofilnadib",
     "prefixes": [
       "scada"
-    ]
+    ],
+    "company": "pas"
   },
   "logbook": {
     "title": "Logbook Magang",
@@ -65,7 +70,8 @@
     "prefixes": [
       "logbook",
       "magang"
-    ]
+    ],
+    "company": "pas"
   },
   "p2h": {
     "title": "Digitalisasi P2H",
@@ -75,7 +81,8 @@
     "author": "asrofilnadib",
     "prefixes": [
       "p2h"
-    ]
+    ],
+    "company": "pas"
   },
   "chatbot": {
     "title": "PAS AI Chatbot",
@@ -87,7 +94,8 @@
       "chatbot",
       "pas-ai",
       "gemini"
-    ]
+    ],
+    "company": "pas"
   },
   "kapas": {
     "title": "KAPAS",
@@ -97,7 +105,8 @@
     "author": "asrofilnadib",
     "prefixes": [
       "kapas"
-    ]
+    ],
+    "company": "pas"
   },
   "timbangin": {
     "title": "TimbanginIN",
@@ -108,7 +117,8 @@
     "prefixes": [
       "timbangin",
       "timbangan"
-    ]
+    ],
+    "company": "pas"
   },
   "prayer": {
     "title": "Prayer Portal",
@@ -118,7 +128,8 @@
     "author": "asrofilnadib",
     "prefixes": [
       "prayer"
-    ]
+    ],
+    "company": "pas"
   },
   "kms-form": {
     "title": "KMS Form",
@@ -126,15 +137,20 @@
     "repo": "compliance-form-app",
     "branch": "main",
     "author": "asrofilnadib",
-    "prefixes": []
+    "prefixes": [],
+    "company": "pas"
   },
   "command-center": {
     "title": "Command Center CCTV",
     "owner": "asrofilnadib",
     "repo": "playback_command_center",
     "branch": "main",
-    "authors": ["asrofilnadib", "codemysister"],
-    "prefixes": []
+    "authors": [
+      "asrofilnadib",
+      "codemysister"
+    ],
+    "prefixes": [],
+    "company": "pas"
   },
   "psikotes": {
     "title": "Psikotes",
@@ -142,7 +158,8 @@
     "repo": "psikotes",
     "branch": "main",
     "author": "asrofilnadib",
-    "prefixes": []
+    "prefixes": [],
+    "company": "others"
   },
   "labqc": {
     "title": "Lab QC",
@@ -150,7 +167,8 @@
     "repo": "Proyek_Magang-CBI",
     "branch": "lab-qc",
     "author": "asrofilnadib",
-    "prefixes": []
+    "prefixes": [],
+    "company": "cbi"
   },
   "log-customer": {
     "title": "Log Problem Customer",
@@ -158,7 +176,8 @@
     "repo": "Proyek_Magang-CBI",
     "branch": "log-problem-customer",
     "author": "asrofilnadib",
-    "prefixes": []
+    "prefixes": [],
+    "company": "cbi"
   },
   "checksheet": {
     "title": "Checksheet Plate",
@@ -166,7 +185,8 @@
     "repo": "Proyek_Magang-CBI",
     "branch": "checksheet-plate",
     "author": "asrofilnadib",
-    "prefixes": []
+    "prefixes": [],
+    "company": "cbi"
   },
   "log-internal": {
     "title": "Log Problem QC",
@@ -174,7 +194,8 @@
     "repo": "Proyek_Magang-CBI",
     "branch": "log-problem-internal",
     "author": "asrofilnadib",
-    "prefixes": []
+    "prefixes": [],
+    "company": "cbi"
   },
   "pending-qc": {
     "title": "Pending QC",
@@ -182,7 +203,8 @@
     "repo": "Proyek_Magang-CBI",
     "branch": "pending-qc",
     "author": "asrofilnadib",
-    "prefixes": []
+    "prefixes": [],
+    "company": "cbi"
   },
   "testing-report": {
     "title": "Testing Report",
@@ -190,7 +212,8 @@
     "repo": "Proyek_Magang-CBI",
     "branch": "testing-report",
     "author": "asrofilnadib",
-    "prefixes": []
+    "prefixes": [],
+    "company": "cbi"
   },
   "investigation-report": {
     "title": "Berita Acara Investigasi",
@@ -198,7 +221,8 @@
     "repo": "Proyek_Magang-CBI",
     "branch": "investigation-report",
     "author": "asrofilnadib",
-    "prefixes": []
+    "prefixes": [],
+    "company": "cbi"
   },
   "grace-period": {
     "title": "Grace Period",
@@ -206,7 +230,8 @@
     "repo": "Magang_PNM",
     "branch": "gpserver",
     "author": "asrofilnadib",
-    "prefixes": []
+    "prefixes": [],
+    "company": "pnm"
   },
   "okration": {
     "title": "OKRation",
@@ -214,7 +239,8 @@
     "repo": "Skripsi-OKRation",
     "branch": "dev",
     "author": "asrofilnadib",
-    "prefixes": []
+    "prefixes": [],
+    "company": "pnm"
   },
   "kastara": {
     "title": "Kastara",
@@ -222,7 +248,8 @@
     "repo": "Kastara_Kain-Nusantara",
     "branch": "dev",
     "author": "asrofilnadib",
-    "prefixes": []
+    "prefixes": [],
+    "company": "others"
   },
   "sistem-pakar": {
     "title": "Sistem Pakar",
@@ -230,6 +257,7 @@
     "repo": "Sistem_Pakar_Gangguan_Belajar",
     "branch": "dev",
     "author": "asrofilnadib",
-    "prefixes": []
+    "prefixes": [],
+    "company": "others"
   }
 }
