@@ -233,11 +233,12 @@ function respond(res, rawCommits, meta) {
   }
 
   res.setHeader("Cache-Control", "s-maxage=300, stale-while-revalidate=600");
+  const branchPath = meta.branch ? `/tree/${encodeURIComponent(meta.branch)}` : "";
   return res.status(200).json({
     project: meta.title,
     repo: `${meta.owner}/${meta.repo}`,
     branch: meta.branch,
-    htmlUrl: `https://github.com/${meta.owner}/${meta.repo}`,
+    htmlUrl: `https://github.com/${meta.owner}/${meta.repo}${branchPath}`,
     count: commits.length,
     groups,
   });

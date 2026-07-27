@@ -143,5 +143,93 @@
     "branch": "main",
     "author": "asrofilnadib",
     "prefixes": []
+  },
+  "labqc": {
+    "title": "Lab QC",
+    "owner": "asrofilnadib",
+    "repo": "Proyek_Magang-CBI",
+    "branch": "lab-qc",
+    "author": "asrofilnadib",
+    "prefixes": []
+  },
+  "log-customer": {
+    "title": "Log Problem Customer",
+    "owner": "asrofilnadib",
+    "repo": "Proyek_Magang-CBI",
+    "branch": "log-problem-customer",
+    "author": "asrofilnadib",
+    "prefixes": []
+  },
+  "checksheet": {
+    "title": "Checksheet Plate",
+    "owner": "asrofilnadib",
+    "repo": "Proyek_Magang-CBI",
+    "branch": "checksheet-plate",
+    "author": "asrofilnadib",
+    "prefixes": []
+  },
+  "log-internal": {
+    "title": "Log Problem QC",
+    "owner": "asrofilnadib",
+    "repo": "Proyek_Magang-CBI",
+    "branch": "log-problem-internal",
+    "author": "asrofilnadib",
+    "prefixes": []
+  },
+  "pending-qc": {
+    "title": "Pending QC",
+    "owner": "asrofilnadib",
+    "repo": "Proyek_Magang-CBI",
+    "branch": "pending-qc",
+    "author": "asrofilnadib",
+    "prefixes": []
+  },
+  "testing-report": {
+    "title": "Testing Report",
+    "owner": "asrofilnadib",
+    "repo": "Proyek_Magang-CBI",
+    "branch": "testing-report",
+    "author": "asrofilnadib",
+    "prefixes": []
+  },
+  "investigation-report": {
+    "title": "Berita Acara Investigasi",
+    "owner": "asrofilnadib",
+    "repo": "Proyek_Magang-CBI",
+    "branch": "investigation-report",
+    "author": "asrofilnadib",
+    "prefixes": []
+  },
+  "grace-period": {
+    "title": "Grace Period",
+    "owner": "asrofilnadib",
+    "repo": "Magang_PNM",
+    "branch": "gpserver",
+    "author": "asrofilnadib",
+    "prefixes": []
+  },
+  "okration": {
+    "title": "OKRation",
+    "owner": "asrofilnadib",
+    "repo": "Skripsi-OKRation",
+    "branch": "dev",
+    "author": "asrofilnadib",
+    "prefixes": []
+  },
+  "kastara": {
+    "title": "Kastara",
+    "owner": "asrofilnadib",
+    "repo": "Kastara_Kain-Nusantara",
+    "branch": "dev",
+    "author": "asrofilnadib",
+    "prefixes": []
+  },
+  "sistem-pakar": {
+    "title": "Sistem Pakar",
+    "owner": "asrofilnadib",
+    "repo": "Sistem_Pakar_Gangguan_Belajar",
+    "branch": "dev",
+    "author": "asrofilnadib",
+    "prefixes": []
   }
 }
