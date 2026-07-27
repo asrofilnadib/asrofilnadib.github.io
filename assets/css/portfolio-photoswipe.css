@@ -1,0 +1,31 @@
+/* Portfolio PhotoSwipe tweaks */
+a.portfolio-pswp-link {
+	cursor: zoom-in;
+	display: block;
+	max-width: 100%;
+}
+
+a.portfolio-pswp-link img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+.portfolio-pswp-caption {
+	position: absolute;
+	left: 50%;
+	bottom: 28px;
+	transform: translateX(-50%);
+	max-width: min(90vw, 720px);
+	padding: 8px 14px;
+	border-radius: 8px;
+	background: rgba(0, 0, 0, 0.55);
+	color: #fff;
+	font-size: 13px;
+	text-align: center;
+	pointer-events: none;
+}
+
+.pswp {
+	z-index: 100050 !important;
+}
