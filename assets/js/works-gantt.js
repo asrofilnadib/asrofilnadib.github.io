@@ -1,7 +1,8 @@
 /**
  * Works Timeline — Highcharts Gantt
  * Bars = consecutive commit days; diamonds = single-day milestones.
- * Default view: last 30 days; interactive zoom/pan + expandable range.
+ * Default view: last 30 days. Rows only show projects with commits in the
+ * visible range, and update gradually as the user expands / pans / zooms.
  */
 (function () {
   "use strict";
@@ -33,10 +34,14 @@
   var DAY_MS = 24 * 60 * 60 * 1000;
   var chart = null;
   var allProjects = null;
+  var activePool = [];
   var currentCompany = "all";
   var rangeIndex = 0;
   var lastWin = null;
   var dataBounds = null;
+  var lastVisibleSig = "";
+  var syncTimer = null;
+  var syncingRows = false;
   var resizeObserver = null;
   var wheelBound = false;
   var WRAPPER_MAP = {
@@ -78,17 +83,20 @@
   function setStatus(msg, isError) {
     var el = $("#works-gantt-status");
     var host = $("#works-gantt");
+    var hint = $(".works-gantt-hint");
     if (!el) return;
     if (!msg) {
       el.classList.remove("is-visible", "is-error");
       el.textContent = "";
       if (host) host.style.display = "";
+      if (hint) hint.style.display = "";
       return;
     }
     el.textContent = msg;
     el.classList.add("is-visible");
     el.classList.toggle("is-error", !!isError);
     if (host) host.style.display = "none";
+    if (hint) hint.style.display = "none";
   }
 
   function companyFromFilter(filter) {
@@ -119,6 +127,12 @@
     return parseDay(fmt.format(new Date()));
   }
 
+  function segmentOverlaps(seg, min, max) {
+    var s = parseDay(seg.start);
+    var e = endExclusive(seg.end);
+    return e > min && s < max;
+  }
+
   function computeDataBounds(projects) {
     var min = null;
     var max = null;
@@ -140,8 +154,8 @@
   function getRangeWindow(bounds) {
     var step = RANGE_STEPS[rangeIndex] || RANGE_STEPS[0];
     var todayMax = startOfTodayJakarta() + DAY_MS;
-    var max = Math.max(todayMax, bounds.max);
     var min;
+    var max;
 
     if (step.days == null) {
       min = bounds.min;
@@ -149,7 +163,6 @@
     } else {
       min = todayMax - step.days * DAY_MS;
       max = todayMax;
-      // clamp into available data with slight pad
       if (min < bounds.min) min = bounds.min;
       if (max > bounds.max) max = bounds.max;
       if (min >= max) {
@@ -175,6 +188,36 @@
     });
   }
 
+  /** Projects that have at least one commit segment inside [min, max]. */
+  function projectsInRange(projects, min, max) {
+    return (projects || [])
+      .map(function (p) {
+        var segs = (p.segments || []).filter(function (seg) {
+          return segmentOverlaps(seg, min, max);
+        });
+        return {
+          key: p.key,
+          title: p.title,
+          company: p.company,
+          segments: segs,
+        };
+      })
+      .filter(function (p) {
+        return p.segments.length > 0;
+      });
+  }
+
+  function colorForProject(projectKey) {
+    var idx = 0;
+    for (var i = 0; i < activePool.length; i += 1) {
+      if (activePool[i].key === projectKey) {
+        idx = i;
+        break;
+      }
+    }
+    return COLORS[idx % COLORS.length];
+  }
+
   function buildSeries(projects) {
     var categories = projects.map(function (p) {
       return p.title;
@@ -182,7 +225,7 @@
     var data = [];
 
     projects.forEach(function (project, y) {
-      var color = COLORS[y % COLORS.length];
+      var color = colorForProject(project.key);
       (project.segments || []).forEach(function (seg) {
         var point = {
           name: project.title,
@@ -212,6 +255,37 @@
     return { categories: categories, data: data };
   }
 
+  /** Flattened overview points so the navigator keeps the full history. */
+  function buildOverviewData(projects) {
+    var data = [];
+    (projects || []).forEach(function (project) {
+      var color = colorForProject(project.key);
+      (project.segments || []).forEach(function (seg) {
+        data.push({
+          name: project.title,
+          y: 0,
+          projectKey: project.key,
+          color: color,
+          start: parseDay(seg.start),
+          end: endExclusive(seg.end),
+          milestone: !!seg.milestone,
+          marker: seg.milestone
+            ? { symbol: "diamond", radius: 3, lineWidth: 0, fillColor: color }
+            : undefined,
+        });
+      });
+    });
+    return data;
+  }
+
+  function visibleSignature(projects) {
+    return projects
+      .map(function (p) {
+        return p.key;
+      })
+      .join("|");
+  }
+
   function syncRangeUi(win) {
     lastWin = win;
     var label = $("#works-range-label");
@@ -231,7 +305,6 @@
   function applyViewExtremes(animate) {
     if (!chart || !lastWin) return;
     chart.xAxis[0].setExtremes(lastWin.min, lastWin.max, true, animate !== false);
-    if (chart.xAxis[1]) chart.xAxis[1].setExtremes(lastWin.min, lastWin.max, true, animate !== false);
   }
 
   function zoomAt(axis, center, factor) {
@@ -239,7 +312,7 @@
     var ex = axis.getExtremes();
     var span = ex.max - ex.min;
     var nextSpan = Math.max(3 * DAY_MS, Math.min(dataBounds.max - dataBounds.min, span * factor));
-    var ratio = (center - ex.min) / span;
+    var ratio = span ? (center - ex.min) / span : 0.5;
     var nextMin = center - nextSpan * ratio;
     var nextMax = nextMin + nextSpan;
     if (nextMin < dataBounds.min) {
@@ -260,7 +333,7 @@
     if (!axis) return;
     e.preventDefault();
     var factor = e.deltaY > 0 ? 1.25 : 0.8;
-    var rect = chart.plotBox && chart.container ? chart.container.getBoundingClientRect() : null;
+    var rect = chart.container ? chart.container.getBoundingClientRect() : null;
     var center;
     if (rect && typeof axis.toValue === "function") {
       var x = e.clientX - rect.left - (chart.plotLeft || 0);
@@ -280,10 +353,53 @@
 
   function chartHeight(rowCount) {
     var row = isMobile() ? 30 : 36;
-    var chrome = isMobile() ? 120 : 150; // axes + navigator + scrollbar
-    var minH = isMobile() ? 320 : 380;
+    var chrome = isMobile() ? 120 : 150;
+    var minH = isMobile() ? 300 : 360;
     var maxH = Math.min(window.innerHeight * 0.72, isMobile() ? 560 : 720);
-    return Math.max(minH, Math.min(maxH, chrome + rowCount * row));
+    return Math.max(minH, Math.min(maxH, chrome + Math.max(rowCount, 1) * row));
+  }
+
+  /**
+   * Gradually show/hide project rows based on the visible x-range.
+   */
+  function syncVisibleRows(min, max) {
+    if (!chart || !activePool.length) return;
+
+    var visible = projectsInRange(activePool, min, max);
+    var sig = visibleSignature(visible) + "@" + Math.round(min) + ":" + Math.round(max);
+
+    if (!visible.length) {
+      lastVisibleSig = sig;
+      setStatus("No commits in this view. Expand the range or scrub the navigator.");
+      return;
+    }
+
+    if (sig === lastVisibleSig) return;
+    lastVisibleSig = sig;
+
+    setStatus("");
+    var built = buildSeries(visible);
+    var nextHeight = chartHeight(visible.length);
+    var series = chart.get("visible-activity") || chart.series[0];
+
+    syncingRows = true;
+    try {
+      chart.yAxis[0].setCategories(built.categories, false);
+      if (series) series.setData(built.data, false, false, false);
+      if (Math.abs((chart.chartHeight || 0) - nextHeight) > 8) {
+        chart.setSize(undefined, nextHeight, false);
+      }
+      chart.redraw(false);
+    } finally {
+      syncingRows = false;
+    }
+  }
+
+  function scheduleSyncFromExtremes(min, max) {
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(function () {
+      syncVisibleRows(min, max);
+    }, 80);
   }
 
   function renderChart(company) {
@@ -292,11 +408,11 @@
       return;
     }
 
-    var companyProjects = filterProjects(company).filter(function (p) {
+    activePool = filterProjects(company).filter(function (p) {
       return p.segments && p.segments.length;
     });
 
-    if (!companyProjects.length) {
+    if (!activePool.length) {
       setStatus("No commit activity found for this filter yet.");
       if (chart) {
         chart.destroy();
@@ -305,15 +421,27 @@
       return;
     }
 
-    dataBounds = computeDataBounds(companyProjects);
+    dataBounds = computeDataBounds(activePool);
     var win = getRangeWindow(dataBounds);
     syncRangeUi(win);
 
+    var visible = projectsInRange(activePool, win.min, win.max);
+    if (!visible.length) {
+      setStatus("No activity in " + win.label.toLowerCase() + ". Expand the range to see older commits.");
+      if (chart) {
+        chart.destroy();
+        chart = null;
+      }
+      return;
+    }
+
     setStatus("");
-    var built = buildSeries(companyProjects);
+    var built = buildSeries(visible);
+    var overview = buildOverviewData(activePool);
     var mobile = isMobile();
-    var height = chartHeight(companyProjects.length);
+    var height = chartHeight(visible.length);
     var host = $("#works-gantt");
+    lastVisibleSig = visibleSignature(visible) + "@" + Math.round(win.min) + ":" + Math.round(win.max);
 
     if (chart) {
       chart.destroy();
@@ -341,7 +469,12 @@
               fill: "rgba(18, 16, 26, 0.92)",
               stroke: "rgba(135, 80, 247, 0.55)",
               r: 8,
-              style: { color: "#e6edf3", fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: "600" },
+              style: {
+                color: "#e6edf3",
+                fontFamily: "Sora, sans-serif",
+                fontSize: "11px",
+                fontWeight: "600",
+              },
               states: {
                 hover: {
                   fill: "rgba(135, 80, 247, 0.28)",
@@ -353,7 +486,9 @@
         },
         events: {
           load: function () {
+            // Set the preset window, then ensure rows match that window.
             this.xAxis[0].setExtremes(win.min, win.max, true, false);
+            syncVisibleRows(win.min, win.max);
           },
         },
       },
@@ -364,6 +499,7 @@
       legend: { enabled: false },
       navigator: {
         enabled: true,
+        adaptToUpdatedData: false,
         height: mobile ? 28 : 36,
         maskFill: "rgba(135, 80, 247, 0.18)",
         outlineColor: "rgba(135, 80, 247, 0.35)",
@@ -381,6 +517,8 @@
           lineWidth: 0,
         },
         xAxis: {
+          min: dataBounds.min,
+          max: dataBounds.max,
           labels: {
             style: { color: "#8b949e", fontSize: "10px" },
           },
@@ -389,6 +527,7 @@
       },
       scrollbar: {
         enabled: true,
+        liveRedraw: true,
         height: mobile ? 8 : 10,
         barBackgroundColor: "rgba(135, 80, 247, 0.45)",
         barBorderRadius: 6,
@@ -410,6 +549,9 @@
         stickOnContact: true,
         style: { color: "#e6edf3", fontSize: mobile ? "11px" : "12px" },
         formatter: function () {
+          if (this.series && this.series.options && this.series.options.id === "overview-activity") {
+            return false;
+          }
           var p = this.point;
           var kind = p.milestone ? "Single day" : "Consecutive days";
           return (
@@ -429,6 +571,10 @@
       },
       xAxis: [
         {
+          // floor/ceiling keep navigator panning within full history,
+          // without forcing the initial view to "All".
+          floor: dataBounds.min,
+          ceiling: dataBounds.max,
           currentDateIndicator: {
             color: "rgba(135, 80, 247, 0.55)",
             width: 1,
@@ -444,10 +590,21 @@
           labels: { style: { color: "#8b949e", fontSize: mobile ? "10px" : "11px" } },
           lineColor: "#30363d",
           tickColor: "#30363d",
+          events: {
+            afterSetExtremes: function (e) {
+              if (syncingRows) return;
+              if (e.min == null || e.max == null) return;
+              scheduleSyncFromExtremes(e.min, e.max);
+            },
+          },
         },
         {
           labels: {
-            style: { color: "#c9d1d9", fontSize: mobile ? "11px" : "12px", fontWeight: "600" },
+            style: {
+              color: "#c9d1d9",
+              fontSize: mobile ? "11px" : "12px",
+              fontWeight: "600",
+            },
           },
           grid: { borderColor: "#30363d" },
           lineColor: "#30363d",
@@ -475,7 +632,7 @@
       },
       plotOptions: {
         series: {
-          animation: mobile ? false : { duration: 450 },
+          animation: mobile ? false : { duration: 350 },
           borderRadius: 6,
           borderColor: "transparent",
           dataLabels: { enabled: false },
@@ -483,18 +640,14 @@
           states: {
             hover: {
               brightness: 0.12,
-              halo: {
-                size: 6,
-                opacity: 0.25,
-              },
+              halo: { size: 6, opacity: 0.25 },
             },
-            inactive: {
-              opacity: 0.35,
-            },
+            inactive: { opacity: 0.35 },
           },
           point: {
             events: {
               click: function () {
+                if (this.series && this.series.options.id === "overview-activity") return;
                 focusProject(this.projectKey);
               },
             },
@@ -522,10 +675,23 @@
       },
       series: [
         {
+          id: "visible-activity",
           name: "Activity",
           data: built.data,
           borderRadius: 6,
           turboThreshold: 0,
+          showInNavigator: false,
+        },
+        {
+          id: "overview-activity",
+          name: "Overview",
+          data: overview,
+          borderRadius: 4,
+          turboThreshold: 0,
+          visible: false,
+          showInLegend: false,
+          enableMouseTracking: false,
+          showInNavigator: true,
         },
       ],
     });
@@ -579,6 +745,8 @@
       var win = getRangeWindow(dataBounds);
       syncRangeUi(win);
       applyViewExtremes(true);
+      // afterSetExtremes will sync rows; also sync immediately for snappy UI
+      scheduleSyncFromExtremes(win.min, win.max);
       return;
     }
     renderChart(currentCompany);
@@ -634,6 +802,7 @@
       reset.addEventListener("click", function () {
         if (!lastWin) return;
         applyViewExtremes(true);
+        scheduleSyncFromExtremes(lastWin.min, lastWin.max);
       });
     }
   }
@@ -644,7 +813,6 @@
       clearTimeout(timer);
       timer = setTimeout(function () {
         if (!allProjects || !chart) return;
-        // rebuild on breakpoint flip so row scale / navigator height adapt
         renderChart(currentCompany);
       }, 220);
     });
