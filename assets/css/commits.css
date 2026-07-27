@@ -212,11 +212,10 @@
 	color: inherit;
 }
 
-/* Hover tint by conventional-commit type (message is not a link) */
+/* Hover tint by conventional-commit type — title stays white for contrast */
 .gh-commit-item.gh-type-feat:hover {
 	background: rgba(63, 185, 80, 0.12);
 	border-color: rgba(63, 185, 80, 0.35);
-	color: #3fb950;
 }
 
 .gh-commit-item.gh-type-feat:hover::before {
@@ -227,7 +226,6 @@
 .gh-commit-item.gh-type-fix:hover {
 	background: rgba(248, 81, 73, 0.12);
 	border-color: rgba(248, 81, 73, 0.35);
-	color: #f85149;
 }
 
 .gh-commit-item.gh-type-fix:hover::before {
@@ -238,7 +236,6 @@
 .gh-commit-item.gh-type-refactor:hover {
 	background: rgba(88, 166, 255, 0.12);
 	border-color: rgba(88, 166, 255, 0.35);
-	color: #58a6ff;
 }
 
 .gh-commit-item.gh-type-refactor:hover::before {
@@ -249,7 +246,6 @@
 .gh-commit-item.gh-type-chore:hover {
 	background: rgba(139, 148, 158, 0.14);
 	border-color: rgba(139, 148, 158, 0.4);
-	color: #c9d1d9;
 }
 
 .gh-commit-item.gh-type-chore:hover::before {
@@ -260,7 +256,6 @@
 .gh-commit-item.gh-type-other:hover {
 	background: rgba(135, 80, 247, 0.12);
 	border-color: rgba(135, 80, 247, 0.35);
-	color: #b794f6;
 }
 
 .gh-commit-item.gh-type-other:hover::before {
@@ -268,13 +263,13 @@
 	box-shadow: 0 0 0 2px rgba(135, 80, 247, 0.25);
 }
 
-.gh-commit-item:hover .gh-commit-msg {
-	color: inherit;
+.gh-commit-item:hover .gh-commit-msg,
+.gh-commit-item:hover .gh-commit-text {
+	color: #f0f6fc;
 }
 
 .gh-commit-item:hover .gh-commit-meta {
-	color: inherit;
-	opacity: 0.85;
+	color: #8b949e;
 }
 
 .gh-badge {
