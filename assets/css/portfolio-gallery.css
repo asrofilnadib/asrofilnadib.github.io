@@ -1,0 +1,111 @@
+/* PAS portfolio gallery: image / flowchart / youtube / ppt */
+
+.portfolio_gallery .gallery_item[data-type="flowchart"],
+.portfolio_gallery .gallery_item[data-type="youtube"],
+.portfolio_gallery .gallery_item[data-type="ppt"] {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.portfolio_gallery .flowchart-host {
+	position: relative;
+	width: 100%;
+	min-height: 420px;
+	height: min(52vh, 560px);
+	background: #161b22;
+	border: 1px solid #30363d;
+	border-radius: 12px;
+	overflow: hidden;
+	cursor: grab;
+}
+
+.portfolio_gallery .flowchart-host:active {
+	cursor: grabbing;
+}
+
+.portfolio_gallery .flowchart-host .flowchart-loading,
+.portfolio_gallery .flowchart-host .flowchart-error {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 24px;
+	text-align: center;
+	color: #8b949e;
+	font-size: 14px;
+	background: #161b22;
+}
+
+.portfolio_gallery .flowchart-host .flowchart-error {
+	color: #f85149;
+}
+
+.portfolio_gallery .flowchart-host svg {
+	width: 100%;
+	height: 100%;
+	display: block;
+}
+
+.portfolio_gallery .gallery_caption {
+	margin: 0;
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--tj-theme-primary, #8750f7);
+	text-align: center;
+}
+
+.portfolio_gallery .youtube-host {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 16 / 9;
+	background: #0d1117;
+	border: 1px solid #30363d;
+	border-radius: 12px;
+	overflow: hidden;
+}
+
+.portfolio_gallery .youtube-host iframe {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	border: 0;
+}
+
+.portfolio_gallery .ppt-host {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 220px;
+	padding: 24px;
+	background: #161b22;
+	border: 1px solid #30363d;
+	border-radius: 12px;
+}
+
+.portfolio_gallery .ppt-host a {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 12px 20px;
+	border-radius: 999px;
+	background: var(--tj-theme-primary, #8750f7);
+	color: #fff;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.portfolio_gallery .ppt-host a:hover {
+	filter: brightness(1.08);
+}
+
+@media (max-width: 767px) {
+	.portfolio_gallery .flowchart-host {
+		min-height: 320px;
+		height: min(48vh, 420px);
+	}
+}
