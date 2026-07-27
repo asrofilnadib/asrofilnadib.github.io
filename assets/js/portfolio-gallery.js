@@ -6,7 +6,10 @@
 (function ($) {
   "use strict";
 
-  var panZoomInstances = [];
+  var panZoomByHost = new WeakMap();
+  var panZoomList = [];
+  var hydrating = false;
+  var hydratedModal = false;
 
   function youtubeId(url) {
     if (!url) return "";
@@ -18,28 +21,40 @@
   }
 
   function destroyPanZooms() {
-    panZoomInstances.forEach(function (pz) {
+    panZoomList.forEach(function (pz) {
       try {
         pz.destroy();
       } catch (_) {}
     });
-    panZoomInstances = [];
+    panZoomList = [];
+    panZoomByHost = new WeakMap();
+    hydratedModal = false;
   }
 
-  function attachPanZoom(svg) {
-    if (!window.svgPanZoom || !svg) return null;
+  function attachPanZoom(host, svg) {
+    if (!window.svgPanZoom || !svg || !host) return null;
+    // Don't double-init the same host
+    if (panZoomByHost.get(host)) return panZoomByHost.get(host);
+
     try {
       var pz = window.svgPanZoom(svg, {
         zoomEnabled: true,
         controlIconsEnabled: true,
         fit: true,
         center: true,
-        minZoom: 0.35,
-        maxZoom: 10,
+        minZoom: 0.2,
+        maxZoom: 12,
+        zoomScaleSensitivity: 0.3,
+        // Keep mouse wheel zooming the chart, not the page
+        mouseWheelZoomEnabled: true,
+        // Prevent dbl-click zoom fighting Owl
+        dblClickZoomEnabled: true,
       });
-      panZoomInstances.push(pz);
+      panZoomByHost.set(host, pz);
+      panZoomList.push(pz);
       return pz;
-    } catch (_) {
+    } catch (err) {
+      console.warn("svgPanZoom init failed", err);
       return null;
     }
   }
@@ -47,13 +62,13 @@
   function blockOwlOnHost(host) {
     if (!host || host.dataset.owlBlocked) return;
     host.dataset.owlBlocked = "1";
-    ["mousedown", "touchstart", "pointerdown"].forEach(function (evt) {
+    ["mousedown", "touchstart", "pointerdown", "click", "wheel"].forEach(function (evt) {
       host.addEventListener(
         evt,
         function (e) {
           e.stopPropagation();
         },
-        { passive: true }
+        { passive: false }
       );
     });
   }
@@ -68,6 +83,12 @@
   }
 
   function applySvgToHost(host, svgHtml) {
+    if (!host) return;
+    // Already live — never wipe (that destroys zoom state)
+    if (host.dataset.rendered === "1" && host.querySelector("svg") && panZoomByHost.get(host)) {
+      return;
+    }
+
     host.innerHTML = svgHtml;
     var svg = host.querySelector("svg");
     if (!svg) {
@@ -81,7 +102,7 @@
     svg.style.height = "100%";
     svg.style.maxWidth = "100%";
     svg.style.maxHeight = "100%";
-    attachPanZoom(svg);
+    attachPanZoom(host, svg);
     blockOwlOnHost(host);
     host.dataset.rendered = "1";
   }
@@ -91,7 +112,9 @@
     var src = $item.attr("data-flowchart-src");
     var host = $item.find(".flowchart-host")[0];
     if (!host || !src) return;
-    if (host.dataset.rendered === "1" && host.querySelector("svg")) return;
+    if (host.dataset.rendered === "1" && host.querySelector("svg") && panZoomByHost.get(host)) {
+      return;
+    }
 
     host.innerHTML = '<div class="flowchart-loading">Loading flowchart…</div>';
 
@@ -110,7 +133,7 @@
     }
 
     try {
-      var res = await fetch(src, { cache: "no-cache" });
+      var res = await fetch(src, { cache: "force-cache" });
       if (!res.ok) throw new Error("HTTP " + res.status + " fetching " + src);
       var text = await res.text();
       var svgHtml = extractSvgMarkup(text);
@@ -192,7 +215,7 @@
     await Promise.all(tasks);
   }
 
-  function refreshOwl($gallery) {
+  function refreshOwlLayout($gallery) {
     if (!$gallery || !$gallery.length) return;
     $gallery.each(function () {
       var $g = $(this);
@@ -220,50 +243,71 @@
         });
       }
     });
-    panZoomInstances.forEach(function (pz) {
+  }
+
+  /** Only resize pan-zoom to new box size — never fit/center (that resets user zoom). */
+  function softResizePanZooms() {
+    panZoomList.forEach(function (pz) {
       try {
         pz.resize();
-        pz.fit();
-        pz.center();
       } catch (_) {}
     });
   }
 
+  function hostsNeedHydrate($galleries) {
+    var need = false;
+    $galleries.find(".flowchart-host").each(function () {
+      if (this.dataset.rendered !== "1" || !this.querySelector("svg") || !panZoomByHost.get(this)) {
+        need = true;
+      }
+    });
+    return need;
+  }
+
   async function onModalOpen() {
+    if (hydrating) return;
+
     var $content = $(".mfp-content");
     if (!$content.length) return;
 
     var $galleries = $content.find(".portfolio_gallery.owl-carousel");
     if (!$galleries.length) return;
 
-    // Skip full wipe if already hydrated (retry pass)
-    var needsHydrate = false;
-    $galleries.find(".flowchart-host").each(function () {
-      if (this.dataset.rendered !== "1" || !this.querySelector("svg")) {
-        needsHydrate = true;
-        delete this.dataset.rendered;
-        if (!this.querySelector(".flowchart-loading")) {
-          this.innerHTML = '<div class="flowchart-loading">Loading flowchart…</div>';
-        }
-      }
-    });
-    if (!needsHydrate) {
-      refreshOwl($galleries);
+    // Already good — do nothing (CRITICAL: don't refreshOwl/fit, that resets zoom)
+    if (hydratedModal && !hostsNeedHydrate($galleries)) {
       return;
     }
 
-    destroyPanZooms();
-
+    hydrating = true;
     try {
-      await hydrateGallery($galleries);
+      if (hostsNeedHydrate($galleries)) {
+        $galleries.find(".flowchart-host").each(function () {
+          if (this.dataset.rendered === "1" && this.querySelector("svg") && panZoomByHost.get(this)) {
+            return;
+          }
+          delete this.dataset.rendered;
+          this.innerHTML = '<div class="flowchart-loading">Loading flowchart…</div>';
+        });
+
+        await hydrateGallery($galleries);
+        refreshOwlLayout($galleries);
+
+        // One soft resize after Owl settles — no fit/center
+        setTimeout(function () {
+          softResizePanZooms();
+          // Owl may clone nodes after refresh; re-apply SVG to empty clones only
+          hydrateGallery($galleries).then(function () {
+            softResizePanZooms();
+          });
+        }, 220);
+      }
+
+      hydratedModal = true;
     } catch (e) {
       console.warn("gallery hydrate failed", e);
+    } finally {
+      hydrating = false;
     }
-
-    refreshOwl($galleries);
-    setTimeout(function () {
-      refreshOwl($galleries);
-    }, 200);
   }
 
   function boot() {
@@ -274,35 +318,32 @@
       clearTimeout(hydrateTimer);
       hydrateTimer = setTimeout(function () {
         onModalOpen();
-        setTimeout(onModalOpen, 350);
-        setTimeout(onModalOpen, 800);
-      }, 80);
+      }, 150);
     }
 
-    $(document).on("mfpOpen.portfolioGallery", scheduleHydrate);
-    // Backup: some Magnific opens don't bubble mfpOpen reliably with inline clones
-    $(document).on("click.portfolioGallery", ".modal-popup", function () {
+    $(document).on("mfpOpen.portfolioGallery", function () {
+      hydratedModal = false;
       scheduleHydrate();
+      // One delayed retry for late Owl init — still no fit/center loop
+      setTimeout(scheduleHydrate, 500);
+    });
+
+    $(document).on("click.portfolioGallery", ".modal-popup", function () {
+      hydratedModal = false;
+      scheduleHydrate();
+      setTimeout(scheduleHydrate, 500);
     });
 
     $(document).on("mfpClose.portfolioGallery", function () {
       destroyPanZooms();
     });
 
-    if (typeof MutationObserver !== "undefined") {
-      var moTimer = null;
-      var mo = new MutationObserver(function () {
-        if (!document.querySelector(".mfp-ready .portfolio_gallery .flowchart-host")) return;
-        clearTimeout(moTimer);
-        moTimer = setTimeout(scheduleHydrate, 100);
-      });
-      mo.observe(document.body, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ["class"],
-      });
-    }
+    // Re-hydrate empty Owl clones after slide change — never fit/center
+    $(document).on("translated.owl.carousel.portfolioGallery", ".portfolio_gallery", function () {
+      var $g = $(this);
+      if (!$g.closest(".mfp-content").length) return;
+      hydrateGallery($g).then(softResizePanZooms);
+    });
   }
 
   if (document.readyState === "loading") {

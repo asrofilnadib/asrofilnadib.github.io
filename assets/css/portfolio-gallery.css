@@ -56,11 +56,24 @@
 }
 
 .portfolio_gallery .flowchart-host .svg-pan-zoom-control {
-	opacity: 0.85;
+	opacity: 0.9;
+	pointer-events: all;
 }
 
 .portfolio_gallery .flowchart-host .svg-pan-zoom-control:hover {
 	opacity: 1;
+}
+
+.portfolio_gallery .flowchart-host .svg-pan-zoom-control-background {
+	fill: rgba(18, 16, 26, 0.82) !important;
+	fill-opacity: 1 !important;
+	stroke: rgba(135, 80, 247, 0.45);
+	stroke-width: 1;
+}
+
+.portfolio_gallery .flowchart-host .svg-pan-zoom-control-element {
+	fill: #e6edf3 !important;
+	fill-opacity: 1 !important;
 }
 
 .portfolio_gallery .gallery_caption {
