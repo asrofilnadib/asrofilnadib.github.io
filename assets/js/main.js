@@ -329,9 +329,9 @@ Description: Gerold - Personal Portfolio HTML5 Template
 			margin: 30,
 			nav: false,
 			dots: true,
-			mouseDrag: false,
+			mouseDrag: true,
 			touchDrag: true,
-			pullDrag: false,
+			pullDrag: true,
 			responsive: {
 				// breakpoint from 0 up
 				0: {
@@ -350,9 +350,14 @@ Description: Gerold - Personal Portfolio HTML5 Template
 			},
 		});
 
-		// Clicks on zoomable gallery images must not start a drag/slide
-		$(document).on("mousedown touchstart", ".portfolio_gallery a.portfolio-pswp-link, .popup_modal_img a.portfolio-pswp-link", function (e) {
-			e.stopPropagation();
+		// Track Owl drag so PhotoSwipe/zoom don't treat swipe as a click
+		$(document).on("drag.owl.carousel", ".portfolio_gallery", function () {
+			window.__portfolioGalleryDragging = true;
+		});
+		$(document).on("dragged.owl.carousel translated.owl.carousel", ".portfolio_gallery", function () {
+			setTimeout(function () {
+				window.__portfolioGalleryDragging = false;
+			}, 80);
 		});
 
 		/*------------------------------------------------------

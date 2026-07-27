@@ -71,6 +71,13 @@ window.PortfolioPhotoSwipe = {
         padding: { top: 24, bottom: 40, left: 16, right: 16 },
       });
 
+      // Don't open lightbox after an Owl swipe/drag
+      lb.on("beforeOpen", (e) => {
+        if (window.__portfolioGalleryDragging) {
+          e.preventDefault();
+        }
+      });
+
       lb.on("uiRegister", () => {
         lb.pswp.ui.registerElement({
           name: "portfolio-caption",

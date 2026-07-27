@@ -205,9 +205,9 @@
           margin: 30,
           nav: false,
           dots: true,
-          mouseDrag: false,
+          mouseDrag: true,
           touchDrag: true,
-          pullDrag: false,
+          pullDrag: true,
           responsive: {
             0: { items: 1, margin: 0 },
             768: { items: 2, margin: 20 },

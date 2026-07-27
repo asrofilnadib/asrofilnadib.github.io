@@ -12,6 +12,8 @@
   var counterEl = null;
   var items = [];
   var index = 0;
+  var pointerStart = null;
+  var DRAG_THRESHOLD = 12;
 
   function ensureOverlay() {
     if (overlay) return;
@@ -110,15 +112,22 @@
     var link = e.target.closest("a." + LINK_CLASS);
     if (!link) return;
 
+    // Ignore click that followed a carousel swipe/drag
+    if (window.__portfolioGalleryDragging) return;
+    if (pointerStart) {
+      var dx = Math.abs((e.clientX || 0) - pointerStart.x);
+      var dy = Math.abs((e.clientY || 0) - pointerStart.y);
+      pointerStart = null;
+      if (dx > DRAG_THRESHOLD || dy > DRAG_THRESHOLD) return;
+    }
+
     // Let PhotoSwipe handle when its lightboxes are active
     if (preferPhotoSwipe && window.PortfolioPhotoSwipe && window.PortfolioPhotoSwipe.lightboxes.length) {
       return;
     }
 
-    // Block Owl Carousel / Magnific from treating this as swipe/nav
     e.preventDefault();
     e.stopPropagation();
-    if (typeof e.stopImmediatePropagation === "function") e.stopImmediatePropagation();
 
     var container =
       link.closest(".mfp-content .popup_content_area") ||
@@ -134,6 +143,20 @@
     openZoom(list, Math.max(0, links.indexOf(link)));
   }
 
+  function onPointerDown(e) {
+    var link = e.target.closest("a." + LINK_CLASS);
+    if (!link) return;
+    var pt = e.touches && e.touches[0] ? e.touches[0] : e;
+    pointerStart = { x: pt.clientX || 0, y: pt.clientY || 0 };
+  }
+
+  function onPointerUp() {
+    // Keep pointerStart until click handler runs (same gesture)
+    setTimeout(function () {
+      pointerStart = null;
+    }, 0);
+  }
+
   window.PortfolioImageZoom = {
     prepare: prepareContainer,
     initIn: prepareContainer,
@@ -144,6 +167,10 @@
   };
 
   function boot() {
+    document.addEventListener("pointerdown", onPointerDown, true);
+    document.addEventListener("touchstart", onPointerDown, true);
+    document.addEventListener("pointerup", onPointerUp, true);
+    document.addEventListener("touchend", onPointerUp, true);
     document.addEventListener("click", onClick, true);
     document.querySelectorAll(".popup_content_area").forEach(prepareContainer);
 
