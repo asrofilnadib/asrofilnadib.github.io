@@ -649,6 +649,20 @@
                   <span><i class="legend-diamond"></i> Single day</span>
                 </div>
               </div>
+              <div class="works-timeline-range" role="group" aria-label="Timeline range">
+                <button type="button" class="works-range-step" data-range-step="-1" title="Shrink range" aria-label="Shrink range">−</button>
+                <div class="works-range-pills">
+                  <button type="button" class="works-range-pill is-active" data-range-days="30">30D</button>
+                  <button type="button" class="works-range-pill" data-range-days="90">90D</button>
+                  <button type="button" class="works-range-pill" data-range-days="180">6M</button>
+                  <button type="button" class="works-range-pill" data-range-days="365">1Y</button>
+                  <button type="button" class="works-range-pill" data-range-days="all">All</button>
+                </div>
+                <button type="button" class="works-range-step" data-range-step="1" title="Expand range" aria-label="Expand range">+</button>
+                <button type="button" id="works-range-reset" class="works-range-reset" title="Reset zoom to selected range">Reset view</button>
+                <span id="works-range-label" class="works-range-label">Last 30 days</span>
+              </div>
+              <p class="works-gantt-hint">Drag to zoom · Shift+drag / navigator to pan · Scroll to zoom · Tap a bar to open project</p>
               <div id="works-gantt-status" class="works-gantt-status">Loading timeline…</div>
               <div id="works-gantt" class="works-gantt-host"></div>
             </div>
