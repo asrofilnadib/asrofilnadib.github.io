@@ -2050,6 +2050,25 @@
         <h2 class="title">Project Description</h2>
         <div class="desc"><p>Handles multi-department analysis requests, daily lab activity, and a 2-phase external lab receive workflow (approve + pre-label photos → label photo upload) with GAWI/PR/IM-GR chain.</p></div>
       </div>
+      <div class="portfolio_story_approach">
+        <div class="portfolio_story">
+          <div class="story_title">
+            <h4 class="title">The Story</h4>
+          </div>
+          <div class="story_content">
+            <p>Lab QA at PT Prakarsa Alam Segar used to juggle analysis requests, daily lab work, and external vendor samples across spreadsheets and chat threads. Handoffs between departments were easy to miss, especially for external labs that need purchasing (GAWI/PR/IM-GR) plus photo proof before labels can be trusted.</p>
+          </div>
+        </div>
+        <div class="portfolio_approach">
+          <div class="approach_title">
+            <h4 class="title">My Approach</h4>
+          </div>
+          <div class="approach_content">
+            <p>I modeled three clear lanes in MyPAS—PA, Daily Activity, and Lab Eksternal—with status-driven receive/approve steps and a two-phase external receive (approve + pre-label photos, then label upload). FilePond handles evidence uploads, and role checks keep each actor in the right stage of the chain.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -2076,6 +2095,25 @@
         <h2 class="title">Project Description</h2>
         <div class="desc"><p>Status flow: draft → request → pengambilan → pengiriman → selesai (plus reject/tunda). Involves Produksi, Admin WSM, Staging, Pengawas, Driver, and Maps operators.</p></div>
       </div>
+      <div class="portfolio_story_approach">
+        <div class="portfolio_story">
+          <div class="story_title">
+            <h4 class="title">The Story</h4>
+          </div>
+          <div class="story_content">
+            <p>Internal transport was the hardest operational tangle: SAP documents, staging readiness, pengawas requests, and driver muat/bongkar lived in separate channels. Delays, rejects, and “where is the truck?” questions burned time for Produksi, WSM, and logistics operators.</p>
+          </div>
+        </div>
+        <div class="portfolio_approach">
+          <div class="approach_title">
+            <h4 class="title">My Approach</h4>
+          </div>
+          <div class="approach_content">
+            <p>I built TMS as an end-to-end status machine (draft → request → pengambilan → pengiriman → selesai, plus reject/tunda), wired to SAP staging data and role-based actions for each actor. Maps/realtime visibility sits on top so operators track active trips without chasing WhatsApp updates.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -2102,6 +2140,25 @@
         <h2 class="title">Project Description</h2>
         <div class="desc"><p>Approval chain: Dibuat → Diperiksa → Diketahui (2 levels) → Disetujui, with email notifications and PDF invoice export.</p></div>
       </div>
+      <div class="portfolio_story_approach">
+        <div class="portfolio_story">
+          <div class="story_title">
+            <h4 class="title">The Story</h4>
+          </div>
+          <div class="story_content">
+            <p>E-cafe invoices (Makan, Frozen, Scan Produk) needed formal multi-level sign-off, but paper/email chains made it unclear who still owed approval and hard to re-export a clean invoice later.</p>
+          </div>
+        </div>
+        <div class="portfolio_approach">
+          <div class="approach_title">
+            <h4 class="title">My Approach</h4>
+          </div>
+          <div class="approach_content">
+            <p>I implemented a sequential 5-level approval flow (Dibuat → Diperiksa → Diketahui ×2 → Disetujui) with email notifications at each hop and PDF export, so Finance/HR can audit the trail without leaving MyPAS.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -2128,6 +2185,25 @@
         <h2 class="title">Project Description</h2>
         <div class="desc"><p>Realtime stock board (`ga-stock-board`) for lobby/TV display, separate from FAC stock opname module.</p></div>
       </div>
+      <div class="portfolio_story_approach">
+        <div class="portfolio_story">
+          <div class="story_title">
+            <h4 class="title">The Story</h4>
+          </div>
+          <div class="story_content">
+            <p>GA stock for pantry/catering changed constantly through mutasi in/out, but lobby TVs and ops still relied on delayed spreadsheet snapshots—so the “live” balance was often wrong when people walked past the board.</p>
+          </div>
+        </div>
+        <div class="portfolio_approach">
+          <div class="approach_title">
+            <h4 class="title">My Approach</h4>
+          </div>
+          <div class="approach_content">
+            <p>I separated GA stock opname from FAC stock: baseline + mutasi + catering feed a single balance model, then push updates to a dedicated TV board over websocket so the lobby display stays realtime without polling refresh.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -2154,6 +2230,25 @@
         <h2 class="title">Project Description</h2>
         <div class="desc"><p>Multi-lane integration: WhatsApp alerts from DB triggers, tablet downtime handling, and live display over websocket.</p></div>
       </div>
+      <div class="portfolio_story_approach">
+        <div class="portfolio_story">
+          <div class="story_title">
+            <h4 class="title">The Story</h4>
+          </div>
+          <div class="story_content">
+            <p>Production events from SCADA/DB mattered on the floor, but alerts were slow or missed when people were away from the HMI. Tablet downtime and live status also needed a channel that shop-floor staff actually watch.</p>
+          </div>
+        </div>
+        <div class="portfolio_approach">
+          <div class="approach_title">
+            <h4 class="title">My Approach</h4>
+          </div>
+          <div class="approach_content">
+            <p>I designed a multi-lane pipeline: MySQL triggers enqueue events, a Laravel worker sends Fonnte WhatsApp alerts, and tablet/websocket views show downtime and live status—so OT signals reach both phones and floor displays.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -2180,6 +2275,25 @@
         <h2 class="title">Project Description</h2>
         <div class="desc"><p>Handles large-scale attendance data, shift rules, heatmap contribution graph, and 2-level approval workflow.</p></div>
       </div>
+      <div class="portfolio_story_approach">
+        <div class="portfolio_story">
+          <div class="story_title">
+            <h4 class="title">The Story</h4>
+          </div>
+          <div class="story_content">
+            <p>Interns logged daily work separately from attendance, while supervisors had to reconcile activities against millions of taps in <code>t_absensi</code>. Manual matching was slow and easy to dispute during SPV/Manager review.</p>
+          </div>
+        </div>
+        <div class="portfolio_approach">
+          <div class="approach_title">
+            <h4 class="title">My Approach</h4>
+          </div>
+          <div class="approach_content">
+            <p>I merged activity logbook entries with attendance rules and shift logic, then exposed calendar/heatmap views for contribution clarity. Approval stays two-level (SPV → Manager) so review focuses on exceptions, not data entry.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -2206,6 +2320,25 @@
         <h2 class="title">Project Description</h2>
         <div class="desc"><p>Digital daily maintenance for Material Handling Equipment with monitoring, PDF export, and downtime integration.</p></div>
       </div>
+      <div class="portfolio_story_approach">
+        <div class="portfolio_story">
+          <div class="story_title">
+            <h4 class="title">The Story</h4>
+          </div>
+          <div class="story_content">
+            <p>Daily P2H checks for Material Handling Equipment were still paper-based. Damaged findings often never became maintenance tickets, so foremen lost the link between checklist failures and downtime work.</p>
+          </div>
+        </div>
+        <div class="portfolio_approach">
+          <div class="approach_title">
+            <h4 class="title">My Approach</h4>
+          </div>
+          <div class="approach_content">
+            <p>I digitized QR-based daily checklists: scanning an MHE opens today’s form, damaged items auto-open a PAS Downtime ticket, and Foreman/Supervisor approve with PDF export for audit—closing the loop between inspection and maintenance.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -2232,6 +2365,25 @@
         <h2 class="title">Project Description</h2>
         <div class="desc"><p>FAB chat widget for portal users, message feedback, and usage monitoring integrated with KAPAS admin analytics.</p></div>
       </div>
+      <div class="portfolio_story_approach">
+        <div class="portfolio_story">
+          <div class="story_title">
+            <h4 class="title">The Story</h4>
+          </div>
+          <div class="story_content">
+            <p>Portal users kept asking repetitive operational questions, while admins lacked a safe way to let an assistant query internal context without dumping raw DB access into a generic chatbot.</p>
+          </div>
+        </div>
+        <div class="portfolio_approach">
+          <div class="approach_title">
+            <h4 class="title">My Approach</h4>
+          </div>
+          <div class="approach_content">
+            <p>I built an in-portal assistant that retrieves context via Qdrant, answers with Gemini, and can run guarded SQL where allowed. Feedback + usage metrics feed KAPAS so we can see what people actually ask and improve prompts over time.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -2258,6 +2410,25 @@
         <h2 class="title">Project Description</h2>
         <div class="desc"><p>Charts for programmer contribution, developer activity, project distribution (top 10 systems), plus chatbot usage KPIs.</p></div>
       </div>
+      <div class="portfolio_story_approach">
+        <div class="portfolio_story">
+          <div class="story_title">
+            <h4 class="title">The Story</h4>
+          </div>
+          <div class="story_content">
+            <p>IT needed one place to see programmer contribution, project distribution, and chatbot health—but GitHub activity and portal usage lived in separate tools with no shared dashboard for leadership.</p>
+          </div>
+        </div>
+        <div class="portfolio_approach">
+          <div class="approach_title">
+            <h4 class="title">My Approach</h4>
+          </div>
+          <div class="approach_content">
+            <p>I built KAPAS as an admin analytics/CMS layer: GitHub-driven contribution charts, top system distribution, developer activity, and chatbot KPIs with ApexCharts—plus docs management so process knowledge stays next to the metrics.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -2284,6 +2455,25 @@
         <h2 class="title">Project Description</h2>
         <div class="desc"><p>Realtime industrial scale ingestion with Modbus communication and PLC handshake for production weighing.</p></div>
       </div>
+      <div class="portfolio_story_approach">
+        <div class="portfolio_story">
+          <div class="story_title">
+            <h4 class="title">The Story</h4>
+          </div>
+          <div class="story_content">
+            <p>Production weighing depended on operators reading scales and typing results. Missed weight changes and weak PLC handshake caused rework and inconsistent records on the line.</p>
+          </div>
+        </div>
+        <div class="portfolio_approach">
+          <div class="approach_title">
+            <h4 class="title">My Approach</h4>
+          </div>
+          <div class="approach_content">
+            <p>I ran a Node.js Modbus TCP daemon that watches scale registers, writes to MySQL on meaningful weight change, then acks/resets the PLC coil—so the Laravel side only consumes trusted, machine-sourced weigh events.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -2310,6 +2500,25 @@
         <h2 class="title">Project Description</h2>
         <div class="desc"><p>Admin form builder with quiz mode, public fill without login, NIK lookup, score percentage, and CSV export.</p></div>
       </div>
+      <div class="portfolio_story_approach">
+        <div class="portfolio_story">
+          <div class="story_title">
+            <h4 class="title">The Story</h4>
+          </div>
+          <div class="story_content">
+            <p>Compliance training quizzes were hard to distribute at scale: validating employee NIK, grading, and exporting results usually meant shared sheets and manual scoring.</p>
+          </div>
+        </div>
+        <div class="portfolio_approach">
+          <div class="approach_title">
+            <h4 class="title">My Approach</h4>
+          </div>
+          <div class="approach_content">
+            <p>I shipped a React + Firebase form builder with quiz mode, public fill (no login), NIK validation against Google Sheets, Firestore storage, Cloud Functions for auto-grading, and CSV export for compliance admins.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -2336,6 +2545,25 @@
         <h2 class="title">Project Description</h2>
         <div class="desc"><p>Web + Desktop JavaFX clients with department-scoped camera ACL, live SD/HD streams, and playback sessions.</p></div>
       </div>
+      <div class="portfolio_story_approach">
+        <div class="portfolio_story">
+          <div class="story_title">
+            <h4 class="title">The Story</h4>
+          </div>
+          <div class="story_content">
+            <p>Security/ops needed many cameras at once, but consumer NVR UIs were awkward for department ACL, live grid density, and fast playback seek across recordings.</p>
+          </div>
+        </div>
+        <div class="portfolio_approach">
+          <div class="approach_title">
+            <h4 class="title">My Approach</h4>
+          </div>
+          <div class="approach_content">
+            <p>I built a command center with JWT + camera ACL, MediaMTX WebRTC live grids (SD/HD), and seamless playback seek/speed—delivered for both web and JavaFX desktop clients so operators keep the same mental model on wall displays and desks.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -2362,6 +2590,25 @@
         <h2 class="title">Project Description</h2>
         <div class="desc"><p>Smart TV-friendly prayer portal with aurora UI, adhan schedule, and realtime content updates.</p></div>
       </div>
+      <div class="portfolio_story_approach">
+        <div class="portfolio_story">
+          <div class="story_title">
+            <h4 class="title">The Story</h4>
+          </div>
+          <div class="story_content">
+            <p>Mosque/lobby TVs needed accurate prayer times and rotating ayat content, but static slides went stale and needed manual USB updates whenever schedules or content changed.</p>
+          </div>
+        </div>
+        <div class="portfolio_approach">
+          <div class="approach_title">
+            <h4 class="title">My Approach</h4>
+          </div>
+          <div class="approach_content">
+            <p>I built a prayer portal optimized for Smart TVs: cron refreshes schedules, websocket pushes ayat/content live, and an aurora-style UI stays readable from across the lobby without constant redeploys.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
