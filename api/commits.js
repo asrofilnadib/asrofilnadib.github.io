@@ -114,42 +114,82 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  const { owner, repo, branch = "master", author = "asrofilnadib", prefixes = [], title } = projectConfig;
-  const perPage = prefixes.length ? Math.min(100, Math.max(limit * 3, 50)) : limit;
+  const { owner, repo, branch = "dev", author = "asrofilnadib", prefixes = [], title } = projectConfig;
+  // Pull extra when filtering by module prefixes; paginate until limit is filled
+  const perPage = prefixes.length ? 100 : Math.min(100, limit);
+  const maxPages = prefixes.length ? 8 : 1;
 
-  const params = new URLSearchParams({
-    sha: branch,
-    per_page: String(perPage),
-  });
-  if (author) params.set("author", author);
+  const branchCandidates = [branch, "dev", "main", "master"].filter(
+    (b, i, arr) => b && arr.indexOf(b) === i
+  );
 
-  const url = `https://api.github.com/repos/${owner}/${repo}/commits?${params}`;
-  const { ok, status, data } = await githubGet(url, token);
+  let last = { ok: false, status: 502, data: { message: "Failed to fetch commits" } };
+  let usedBranch = branch;
+  let rawCommits = null;
 
-  if (!ok) {
-    // retry with main if master 404-ish for wrong default branch
-    if ((status === 404 || status === 422) && branch === "master") {
-      params.set("sha", "main");
-      const retry = await githubGet(
-        `https://api.github.com/repos/${owner}/${repo}/commits?${params}`,
-        token
-      );
-      if (retry.ok) {
-        return respond(res, retry.data, { owner, repo, title, prefixes, limit, branch: "main" });
+  for (const candidate of branchCandidates) {
+    const pages = [];
+    let pageFailed = null;
+
+    for (let page = 1; page <= maxPages; page++) {
+      const params = new URLSearchParams({
+        sha: candidate,
+        per_page: String(perPage),
+        page: String(page),
+      });
+      if (author) params.set("author", author);
+
+      const url = `https://api.github.com/repos/${owner}/${repo}/commits?${params}`;
+      last = await githubGet(url, token);
+      usedBranch = candidate;
+
+      if (!last.ok) {
+        pageFailed = last;
+        break;
       }
+
+      const batch = Array.isArray(last.data) ? last.data : [];
+      pages.push(...batch);
+      if (batch.length < perPage) break;
+
+      // Early stop if we already have enough matches after filtering
+      const preview = filterCommits(pages, { prefixes, limit, author });
+      if (preview.length >= limit) break;
     }
-    return res.status(status || 502).json({
+
+    if (pageFailed) {
+      // Wrong branch / missing ref — try next candidate
+      if (pageFailed.status === 404 || pageFailed.status === 422) continue;
+      return res.status(pageFailed.status || 502).json({
+        error: "GitHub API error",
+        status: pageFailed.status,
+        message:
+          pageFailed.data && pageFailed.data.message
+            ? pageFailed.data.message
+            : "Failed to fetch commits",
+        repo: `${owner}/${repo}`,
+        triedBranches: branchCandidates,
+      });
+    }
+
+    rawCommits = pages;
+    break;
+  }
+
+  if (!rawCommits) {
+    return res.status(last.status || 502).json({
       error: "GitHub API error",
-      status,
-      message: data && data.message ? data.message : "Failed to fetch commits",
+      status: last.status,
+      message: last.data && last.data.message ? last.data.message : "Failed to fetch commits",
       repo: `${owner}/${repo}`,
+      triedBranches: branchCandidates,
     });
   }
 
-  return respond(res, data, { owner, repo, title, prefixes, limit, branch });
+  return respond(res, rawCommits, { owner, repo, title, prefixes, limit, branch: usedBranch, author });
 };
 
-function respond(res, rawCommits, meta) {
+function filterCommits(rawCommits, meta) {
   const commits = [];
   for (const item of rawCommits || []) {
     const message = item.commit?.message || "";
@@ -176,6 +216,11 @@ function respond(res, rawCommits, meta) {
     });
     if (commits.length >= meta.limit) break;
   }
+  return commits;
+}
+
+function respond(res, rawCommits, meta) {
+  const commits = filterCommits(rawCommits, meta);
 
   const groups = [];
   const byDay = {};

@@ -121,13 +121,24 @@
       renderGroups(data);
     } catch (err) {
       subtitleEl.textContent = "Could not load commits";
-      var hint =
-        location.protocol === "file:"
-          ? "Jangan buka via file://. Jalankan <code>npm run dev</code> lalu buka http://localhost:3000 (token dari .env)."
-          : "Lokal: pastikan <code>npm run dev</code> jalan + GITHUB_TOKEN di .env. Vercel: set Environment Variable GITHUB_TOKEN lalu redeploy.";
+      var msg = String(err.message || err || "");
+      var hint;
+      if (location.protocol === "file:") {
+        hint =
+          "Jangan buka via file://. Jalankan <code>npm run dev</code> lalu buka http://localhost:3000 (token dari .env).";
+      } else if (/not found/i.test(msg)) {
+        hint =
+          "Repo/branch tidak ketemu atau token belum punya akses ke private repo. Cek mapping di <code>api/commits-config.json</code> (branch biasanya <code>dev</code>) dan scope PAT <code>repo</code>.";
+      } else if (/bad credentials/i.test(msg)) {
+        hint =
+          "GITHUB_TOKEN invalid/expired. Update .env lokal atau Environment Variable di Vercel, lalu redeploy.";
+      } else {
+        hint =
+          "Lokal: pastikan <code>npm run dev</code> jalan + GITHUB_TOKEN di .env. Vercel: set Environment Variable GITHUB_TOKEN lalu redeploy.";
+      }
       bodyEl.innerHTML =
         '<div class="gh-commits-error">' +
-        escapeHtml(err.message || String(err)) +
+        escapeHtml(msg) +
         "<br><small>" +
         hint +
         "</small></div>";
