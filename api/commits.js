@@ -107,7 +107,7 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  const token = process.env.GITHUB_TOKEN;
+  const token = String(process.env.GITHUB_TOKEN || "").trim().replace(/^["']|["']$/g, "");
   if (!token) {
     return res.status(500).json({
       error: "GITHUB_TOKEN is not configured on the server",
