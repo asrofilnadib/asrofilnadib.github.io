@@ -622,8 +622,8 @@
         <div class="col-md-12">
           <div class="section-header text-center">
             <h2 class="section-title wow fadeInUp" data-wow-delay=".3s">My Recent Works</h2>
-            <p class="wow fadeInUp" data-wow-delay=".4s">
-              I have built and optimized various web applications using Laravel and CodeIgniter, integrating modern development practices.
+            <p class="wow fadeInUp portfolio-filter-desc" data-wow-delay=".4s" id="portfolio-filter-desc">
+              Projects I've delivered for PT Permodalan Nasional Madani (PNM), PT Century Batteries Indonesia (CBI), PT Prakarsa Alam Segar (PAS), and other clients.
             </p>
           </div>
         </div>
@@ -634,8 +634,10 @@
           <div class="portfolio-filter text-center wow fadeInUp" data-wow-delay=".5s">
             <div class="button-group filter-button-group">
               <button data-filter="*" class="active">All</button>
-              <button data-filter=".laravel">Laravel</button>
-              <button data-filter=".ci">CodeIgniter</button>
+              <button data-filter=".pnm">PNM</button>
+              <button data-filter=".cbi">CBI</button>
+              <button data-filter=".pas">PAS</button>
+              <button data-filter=".others">Others</button>
               <div class="active-bg"></div>
             </div>
           </div>
@@ -645,22 +647,177 @@
             <div class="portfolio-sizer"></div>
             <div class="gutter-sizer"></div>
 
-            <!-- Kastara -->
-            <div class="portfolio-item laravel">
+            <!-- PAS — Smart Lab -->
+            <div class="portfolio-item pas">
               <div class="image-box">
-                <img src="assets/images/kastara/home page.webp" alt="">
+                <img src="assets/images/smart-lab/dashboard.webp" alt="Smart Lab">
               </div>
               <div class="content-box">
-                <h3 class="portfolio-title">Kastara - Kain Nusantara</h3>
-                <p>E-Commerce application for Nusantara Motif Fabrics that can be accessed by the general public, especially the younger generation.</p>
+                <h3 class="portfolio-title">Smart Lab</h3>
+                <p>Lab system covering Permintaan Analisis (PA), Daily Activity, and Lab Eksternal vendor workflows.</p>
                 <i class="flaticon-up-right-arrow"></i>
-                <button data-mfp-src="#portfolio-wrapper-kastara"
-                        class="portfolio-link modal-popup"></button>
+                <button data-mfp-src="#portfolio-wrapper-smart-lab" class="portfolio-link modal-popup"></button>
               </div>
             </div>
 
-            <!-- Lab QC -->
-            <div class="portfolio-item ci">
+            <!-- PAS — TMS -->
+            <div class="portfolio-item pas">
+              <div class="image-box">
+                <img src="assets/images/tms/dashboard.webp" alt="TMS">
+              </div>
+              <div class="content-box">
+                <h3 class="portfolio-title">TMS — Transportation Management</h3>
+                <p>Internal transport system: SAP staging, pengawas request, driver scan muat/bongkar, and realtime maps.</p>
+                <i class="flaticon-up-right-arrow"></i>
+                <button data-mfp-src="#portfolio-wrapper-tms" class="portfolio-link modal-popup"></button>
+              </div>
+            </div>
+
+            <!-- PAS — E-Cafe Invoice -->
+            <div class="portfolio-item pas">
+              <div class="image-box">
+                <img src="assets/images/ecafe-invoice/dashboard.webp" alt="E-Cafe Invoice">
+              </div>
+              <div class="content-box">
+                <h3 class="portfolio-title">E-Cafe Invoice</h3>
+                <p>E-cafe invoice generation with sequential 5-level approval, email notifications, and PDF export.</p>
+                <i class="flaticon-up-right-arrow"></i>
+                <button data-mfp-src="#portfolio-wrapper-ecafe" class="portfolio-link modal-popup"></button>
+              </div>
+            </div>
+
+            <!-- PAS — Stock Opname GA -->
+            <div class="portfolio-item pas">
+              <div class="image-box">
+                <img src="assets/images/ga-stock-opname/dashboard.webp" alt="Stock Opname GA">
+              </div>
+              <div class="content-box">
+                <h3 class="portfolio-title">Stock Opname GA</h3>
+                <p>GA stock opname with realtime balance displayed on TV boards via websocket.</p>
+                <i class="flaticon-up-right-arrow"></i>
+                <button data-mfp-src="#portfolio-wrapper-ga-stock" class="portfolio-link modal-popup"></button>
+              </div>
+            </div>
+
+            <!-- PAS — SCADA to Tablet -->
+            <div class="portfolio-item pas">
+              <div class="image-box">
+                <img src="assets/images/scada-tablet/dashboard.webp" alt="SCADA to Tablet">
+              </div>
+              <div class="content-box">
+                <h3 class="portfolio-title">SCADA to Tablet</h3>
+                <p>SCADA/DB events via MySQL trigger to WhatsApp (Fonnte), tablet downtime, and websocket display.</p>
+                <i class="flaticon-up-right-arrow"></i>
+                <button data-mfp-src="#portfolio-wrapper-scada" class="portfolio-link modal-popup"></button>
+              </div>
+            </div>
+
+            <!-- PAS — Logbook -->
+            <div class="portfolio-item pas">
+              <div class="image-box">
+                <img src="assets/images/logbook/dashboard.webp" alt="Logbook">
+              </div>
+              <div class="content-box">
+                <h3 class="portfolio-title">Logbook Magang</h3>
+                <p>Intern logbook merging daily activities with millions of attendance rows and 2-level approval.</p>
+                <i class="flaticon-up-right-arrow"></i>
+                <button data-mfp-src="#portfolio-wrapper-logbook" class="portfolio-link modal-popup"></button>
+              </div>
+            </div>
+
+            <!-- PAS — P2H -->
+            <div class="portfolio-item pas">
+              <div class="image-box">
+                <img src="assets/images/p2h/dashboard.webp" alt="P2H">
+              </div>
+              <div class="content-box">
+                <h3 class="portfolio-title">Digitalisasi P2H</h3>
+                <p>Daily MHE inspection via QR scan with damage items auto-creating PAS Downtime tickets.</p>
+                <i class="flaticon-up-right-arrow"></i>
+                <button data-mfp-src="#portfolio-wrapper-p2h" class="portfolio-link modal-popup"></button>
+              </div>
+            </div>
+
+            <!-- PAS — Chatbot -->
+            <div class="portfolio-item pas">
+              <div class="image-box">
+                <img src="assets/images/chatbot/dashboard.webp" alt="Chatbot">
+              </div>
+              <div class="content-box">
+                <h3 class="portfolio-title">PAS AI Chatbot</h3>
+                <p>In-portal AI assistant with Qdrant context, Gemini, and SQL query execution.</p>
+                <i class="flaticon-up-right-arrow"></i>
+                <button data-mfp-src="#portfolio-wrapper-chatbot" class="portfolio-link modal-popup"></button>
+              </div>
+            </div>
+
+            <!-- PAS — KAPAS -->
+            <div class="portfolio-item pas">
+              <div class="image-box">
+                <img src="assets/images/kapas/dashboard.webp" alt="KAPAS">
+              </div>
+              <div class="content-box">
+                <h3 class="portfolio-title">KAPAS</h3>
+                <p>System management, programmer performance analytics, and documentation CMS.</p>
+                <i class="flaticon-up-right-arrow"></i>
+                <button data-mfp-src="#portfolio-wrapper-kapas" class="portfolio-link modal-popup"></button>
+              </div>
+            </div>
+
+            <!-- PAS — TimbanginIN -->
+            <div class="portfolio-item pas">
+              <div class="image-box">
+                <img src="assets/images/timbangin/dashboard.webp" alt="TimbanginIN">
+              </div>
+              <div class="content-box">
+                <h3 class="portfolio-title">TimbanginIN</h3>
+                <p>Realtime scale data via Modbus TCP (Node.js) with PLC coil ack/reset and DB inserts.</p>
+                <i class="flaticon-up-right-arrow"></i>
+                <button data-mfp-src="#portfolio-wrapper-timbangin" class="portfolio-link modal-popup"></button>
+              </div>
+            </div>
+
+            <!-- PAS — KMS Form -->
+            <div class="portfolio-item pas">
+              <div class="image-box">
+                <img src="assets/images/kms-form/dashboard.webp" alt="KMS Form">
+              </div>
+              <div class="content-box">
+                <h3 class="portfolio-title">KMS Form</h3>
+                <p>Compliance survey/quiz forms with NIK validation, Firestore storage, and auto grading.</p>
+                <i class="flaticon-up-right-arrow"></i>
+                <button data-mfp-src="#portfolio-wrapper-kms-form" class="portfolio-link modal-popup"></button>
+              </div>
+            </div>
+
+            <!-- PAS — Command Center CCTV -->
+            <div class="portfolio-item pas">
+              <div class="image-box">
+                <img src="assets/images/command-center/dashboard.webp" alt="Command Center CCTV">
+              </div>
+              <div class="content-box">
+                <h3 class="portfolio-title">Command Center CCTV</h3>
+                <p>Multi-camera command center with JWT ACL, WebRTC live grid, and seamless playback.</p>
+                <i class="flaticon-up-right-arrow"></i>
+                <button data-mfp-src="#portfolio-wrapper-command-center" class="portfolio-link modal-popup"></button>
+              </div>
+            </div>
+
+            <!-- PAS — Prayer -->
+            <div class="portfolio-item pas">
+              <div class="image-box">
+                <img src="assets/images/prayer/dashboard.webp" alt="Prayer">
+              </div>
+              <div class="content-box">
+                <h3 class="portfolio-title">Prayer Portal</h3>
+                <p>Mosque prayer-time display with ayat rotation and websocket updates for lobby TVs.</p>
+                <i class="flaticon-up-right-arrow"></i>
+                <button data-mfp-src="#portfolio-wrapper-prayer" class="portfolio-link modal-popup"></button>
+              </div>
+            </div>
+
+            <!-- CBI — Lab QC -->
+            <div class="portfolio-item cbi">
               <div class="image-box">
                 <img src="assets/images/lab-qc/dashboard.webp" alt="">
               </div>
@@ -668,41 +825,12 @@
                 <h3 class="portfolio-title">Lab Quality Control</h3>
                 <p>Laboratory quality test management and monitoring system.</p>
                 <i class="flaticon-up-right-arrow"></i>
-                <button data-mfp-src="#portfolio-wrapper-labqc"
-                        class="portfolio-link modal-popup"></button>
+                <button data-mfp-src="#portfolio-wrapper-labqc" class="portfolio-link modal-popup"></button>
               </div>
             </div>
 
-            
-            <div class="portfolio-item laravel">
-              <div class="image-box">
-                <img src="assets/images/okration/dashboard.webp" alt="">
-              </div>
-              <div class="content-box">
-                <h3 class="portfolio-title">OKRation</h3>
-                <p>Performance tracking system for accurate employee evaluation.</p>
-                <i class="flaticon-up-right-arrow"></i>
-                <button data-mfp-src="#portfolio-wrapper-skripsi"
-                        class="portfolio-link modal-popup"></button>
-              </div>
-            </div>
-
-            <!-- Sistem Pakar -->
-            <div class="portfolio-item laravel">
-              <div class="image-box">
-                <img src="assets/images/sistem_pakar/dashboard.webp" alt="">
-              </div>
-              <div class="content-box">
-                <h3 class="portfolio-title">Sistem Pakar</h3>
-                <p>implementation of an expert system using the Certainty Factor method.</p>
-                <i class="flaticon-up-right-arrow"></i>
-                <button data-mfp-src="#portfolio-wrapper-sistem_pakar"
-                        class="portfolio-link modal-popup"></button>
-              </div>
-            </div>
-
-            <!-- Log Problem -->
-            <div class="portfolio-item ci">
+            <!-- CBI — Log Problem Customer -->
+            <div class="portfolio-item cbi">
               <div class="image-box">
                 <img src="assets/images/log-problem-customer/dashboard.webp" alt="">
               </div>
@@ -710,13 +838,12 @@
                 <h3 class="portfolio-title">Log Problem Customer</h3>
                 <p>Monitoring and reporting system for battery and charger problem.</p>
                 <i class="flaticon-up-right-arrow"></i>
-                <button data-mfp-src="#portfolio-wrapper-log"
-                        class="portfolio-link modal-popup"></button>
+                <button data-mfp-src="#portfolio-wrapper-log" class="portfolio-link modal-popup"></button>
               </div>
             </div>
 
-            <!-- Checksheet Plate -->
-            <div class="portfolio-item ci">
+            <!-- CBI — Checksheet Plate -->
+            <div class="portfolio-item cbi">
               <div class="image-box">
                 <img src="assets/images/checksheet_plate/dashboard formed.webp" alt="">
               </div>
@@ -724,27 +851,12 @@
                 <h3 class="portfolio-title">Checksheet Plate</h3>
                 <p>Application of quality control checksheet for battery inspection.</p>
                 <i class="flaticon-up-right-arrow"></i>
-                <button data-mfp-src="#portfolio-wrapper-checksheet"
-                        class="portfolio-link modal-popup"></button>
+                <button data-mfp-src="#portfolio-wrapper-checksheet" class="portfolio-link modal-popup"></button>
               </div>
             </div>
 
-            <!-- Graceperiode -->
-            <div class="portfolio-item laravel">
-              <div class="image-box">
-                <img src="assets/images/graceperiode/dashboard.webp" alt="">
-              </div>
-              <div class="content-box">
-                <h3 class="portfolio-title">Grace Period</h3>
-                <p>Web-based loan grace period management system.</p>
-                <i class="flaticon-up-right-arrow"></i>
-                <button data-mfp-src="#portfolio-wrapper-gp"
-                        class="portfolio-link modal-popup"></button>
-              </div>
-            </div>
-
-            <!-- Log Problem internal -->
-            <div class="portfolio-item ci">
+            <!-- CBI — Log Problem Internal -->
+            <div class="portfolio-item cbi">
               <div class="image-box">
                 <img src="assets/images/log-problem-internal/dashboard.webp" alt="">
               </div>
@@ -752,54 +864,111 @@
                 <h3 class="portfolio-title">Log Problem Internal</h3>
                 <p>This application is designed to monitor battery and charger issues, specifically for the QC department.</p>
                 <i class="flaticon-up-right-arrow"></i>
-                <button data-mfp-src="#portfolio-wrapper-logqc"
-                        class="portfolio-link modal-popup"></button>
+                <button data-mfp-src="#portfolio-wrapper-logqc" class="portfolio-link modal-popup"></button>
               </div>
             </div>
 
-            <!-- Pending QC -->
-            <div class="portfolio-item ci">
+            <!-- CBI — Pending QC -->
+            <div class="portfolio-item cbi">
               <div class="image-box">
                 <img src="assets/images/pending-qc/dashboard.webp" alt="">
               </div>
               <div class="content-box">
                 <h3 class="portfolio-title">Pending Quality Control</h3>
-                <p>
-                  A web-based quality control system designed to help and manage items that are pending quality checks before final dispatch.
-                </p>
+                <p>A web-based quality control system designed to help and manage items that are pending quality checks before final dispatch.</p>
                 <i class="flaticon-up-right-arrow"></i>
-                <button data-mfp-src="#portfolio-wrapper-pqc"
-                        class="portfolio-link modal-popup"></button>
+                <button data-mfp-src="#portfolio-wrapper-pqc" class="portfolio-link modal-popup"></button>
               </div>
             </div>
 
-            <!-- Testing Report QC -->
-            <div class="portfolio-item ci">
+            <!-- CBI — Testing Report -->
+            <div class="portfolio-item cbi">
               <div class="image-box">
                 <img src="assets/images/testing-report/DASHBOARD.webp" alt="">
               </div>
               <div class="content-box">
                 <h3 class="portfolio-title">Monitoring Request Testing Report</h3>
-                <p>
-                  A web application to monitor and manage battery testing requests with real-time tracking and streamlined reporting.
-                </p>
+                <p>A web application to monitor and manage battery testing requests with real-time tracking and streamlined reporting.</p>
                 <i class="flaticon-up-right-arrow"></i>
                 <button data-mfp-src="#portfolio-wrapper-testing-report" class="portfolio-link modal-popup"></button>
               </div>
             </div>
 
-            <!-- Investigation Report QC -->
-            <div class="portfolio-item ci">
+            <!-- CBI — Berita Acara Investigasi -->
+            <div class="portfolio-item cbi">
               <div class="image-box">
                 <img src="assets/images/investigation-report/pdf.webp" alt="">
               </div>
               <div class="content-box">
-                <h3 class="portfolio-title">Investigation Report</h3>
-                <p>
-                  A web-based application used to digitally document, manage, and follow up on quality-related complaints and investigations for battery products at PT Century Batteries Indonesia.
-                </p>
+                <h3 class="portfolio-title">Berita Acara Investigasi</h3>
+                <p>Digitally document, manage, and follow up on quality-related complaints and investigations for battery products at PT Century Batteries Indonesia.</p>
                 <i class="flaticon-up-right-arrow"></i>
                 <button data-mfp-src="#portfolio-wrapper-investigation-report" class="portfolio-link modal-popup"></button>
+              </div>
+            </div>
+
+            <!-- PNM — OKRation -->
+            <div class="portfolio-item pnm">
+              <div class="image-box">
+                <img src="assets/images/okration/dashboard.webp" alt="">
+              </div>
+              <div class="content-box">
+                <h3 class="portfolio-title">OKRation</h3>
+                <p>Performance tracking system for accurate employee evaluation.</p>
+                <i class="flaticon-up-right-arrow"></i>
+                <button data-mfp-src="#portfolio-wrapper-skripsi" class="portfolio-link modal-popup"></button>
+              </div>
+            </div>
+
+            <!-- PNM — Grace Period -->
+            <div class="portfolio-item pnm">
+              <div class="image-box">
+                <img src="assets/images/graceperiode/dashboard.webp" alt="">
+              </div>
+              <div class="content-box">
+                <h3 class="portfolio-title">Grace Period</h3>
+                <p>Web-based loan grace period management system.</p>
+                <i class="flaticon-up-right-arrow"></i>
+                <button data-mfp-src="#portfolio-wrapper-gp" class="portfolio-link modal-popup"></button>
+              </div>
+            </div>
+
+            <!-- Others — Kastara -->
+            <div class="portfolio-item others">
+              <div class="image-box">
+                <img src="assets/images/kastara/home page.webp" alt="">
+              </div>
+              <div class="content-box">
+                <h3 class="portfolio-title">Kastara - Kain Nusantara</h3>
+                <p>E-Commerce application for Nusantara Motif Fabrics that can be accessed by the general public, especially the younger generation.</p>
+                <i class="flaticon-up-right-arrow"></i>
+                <button data-mfp-src="#portfolio-wrapper-kastara" class="portfolio-link modal-popup"></button>
+              </div>
+            </div>
+
+            <!-- Others — Sistem Pakar -->
+            <div class="portfolio-item others">
+              <div class="image-box">
+                <img src="assets/images/sistem_pakar/dashboard.webp" alt="">
+              </div>
+              <div class="content-box">
+                <h3 class="portfolio-title">Sistem Pakar</h3>
+                <p>Implementation of an expert system using the Certainty Factor method.</p>
+                <i class="flaticon-up-right-arrow"></i>
+                <button data-mfp-src="#portfolio-wrapper-sistem_pakar" class="portfolio-link modal-popup"></button>
+              </div>
+            </div>
+
+            <!-- Others — Psikotes -->
+            <div class="portfolio-item others">
+              <div class="image-box">
+                <img src="assets/images/psikotes/dashboard.webp" alt="Psikotes">
+              </div>
+              <div class="content-box">
+                <h3 class="portfolio-title">Psikotes</h3>
+                <p>Online exam with InsightFace enrollment/verify and YOLO proctoring for person-count monitoring.</p>
+                <i class="flaticon-up-right-arrow"></i>
+                <button data-mfp-src="#portfolio-wrapper-psikotes" class="portfolio-link modal-popup"></button>
               </div>
             </div>
           </div>
@@ -1753,7 +1922,7 @@
     </div>
   </div>
 
-  <!-- Investigation Report -->
+  <!-- Berita Acara Investigasi -->
   <div id="portfolio-wrapper-investigation-report" class="popup_content_area zoom-anim-dialog mfp-hide">
     <div class="popup_modal_img">
       <img src="./assets/images/investigation-report/form.webp" alt="">
@@ -1762,7 +1931,7 @@
     <div class="popup_modal_content">
       <div class="portfolio_info">
         <div class="portfolio_info_text">
-          <h2 class="title">Investigation Report</h2>
+          <h2 class="title">Berita Acara Investigasi</h2>
           <div class="desc">
             <p>
               A web application that streamlines the documentation and reporting process of quality issues, including role-based input from departments such as Manufacturing, Distributor, and Customer, as well as handling investigation summaries, follow-ups, and digital approvals.
@@ -1850,6 +2019,329 @@
             </div>
           </a>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAS / Others — New Project Modals -->
+  <div id="portfolio-wrapper-smart-lab" class="popup_content_area zoom-anim-dialog mfp-hide">
+    <div class="popup_modal_img"><img src="./assets/images/smart-lab/dashboard.webp" alt="Smart Lab"></div>
+    <div class="popup_modal_content">
+      <div class="portfolio_info">
+        <div class="portfolio_info_text">
+          <h2 class="title">Smart Lab</h2>
+          <div class="desc"><p>Lab system covering Permintaan Analisis (PA), Daily Activity (DA), and Lab Eksternal (vendor + purchasing).</p></div>
+          <a href="#" class="btn tj-btn-primary">Live Preview <i class="fal fa-arrow-right"></i></a>
+        </div>
+        <div class="portfolio_info_items">
+          <div class="info_item"><div class="key">Category</div><div class="value">MyPAS — Lab QA</div></div>
+          <div class="info_item"><div class="key">Client</div><div class="value">PT Prakarsa Alam Segar</div></div>
+          <div class="info_item"><div class="key">Delivery Date</div><div class="value">2026</div></div>
+          <div class="info_item"><div class="key">Stack</div><div class="value">Laravel, MySQL, Blade, FilePond</div></div>
+        </div>
+      </div>
+      <div class="portfolio_description">
+        <h2 class="title">Project Description</h2>
+        <div class="desc"><p>Handles multi-department analysis requests, daily lab activity, and a 2-phase external lab receive workflow (approve + pre-label photos → label photo upload) with GAWI/PR/IM-GR chain.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="portfolio-wrapper-tms" class="popup_content_area zoom-anim-dialog mfp-hide">
+    <div class="popup_modal_img"><img src="./assets/images/tms/dashboard.webp" alt="TMS"></div>
+    <div class="popup_modal_content">
+      <div class="portfolio_info">
+        <div class="portfolio_info_text">
+          <h2 class="title">TMS — Transportation Management</h2>
+          <div class="desc"><p>Most complex MyPAS module: SAP → staging → pengawas request → driver muat/bongkar → selesai (+ maps realtime).</p></div>
+          <a href="#" class="btn tj-btn-primary">Live Preview <i class="fal fa-arrow-right"></i></a>
+        </div>
+        <div class="portfolio_info_items">
+          <div class="info_item"><div class="key">Category</div><div class="value">MyPAS — Logistics</div></div>
+          <div class="info_item"><div class="key">Client</div><div class="value">PT Prakarsa Alam Segar</div></div>
+          <div class="info_item"><div class="key">Delivery Date</div><div class="value">2026</div></div>
+          <div class="info_item"><div class="key">Stack</div><div class="value">Laravel, MySQL, SAP integration</div></div>
+        </div>
+      </div>
+      <div class="portfolio_description">
+        <h2 class="title">Project Description</h2>
+        <div class="desc"><p>Status flow: draft → request → pengambilan → pengiriman → selesai (plus reject/tunda). Involves Produksi, Admin WSM, Staging, Pengawas, Driver, and Maps operators.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="portfolio-wrapper-ecafe" class="popup_content_area zoom-anim-dialog mfp-hide">
+    <div class="popup_modal_img"><img src="./assets/images/ecafe-invoice/dashboard.webp" alt="E-Cafe Invoice"></div>
+    <div class="popup_modal_content">
+      <div class="portfolio_info">
+        <div class="portfolio_info_text">
+          <h2 class="title">E-Cafe Invoice</h2>
+          <div class="desc"><p>Generate e-cafe invoices (Makan &amp; Frozen + Scan Produk) with sequential 5-level approval per section.</p></div>
+          <a href="#" class="btn tj-btn-primary">Live Preview <i class="fal fa-arrow-right"></i></a>
+        </div>
+        <div class="portfolio_info_items">
+          <div class="info_item"><div class="key">Category</div><div class="value">MyPAS — Finance/HR</div></div>
+          <div class="info_item"><div class="key">Client</div><div class="value">PT Prakarsa Alam Segar</div></div>
+          <div class="info_item"><div class="key">Delivery Date</div><div class="value">2026</div></div>
+          <div class="info_item"><div class="key">Stack</div><div class="value">Laravel, email notification, PDF</div></div>
+        </div>
+      </div>
+      <div class="portfolio_description">
+        <h2 class="title">Project Description</h2>
+        <div class="desc"><p>Approval chain: Dibuat → Diperiksa → Diketahui (2 levels) → Disetujui, with email notifications and PDF invoice export.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="portfolio-wrapper-ga-stock" class="popup_content_area zoom-anim-dialog mfp-hide">
+    <div class="popup_modal_img"><img src="./assets/images/ga-stock-opname/dashboard.webp" alt="Stock Opname GA"></div>
+    <div class="popup_modal_content">
+      <div class="portfolio_info">
+        <div class="portfolio_info_text">
+          <h2 class="title">Stock Opname GA</h2>
+          <div class="desc"><p>GA stock opname: baseline + mutasi in/out + catering → realtime balance on TV board via websocket.</p></div>
+          <a href="#" class="btn tj-btn-primary">Live Preview <i class="fal fa-arrow-right"></i></a>
+        </div>
+        <div class="portfolio_info_items">
+          <div class="info_item"><div class="key">Category</div><div class="value">MyPAS — GA / HR</div></div>
+          <div class="info_item"><div class="key">Client</div><div class="value">PT Prakarsa Alam Segar</div></div>
+          <div class="info_item"><div class="key">Delivery Date</div><div class="value">2026</div></div>
+          <div class="info_item"><div class="key">Stack</div><div class="value">Laravel, Websocket</div></div>
+        </div>
+      </div>
+      <div class="portfolio_description">
+        <h2 class="title">Project Description</h2>
+        <div class="desc"><p>Realtime stock board (`ga-stock-board`) for lobby/TV display, separate from FAC stock opname module.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="portfolio-wrapper-scada" class="popup_content_area zoom-anim-dialog mfp-hide">
+    <div class="popup_modal_img"><img src="./assets/images/scada-tablet/dashboard.webp" alt="SCADA to Tablet"></div>
+    <div class="popup_modal_content">
+      <div class="portfolio_info">
+        <div class="portfolio_info_text">
+          <h2 class="title">SCADA to Tablet</h2>
+          <div class="desc"><p>SCADA/DB event pipeline → MySQL trigger → queue → Fonnte WhatsApp, plus tablet downtime &amp; websocket display.</p></div>
+          <a href="#" class="btn tj-btn-primary">Live Preview <i class="fal fa-arrow-right"></i></a>
+        </div>
+        <div class="portfolio_info_items">
+          <div class="info_item"><div class="key">Category</div><div class="value">MyPAS — OT Integration</div></div>
+          <div class="info_item"><div class="key">Client</div><div class="value">PT Prakarsa Alam Segar</div></div>
+          <div class="info_item"><div class="key">Delivery Date</div><div class="value">2026</div></div>
+          <div class="info_item"><div class="key">Stack</div><div class="value">Laravel, MySQL Trigger, Fonnte, Websocket</div></div>
+        </div>
+      </div>
+      <div class="portfolio_description">
+        <h2 class="title">Project Description</h2>
+        <div class="desc"><p>Multi-lane integration: WhatsApp alerts from DB triggers, tablet downtime handling, and live display over websocket.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="portfolio-wrapper-logbook" class="popup_content_area zoom-anim-dialog mfp-hide">
+    <div class="popup_modal_img"><img src="./assets/images/logbook/dashboard.webp" alt="Logbook"></div>
+    <div class="popup_modal_content">
+      <div class="portfolio_info">
+        <div class="portfolio_info_text">
+          <h2 class="title">Logbook Magang</h2>
+          <div class="desc"><p>Intern daily logbook merging activities with millions of attendance taps from <code>t_absensi</code>, with SPV → Manager approval.</p></div>
+          <a href="#" class="btn tj-btn-primary">Live Preview <i class="fal fa-arrow-right"></i></a>
+        </div>
+        <div class="portfolio_info_items">
+          <div class="info_item"><div class="key">Category</div><div class="value">MyPAS — Magang</div></div>
+          <div class="info_item"><div class="key">Client</div><div class="value">PT Prakarsa Alam Segar</div></div>
+          <div class="info_item"><div class="key">Delivery Date</div><div class="value">2026</div></div>
+          <div class="info_item"><div class="key">Stack</div><div class="value">Laravel, MySQL, FullCalendar</div></div>
+        </div>
+      </div>
+      <div class="portfolio_description">
+        <h2 class="title">Project Description</h2>
+        <div class="desc"><p>Handles large-scale attendance data, shift rules, heatmap contribution graph, and 2-level approval workflow.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="portfolio-wrapper-p2h" class="popup_content_area zoom-anim-dialog mfp-hide">
+    <div class="popup_modal_img"><img src="./assets/images/p2h/dashboard.webp" alt="P2H"></div>
+    <div class="popup_modal_content">
+      <div class="portfolio_info">
+        <div class="portfolio_info_text">
+          <h2 class="title">Digitalisasi P2H</h2>
+          <div class="desc"><p>Operator scans QR MHE → daily checklist → damaged items auto-create PAS Downtime ticket → Foreman/Supervisor approve.</p></div>
+          <a href="#" class="btn tj-btn-primary">Live Preview <i class="fal fa-arrow-right"></i></a>
+        </div>
+        <div class="portfolio_info_items">
+          <div class="info_item"><div class="key">Category</div><div class="value">MyPAS — Maintenance</div></div>
+          <div class="info_item"><div class="key">Client</div><div class="value">PT Prakarsa Alam Segar</div></div>
+          <div class="info_item"><div class="key">Delivery Date</div><div class="value">2026</div></div>
+          <div class="info_item"><div class="key">Stack</div><div class="value">Laravel, MySQL, DomPDF, QR</div></div>
+        </div>
+      </div>
+      <div class="portfolio_description">
+        <h2 class="title">Project Description</h2>
+        <div class="desc"><p>Digital daily maintenance for Material Handling Equipment with monitoring, PDF export, and downtime integration.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="portfolio-wrapper-chatbot" class="popup_content_area zoom-anim-dialog mfp-hide">
+    <div class="popup_modal_img"><img src="./assets/images/chatbot/dashboard.webp" alt="Chatbot"></div>
+    <div class="popup_modal_content">
+      <div class="portfolio_info">
+        <div class="portfolio_info_text">
+          <h2 class="title">PAS AI Chatbot</h2>
+          <div class="desc"><p>In-portal AI assistant with Qdrant context retrieval, Gemini, and SQL query execution.</p></div>
+          <a href="#" class="btn tj-btn-primary">Live Preview <i class="fal fa-arrow-right"></i></a>
+        </div>
+        <div class="portfolio_info_items">
+          <div class="info_item"><div class="key">Category</div><div class="value">MyPAS — AI</div></div>
+          <div class="info_item"><div class="key">Client</div><div class="value">PT Prakarsa Alam Segar</div></div>
+          <div class="info_item"><div class="key">Delivery Date</div><div class="value">2026</div></div>
+          <div class="info_item"><div class="key">Stack</div><div class="value">Laravel, Gemini, Qdrant</div></div>
+        </div>
+      </div>
+      <div class="portfolio_description">
+        <h2 class="title">Project Description</h2>
+        <div class="desc"><p>FAB chat widget for portal users, message feedback, and usage monitoring integrated with KAPAS admin analytics.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="portfolio-wrapper-kapas" class="popup_content_area zoom-anim-dialog mfp-hide">
+    <div class="popup_modal_img"><img src="./assets/images/kapas/dashboard.webp" alt="KAPAS"></div>
+    <div class="popup_modal_content">
+      <div class="portfolio_info">
+        <div class="portfolio_info_text">
+          <h2 class="title">KAPAS</h2>
+          <div class="desc"><p>System management, programmer performance analytics from GitHub, and documentation CMS.</p></div>
+          <a href="#" class="btn tj-btn-primary">Live Preview <i class="fal fa-arrow-right"></i></a>
+        </div>
+        <div class="portfolio_info_items">
+          <div class="info_item"><div class="key">Category</div><div class="value">MyPAS — Admin Analytics</div></div>
+          <div class="info_item"><div class="key">Client</div><div class="value">PT Prakarsa Alam Segar</div></div>
+          <div class="info_item"><div class="key">Delivery Date</div><div class="value">2026</div></div>
+          <div class="info_item"><div class="key">Stack</div><div class="value">Laravel, ApexCharts, GitHub API, IndexedDB</div></div>
+        </div>
+      </div>
+      <div class="portfolio_description">
+        <h2 class="title">Project Description</h2>
+        <div class="desc"><p>Charts for programmer contribution, developer activity, project distribution (top 10 systems), plus chatbot usage KPIs.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="portfolio-wrapper-timbangin" class="popup_content_area zoom-anim-dialog mfp-hide">
+    <div class="popup_modal_img"><img src="./assets/images/timbangin/dashboard.webp" alt="TimbanginIN"></div>
+    <div class="popup_modal_content">
+      <div class="portfolio_info">
+        <div class="portfolio_info_text">
+          <h2 class="title">TimbanginIN</h2>
+          <div class="desc"><p>Daemon loop → Node jsmodbus reads scale over TCP → insert DB on weight change → ack/reset PLC coil.</p></div>
+          <a href="#" class="btn tj-btn-primary">Live Preview <i class="fal fa-arrow-right"></i></a>
+        </div>
+        <div class="portfolio_info_items">
+          <div class="info_item"><div class="key">Category</div><div class="value">MyPAS — OT / Scale</div></div>
+          <div class="info_item"><div class="key">Client</div><div class="value">PT Prakarsa Alam Segar</div></div>
+          <div class="info_item"><div class="key">Delivery Date</div><div class="value">2026</div></div>
+          <div class="info_item"><div class="key">Stack</div><div class="value">Laravel, Node.js, Modbus TCP</div></div>
+        </div>
+      </div>
+      <div class="portfolio_description">
+        <h2 class="title">Project Description</h2>
+        <div class="desc"><p>Realtime industrial scale ingestion with Modbus communication and PLC handshake for production weighing.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="portfolio-wrapper-kms-form" class="popup_content_area zoom-anim-dialog mfp-hide">
+    <div class="popup_modal_img"><img src="./assets/images/kms-form/dashboard.webp" alt="KMS Form"></div>
+    <div class="popup_modal_content">
+      <div class="portfolio_info">
+        <div class="portfolio_info_text">
+          <h2 class="title">KMS Form</h2>
+          <div class="desc"><p>Dynamic survey/quiz forms for compliance training: NIK validation via Google Sheets, Firestore storage, auto grading.</p></div>
+          <a href="#" class="btn tj-btn-primary">Live Preview <i class="fal fa-arrow-right"></i></a>
+        </div>
+        <div class="portfolio_info_items">
+          <div class="info_item"><div class="key">Category</div><div class="value">Compliance Web App</div></div>
+          <div class="info_item"><div class="key">Client</div><div class="value">PT Prakarsa Alam Segar</div></div>
+          <div class="info_item"><div class="key">Delivery Date</div><div class="value">2026</div></div>
+          <div class="info_item"><div class="key">Stack</div><div class="value">React, Firebase, Firestore, Cloud Functions</div></div>
+        </div>
+      </div>
+      <div class="portfolio_description">
+        <h2 class="title">Project Description</h2>
+        <div class="desc"><p>Admin form builder with quiz mode, public fill without login, NIK lookup, score percentage, and CSV export.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="portfolio-wrapper-command-center" class="popup_content_area zoom-anim-dialog mfp-hide">
+    <div class="popup_modal_img"><img src="./assets/images/command-center/dashboard.webp" alt="Command Center CCTV"></div>
+    <div class="popup_modal_content">
+      <div class="portfolio_info">
+        <div class="portfolio_info_text">
+          <h2 class="title">Command Center CCTV</h2>
+          <div class="desc"><p>Multi-CCTV command center: JWT + ACL cameras → MediaMTX WebRTC live grid → seamless playback seek/speed.</p></div>
+          <a href="#" class="btn tj-btn-primary">Live Preview <i class="fal fa-arrow-right"></i></a>
+        </div>
+        <div class="portfolio_info_items">
+          <div class="info_item"><div class="key">Category</div><div class="value">Desktop + Web Surveillance</div></div>
+          <div class="info_item"><div class="key">Client</div><div class="value">PT Prakarsa Alam Segar</div></div>
+          <div class="info_item"><div class="key">Delivery Date</div><div class="value">2026</div></div>
+          <div class="info_item"><div class="key">Stack</div><div class="value">React, JavaFX, MediaMTX, WebRTC</div></div>
+        </div>
+      </div>
+      <div class="portfolio_description">
+        <h2 class="title">Project Description</h2>
+        <div class="desc"><p>Web + Desktop JavaFX clients with department-scoped camera ACL, live SD/HD streams, and playback sessions.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="portfolio-wrapper-prayer" class="popup_content_area zoom-anim-dialog mfp-hide">
+    <div class="popup_modal_img"><img src="./assets/images/prayer/dashboard.webp" alt="Prayer"></div>
+    <div class="popup_modal_content">
+      <div class="portfolio_info">
+        <div class="portfolio_info_text">
+          <h2 class="title">Prayer Portal</h2>
+          <div class="desc"><p>Mosque prayer-time display with ayat rotation; cron refresh and websocket updates for lobby TVs.</p></div>
+          <a href="#" class="btn tj-btn-primary">Live Preview <i class="fal fa-arrow-right"></i></a>
+        </div>
+        <div class="portfolio_info_items">
+          <div class="info_item"><div class="key">Category</div><div class="value">MyPAS — Display</div></div>
+          <div class="info_item"><div class="key">Client</div><div class="value">PT Prakarsa Alam Segar</div></div>
+          <div class="info_item"><div class="key">Delivery Date</div><div class="value">2026</div></div>
+          <div class="info_item"><div class="key">Stack</div><div class="value">Laravel, React, Websocket</div></div>
+        </div>
+      </div>
+      <div class="portfolio_description">
+        <h2 class="title">Project Description</h2>
+        <div class="desc"><p>Smart TV-friendly prayer portal with aurora UI, adhan schedule, and realtime content updates.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="portfolio-wrapper-psikotes" class="popup_content_area zoom-anim-dialog mfp-hide">
+    <div class="popup_modal_img"><img src="./assets/images/psikotes/dashboard.webp" alt="Psikotes"></div>
+    <div class="popup_modal_content">
+      <div class="portfolio_info">
+        <div class="portfolio_info_text">
+          <h2 class="title">Psikotes</h2>
+          <div class="desc"><p>Online exam with InsightFace enrollment/verify and YOLO proctoring for person-count monitoring.</p></div>
+          <a href="#" class="btn tj-btn-primary">Live Preview <i class="fal fa-arrow-right"></i></a>
+        </div>
+        <div class="portfolio_info_items">
+          <div class="info_item"><div class="key">Category</div><div class="value">Computer Vision / Exam</div></div>
+          <div class="info_item"><div class="key">Client</div><div class="value">Personal / Client Project</div></div>
+          <div class="info_item"><div class="key">Delivery Date</div><div class="value">2026</div></div>
+          <div class="info_item"><div class="key">Stack</div><div class="value">React, Laravel, MySQL, InsightFace, YOLO</div></div>
+        </div>
+      </div>
+      <div class="portfolio_description">
+        <h2 class="title">Project Description</h2>
+        <div class="desc"><p>Admin imports question banks and enrolls faces; candidates verify identity, take exams with proctoring, and results are scored digitally. Tokens can be issued via WhatsApp (Fonnte).</p></div>
       </div>
     </div>
   </div>

@@ -290,12 +290,24 @@ Description: Gerold - Personal Portfolio HTML5 Template
 			}, 150);
 		});
 
+		var portfolioFilterCopy = {
+			"*": "Projects across PNM, CBI, PAS, and others.",
+			".pnm": "Projects I've worked on at PT Permodalan Nasional Madani (PNM).",
+			".cbi": "Projects I've worked on at PT Century Batteries Indonesia (CBI).",
+			".pas": "Projects I've built at PT Prakarsa Alam Segar (PAS) — MyPAS modules and compliance tools.",
+			".others": "Personal and client projects outside PNM, CBI, and PAS.",
+		};
+
 		// filter items on button click
 		$(".filter-button-group").on("click", "button", function () {
 			$(".filter-button-group button").removeClass("active");
 			$(this).addClass("active");
 
 			var filterValue = $(this).attr("data-filter");
+			var $desc = $("#portfolio-filter-desc");
+			if ($desc.length && portfolioFilterCopy[filterValue]) {
+				$desc.text(portfolioFilterCopy[filterValue]);
+			}
 			portfolioVisibleCount = getPortfolioItemsPerRow() * PORTFOLIO_INITIAL_ROWS;
 			$portfolioShowcase.removeClass("is-fully-expanded").addClass("is-collapsed");
 			$grid.isotope({ filter: filterValue });
