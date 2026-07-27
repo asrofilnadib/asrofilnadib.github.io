@@ -1802,7 +1802,7 @@ body.loaded {
 }
 .popup_modal_content .portfolio_navigation {
 	background-color: var(--tj-theme-primary);
-	padding: 35px 50px;
+	padding: 10px 50px;
 
 	display: -webkit-box;
 
