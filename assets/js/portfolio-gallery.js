@@ -9,8 +9,28 @@
   var mermaidReady = false;
   var renderSeq = 0;
 
-  function ensureMermaid() {
-    if (!window.mermaid) return false;
+  function waitForMermaid(ms) {
+    return new Promise(function (resolve) {
+      if (window.mermaid && typeof window.mermaid.render === "function") {
+        resolve(true);
+        return;
+      }
+      var start = Date.now();
+      var timer = setInterval(function () {
+        if (window.mermaid && typeof window.mermaid.render === "function") {
+          clearInterval(timer);
+          resolve(true);
+        } else if (Date.now() - start > (ms || 8000)) {
+          clearInterval(timer);
+          resolve(false);
+        }
+      }, 40);
+    });
+  }
+
+  async function ensureMermaid() {
+    var ok = await waitForMermaid(8000);
+    if (!ok) return false;
     if (!mermaidReady) {
       try {
         window.mermaid.initialize({
@@ -80,55 +100,63 @@
   function blockOwlOnHost(host) {
     if (!host || host.dataset.owlBlocked) return;
     host.dataset.owlBlocked = "1";
-    ["mousedown", "touchstart", "pointerdown", "wheel"].forEach(function (evt) {
+    ["mousedown", "touchstart", "pointerdown"].forEach(function (evt) {
       host.addEventListener(
         evt,
         function (e) {
           e.stopPropagation();
         },
-        { passive: false }
+        { passive: true }
       );
     });
   }
 
-  async function renderFlowchartSlide($item) {
-    var host = $item.find(".flowchart-host")[0];
-    if (!host) return;
-    if (host.dataset.rendered === "1") return;
-
-    var src = $item.attr("data-flowchart-src");
-    if (!src) {
-      host.innerHTML = '<div class="flowchart-error">Missing flowchart source</div>';
-      return;
+  function applySvgToHost(host, svgHtml) {
+    host.innerHTML = svgHtml;
+    var svg = host.querySelector("svg");
+    if (svg) {
+      svg.removeAttribute("height");
+      svg.style.width = "100%";
+      svg.style.height = "100%";
+      attachPanZoom(svg);
     }
+    blockOwlOnHost(host);
+    host.dataset.rendered = "1";
+  }
+
+  async function renderFlowchartSlide($item) {
+    var $gallery = $item.closest(".portfolio_gallery");
+    var src = $item.attr("data-flowchart-src");
+    var host = $item.find(".flowchart-host")[0];
+    if (!host || !src) return;
+    if (host.dataset.rendered === "1" && host.querySelector("svg")) return;
 
     host.innerHTML = '<div class="flowchart-loading">Loading flowchart…</div>';
 
-    if (!ensureMermaid()) {
-      host.innerHTML = '<div class="flowchart-error">Mermaid library not loaded</div>';
+    if (!(await ensureMermaid())) {
+      host.innerHTML =
+        '<div class="flowchart-error">Mermaid gagal load. Cek koneksi CDN / console.</div>';
       return;
     }
 
     try {
       var res = await fetch(src, { cache: "no-cache" });
-      if (!res.ok) throw new Error("HTTP " + res.status);
+      if (!res.ok) throw new Error("HTTP " + res.status + " fetching " + src);
       var md = await res.text();
       var blocks = extractMermaidBlocks(md);
-      if (!blocks.length) throw new Error("No mermaid block found");
+      if (!blocks.length) throw new Error("No mermaid block found in " + src);
 
       var code = blocks[0];
       var id = "pf-mermaid-" + ++renderSeq + "-" + Date.now();
       var out = await window.mermaid.render(id, code);
-      host.innerHTML = out.svg || out;
-      var svg = host.querySelector("svg");
-      if (svg) {
-        svg.removeAttribute("height");
-        svg.style.width = "100%";
-        svg.style.height = "100%";
-        attachPanZoom(svg);
-      }
-      blockOwlOnHost(host);
-      host.dataset.rendered = "1";
+      var svgHtml = typeof out === "string" ? out : out.svg;
+
+      // Apply to this host + any Owl clones with the same source
+      var selector = '.gallery_item[data-type="flowchart"][data-flowchart-src="' + src.replace(/"/g, '\\"') + '"] .flowchart-host';
+      var targets = $gallery.length ? $gallery.find(selector) : $(host);
+      targets.each(function () {
+        applySvgToHost(this, svgHtml);
+      });
     } catch (err) {
       console.warn("flowchart render failed", src, err);
       host.innerHTML =
@@ -177,13 +205,24 @@
 
   async function hydrateGallery($gallery) {
     var tasks = [];
-    $gallery.find(".gallery_item").each(function () {
+    var seenSrc = {};
+
+    $gallery.find('.gallery_item[data-type="flowchart"]').each(function () {
       var $item = $(this);
-      var type = $item.attr("data-type") || "image";
-      if (type === "flowchart") tasks.push(renderFlowchartSlide($item));
-      else if (type === "youtube") renderYoutubeSlide($item);
-      else if (type === "ppt") renderPptSlide($item);
+      var src = $item.attr("data-flowchart-src") || "";
+      // One render per unique source (covers Owl clones)
+      if (src && seenSrc[src]) return;
+      if (src) seenSrc[src] = true;
+      tasks.push(renderFlowchartSlide($item));
     });
+
+    $gallery.find('.gallery_item[data-type="youtube"]').each(function () {
+      renderYoutubeSlide($(this));
+    });
+    $gallery.find('.gallery_item[data-type="ppt"]').each(function () {
+      renderPptSlide($(this));
+    });
+
     await Promise.all(tasks);
   }
 
@@ -194,7 +233,6 @@
       if ($g.hasClass("owl-loaded")) {
         $g.trigger("refresh.owl.carousel");
       } else if ($.fn.owlCarousel) {
-        // Fallback if somehow not inited by main.js
         $g.owlCarousel({
           items: 2,
           loop: true,
@@ -234,9 +272,9 @@
     var $galleries = $content.find(".portfolio_gallery.owl-carousel");
     if (!$galleries.length) return;
 
-    // Allow re-render when the same modal is opened again after close
     $galleries.find(".flowchart-host").each(function () {
       delete this.dataset.rendered;
+      this.innerHTML = '<div class="flowchart-loading">Loading flowchart…</div>';
     });
 
     try {
@@ -248,7 +286,7 @@
     refreshOwl($galleries);
     setTimeout(function () {
       refreshOwl($galleries);
-    }, 150);
+    }, 200);
   }
 
   function boot() {
@@ -257,7 +295,7 @@
     $(document).on("mfpOpen.portfolioGallery", function () {
       setTimeout(function () {
         onModalOpen();
-      }, 80);
+      }, 100);
     });
 
     $(document).on("mfpClose.portfolioGallery", function () {
