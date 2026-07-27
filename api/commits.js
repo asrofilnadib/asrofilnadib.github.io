@@ -1,4 +1,5 @@
 const config = require("./commits-config.json");
+const { matchesPrefixes, isMerge, normalizeAuthors } = require("./commit-utils");
 
 function cors(res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -49,17 +50,6 @@ function labelForType(type) {
   return { feat: "Feature", fix: "Fix", refactor: "Refactor", chore: "Chore", other: "Other" }[type] || "Other";
 }
 
-function matchesPrefixes(message, prefixes) {
-  if (!prefixes || !prefixes.length) return true;
-  const lower = (message || "").toLowerCase();
-  return prefixes.some((p) => lower.includes(String(p).toLowerCase()));
-}
-
-function isMerge(message) {
-  const m = (message || "").toLowerCase();
-  return m.includes("merge branch") || m.includes("merge pull request") || m.startsWith("merge remote");
-}
-
 function formatDay(iso) {
   return new Date(iso).toLocaleDateString("en-US", {
     year: "numeric",
@@ -97,7 +87,7 @@ module.exports = async function handler(req, res) {
   }
 
   const project = String(req.query.project || "").trim();
-  const limit = Math.min(parseInt(req.query.limit || "40", 10) || 40, 100);
+  const limit = Math.min(parseInt(req.query.limit || "200", 10) || 200, 250);
   const projectConfig = config[project];
 
   if (!projectConfig) {
@@ -116,9 +106,9 @@ module.exports = async function handler(req, res) {
 
   const { owner, repo, branch = "dev", prefixes = [], title } = projectConfig;
   const authors = normalizeAuthors(projectConfig);
-  // Pull extra when filtering by module prefixes; paginate until limit is filled
-  const perPage = prefixes.length ? 100 : Math.min(100, limit);
-  const maxPages = prefixes.length ? 8 : Math.max(2, authors.length > 1 ? 3 : 1);
+  // Monorepo modules sit deep in history — dig farther when filtering by prefix.
+  const perPage = 100;
+  const maxPages = prefixes.length ? 18 : Math.max(3, authors.length > 1 ? 5 : 2);
 
   const branchCandidates = [branch, "dev", "main", "master"].filter(
     (b, i, arr) => b && arr.indexOf(b) === i
@@ -159,8 +149,11 @@ module.exports = async function handler(req, res) {
         }
         if (batch.length < perPage) break;
 
+        // Only stop early once we have enough matches AND we've scanned deep enough
+        // to cover older module history (e.g. Smart Lab Dec 2025 sits ~page 8+).
         const preview = filterCommits([...bySha.values()], { prefixes, limit, authors });
-        if (preview.length >= limit) break;
+        const deepEnough = page >= (prefixes.length ? 12 : 2);
+        if (preview.length >= limit && deepEnough) break;
       }
       if (pageFailed) break;
     }
@@ -208,15 +201,6 @@ module.exports = async function handler(req, res) {
     authors,
   });
 };
-
-function normalizeAuthors(projectConfig) {
-  if (Array.isArray(projectConfig.authors) && projectConfig.authors.length) {
-    return projectConfig.authors.map((a) => String(a).trim()).filter(Boolean);
-  }
-  if (projectConfig.author === null || projectConfig.author === "") return [];
-  if (projectConfig.author) return [String(projectConfig.author).trim()];
-  return ["asrofilnadib"];
-}
 
 function filterCommits(rawCommits, meta) {
   const commits = [];

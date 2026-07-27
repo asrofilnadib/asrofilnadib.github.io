@@ -101,7 +101,7 @@
     bodyEl.innerHTML = '<div class="gh-commits-loading">Fetching commits from GitHub…</div>';
 
     try {
-      var res = await fetch("/api/commits?project=" + encodeURIComponent(projectKey) + "&limit=40");
+      var res = await fetch("/api/commits?project=" + encodeURIComponent(projectKey) + "&limit=200");
       var data = await res.json();
       if (!res.ok) {
         throw new Error(data.message || data.error || "Failed to load commits");

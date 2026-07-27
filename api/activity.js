@@ -1,29 +1,10 @@
 const config = require("./commits-config.json");
+const { matchesPrefixes, isMerge, normalizeAuthors } = require("./commit-utils");
 
 function cors(res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-}
-
-function isMerge(message) {
-  const m = (message || "").toLowerCase();
-  return m.includes("merge branch") || m.includes("merge pull request") || m.startsWith("merge remote");
-}
-
-function matchesPrefixes(message, prefixes) {
-  if (!prefixes || !prefixes.length) return true;
-  const lower = (message || "").toLowerCase();
-  return prefixes.some((p) => lower.includes(String(p).toLowerCase()));
-}
-
-function normalizeAuthors(projectConfig) {
-  if (Array.isArray(projectConfig.authors) && projectConfig.authors.length) {
-    return projectConfig.authors.map((a) => String(a).trim()).filter(Boolean);
-  }
-  if (projectConfig.author === null || projectConfig.author === "") return [];
-  if (projectConfig.author) return [String(projectConfig.author).trim()];
-  return ["asrofilnadib"];
 }
 
 function toDayKey(iso) {
@@ -78,7 +59,7 @@ async function githubGet(url, token) {
   return { ok: res.ok, status: res.status, data };
 }
 
-async function fetchRepoCommits({ owner, repo, branch, authors, token, maxPages = 5 }) {
+async function fetchRepoCommits({ owner, repo, branch, authors, token, maxPages = 15 }) {
   const branchCandidates = [branch, "dev", "main", "master"].filter((b, i, arr) => b && arr.indexOf(b) === i);
   const authorQueries = authors.length ? authors : [null];
   let last = { ok: false, status: 502, data: { message: "Failed to fetch commits" } };
@@ -187,7 +168,7 @@ module.exports = async function handler(req, res) {
         branch: group.branch,
         authors: [...group.authors],
         token,
-        maxPages: 4,
+        maxPages: 15,
       });
       cache.set(gkey, fetched);
     }

@@ -7,8 +7,10 @@
     "author": "asrofilnadib",
     "prefixes": [
       "smart-lab",
+      "smart_lab",
       "smartlab",
       "lab-eksternal",
+      "lab_eksternal",
       "lab eksternal"
     ],
     "company": "pas"
@@ -45,7 +47,9 @@
     "author": "asrofilnadib",
     "prefixes": [
       "ga-stock",
+      "ga_stock",
       "stock-opname",
+      "stock_opname",
       "gastock"
     ],
     "company": "pas"
@@ -93,6 +97,7 @@
     "prefixes": [
       "chatbot",
       "pas-ai",
+      "pas_ai",
       "gemini"
     ],
     "company": "pas"
