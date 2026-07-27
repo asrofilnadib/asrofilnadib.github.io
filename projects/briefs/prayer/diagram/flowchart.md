@@ -36,7 +36,7 @@ config:
 flowchart LR
   API[Aladhan + Quran API] --> CTRL[PrayerController]
   CRON[prayer:refresh times/verse] --> EVT[Broadcast events]
-  CTRL --> UI[/prayer TV display]
+  CTRL --> UI["/prayer TV display"]
   EVT -->|Echo prayer-times / prayer-verse| UI
   EVT -.->|fallback poll| UI
 ```

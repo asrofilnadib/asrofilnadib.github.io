@@ -35,7 +35,7 @@ flowchart TB
   L[Login web / desktop JavaFX] --> JWT[JWT + user dept]
   JWT --> CAM[GET /cameras filtered ACL]
   CAM --> GRID[Grid layout / Template]
-  GRID --> STR[GET /stream/:id SD|HD]
+  GRID --> STR["GET /stream/:id SD/HD"]
   STR --> MTX[Register MediaMTX path]
   MTX --> LIVE[WebRTC live view<br/>WHEP → fallback WS]
   LIVE --> PB[Buka Playback]

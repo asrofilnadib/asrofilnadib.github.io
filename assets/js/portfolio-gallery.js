@@ -1,65 +1,12 @@
 /**
  * PAS portfolio media gallery extras (flowchart / youtube / ppt)
+ * Flowcharts: static local SVG + svg-pan-zoom (no Mermaid runtime).
  * Owl Carousel stays owned by main.js — this only hydrates media then refreshes.
  */
 (function ($) {
   "use strict";
 
   var panZoomInstances = [];
-  var mermaidReady = false;
-  var renderSeq = 0;
-
-  function waitForMermaid(ms) {
-    return new Promise(function (resolve) {
-      if (window.mermaid && typeof window.mermaid.render === "function") {
-        resolve(true);
-        return;
-      }
-      var start = Date.now();
-      var timer = setInterval(function () {
-        if (window.mermaid && typeof window.mermaid.render === "function") {
-          clearInterval(timer);
-          resolve(true);
-        } else if (Date.now() - start > (ms || 8000)) {
-          clearInterval(timer);
-          resolve(false);
-        }
-      }, 40);
-    });
-  }
-
-  async function ensureMermaid() {
-    var ok = await waitForMermaid(8000);
-    if (!ok) return false;
-    if (!mermaidReady) {
-      try {
-        window.mermaid.initialize({
-          startOnLoad: false,
-          theme: "dark",
-          securityLevel: "loose",
-          flowchart: { htmlLabels: true, curve: "basis" },
-        });
-        mermaidReady = true;
-      } catch (e) {
-        console.warn("mermaid init failed", e);
-        return false;
-      }
-    }
-    return true;
-  }
-
-  function extractMermaidBlocks(markdown) {
-    var blocks = [];
-    var re = /```mermaid\s*([\s\S]*?)```/gi;
-    var m;
-    while ((m = re.exec(markdown))) {
-      var body = String(m[1] || "").trim();
-      if (!body) continue;
-      body = body.replace(/^---[\s\S]*?---\s*/m, "").trim();
-      if (body) blocks.push(body);
-    }
-    return blocks;
-  }
 
   function youtubeId(url) {
     if (!url) return "";
@@ -87,8 +34,8 @@
         controlIconsEnabled: true,
         fit: true,
         center: true,
-        minZoom: 0.4,
-        maxZoom: 8,
+        minZoom: 0.35,
+        maxZoom: 10,
       });
       panZoomInstances.push(pz);
       return pz;
@@ -111,15 +58,30 @@
     });
   }
 
+  function extractSvgMarkup(text) {
+    var raw = String(text || "").trim();
+    if (!raw) return "";
+    var start = raw.indexOf("<svg");
+    var end = raw.lastIndexOf("</svg>");
+    if (start === -1 || end === -1) return "";
+    return raw.slice(start, end + 6);
+  }
+
   function applySvgToHost(host, svgHtml) {
     host.innerHTML = svgHtml;
     var svg = host.querySelector("svg");
-    if (svg) {
-      svg.removeAttribute("height");
-      svg.style.width = "100%";
-      svg.style.height = "100%";
-      attachPanZoom(svg);
+    if (!svg) {
+      host.innerHTML = '<div class="flowchart-error">Invalid SVG flowchart</div>';
+      return;
     }
+    svg.removeAttribute("width");
+    svg.removeAttribute("height");
+    svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+    svg.style.width = "100%";
+    svg.style.height = "100%";
+    svg.style.maxWidth = "100%";
+    svg.style.maxHeight = "100%";
+    attachPanZoom(svg);
     blockOwlOnHost(host);
     host.dataset.rendered = "1";
   }
@@ -133,26 +95,31 @@
 
     host.innerHTML = '<div class="flowchart-loading">Loading flowchart…</div>';
 
-    if (!(await ensureMermaid())) {
+    if (!/\.svg(\?|#|$)/i.test(src)) {
       host.innerHTML =
-        '<div class="flowchart-error">Mermaid gagal load. Cek koneksi CDN / console.</div>';
+        '<div class="flowchart-error">Flowchart must be a local .svg file<br><small>' +
+        src +
+        "</small></div>";
+      return;
+    }
+
+    if (!window.svgPanZoom) {
+      host.innerHTML =
+        '<div class="flowchart-error">svg-pan-zoom failed to load</div>';
       return;
     }
 
     try {
       var res = await fetch(src, { cache: "no-cache" });
       if (!res.ok) throw new Error("HTTP " + res.status + " fetching " + src);
-      var md = await res.text();
-      var blocks = extractMermaidBlocks(md);
-      if (!blocks.length) throw new Error("No mermaid block found in " + src);
+      var text = await res.text();
+      var svgHtml = extractSvgMarkup(text);
+      if (!svgHtml) throw new Error("No <svg> found in " + src);
 
-      var code = blocks[0];
-      var id = "pf-mermaid-" + ++renderSeq + "-" + Date.now();
-      var out = await window.mermaid.render(id, code);
-      var svgHtml = typeof out === "string" ? out : out.svg;
-
-      // Apply to this host + any Owl clones with the same source
-      var selector = '.gallery_item[data-type="flowchart"][data-flowchart-src="' + src.replace(/"/g, '\\"') + '"] .flowchart-host';
+      var selector =
+        '.gallery_item[data-type="flowchart"][data-flowchart-src="' +
+        src.replace(/"/g, '\\"') +
+        '"] .flowchart-host';
       var targets = $gallery.length ? $gallery.find(selector) : $(host);
       targets.each(function () {
         applySvgToHost(this, svgHtml);
@@ -210,7 +177,6 @@
     $gallery.find('.gallery_item[data-type="flowchart"]').each(function () {
       var $item = $(this);
       var src = $item.attr("data-flowchart-src") || "";
-      // One render per unique source (covers Owl clones)
       if (src && seenSrc[src]) return;
       if (src) seenSrc[src] = true;
       tasks.push(renderFlowchartSlide($item));
@@ -267,15 +233,26 @@
     var $content = $(".mfp-content");
     if (!$content.length) return;
 
-    destroyPanZooms();
-
     var $galleries = $content.find(".portfolio_gallery.owl-carousel");
     if (!$galleries.length) return;
 
+    // Skip full wipe if already hydrated (retry pass)
+    var needsHydrate = false;
     $galleries.find(".flowchart-host").each(function () {
-      delete this.dataset.rendered;
-      this.innerHTML = '<div class="flowchart-loading">Loading flowchart…</div>';
+      if (this.dataset.rendered !== "1" || !this.querySelector("svg")) {
+        needsHydrate = true;
+        delete this.dataset.rendered;
+        if (!this.querySelector(".flowchart-loading")) {
+          this.innerHTML = '<div class="flowchart-loading">Loading flowchart…</div>';
+        }
+      }
     });
+    if (!needsHydrate) {
+      refreshOwl($galleries);
+      return;
+    }
+
+    destroyPanZooms();
 
     try {
       await hydrateGallery($galleries);
@@ -292,15 +269,40 @@
   function boot() {
     if (!window.jQuery) return;
 
-    $(document).on("mfpOpen.portfolioGallery", function () {
-      setTimeout(function () {
+    var hydrateTimer = null;
+    function scheduleHydrate() {
+      clearTimeout(hydrateTimer);
+      hydrateTimer = setTimeout(function () {
         onModalOpen();
-      }, 100);
+        setTimeout(onModalOpen, 350);
+        setTimeout(onModalOpen, 800);
+      }, 80);
+    }
+
+    $(document).on("mfpOpen.portfolioGallery", scheduleHydrate);
+    // Backup: some Magnific opens don't bubble mfpOpen reliably with inline clones
+    $(document).on("click.portfolioGallery", ".modal-popup", function () {
+      scheduleHydrate();
     });
 
     $(document).on("mfpClose.portfolioGallery", function () {
       destroyPanZooms();
     });
+
+    if (typeof MutationObserver !== "undefined") {
+      var moTimer = null;
+      var mo = new MutationObserver(function () {
+        if (!document.querySelector(".mfp-ready .portfolio_gallery .flowchart-host")) return;
+        clearTimeout(moTimer);
+        moTimer = setTimeout(scheduleHydrate, 100);
+      });
+      mo.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ["class"],
+      });
+    }
   }
 
   if (document.readyState === "loading") {
