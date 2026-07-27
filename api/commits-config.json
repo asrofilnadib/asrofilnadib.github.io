@@ -1,88 +1,88 @@
 {
   "smart-lab": {
     "title": "Smart Lab",
-    "owner": "PT-PAS-Dev",
-    "repo": "newpas",
+    "owner": "asrofilnadib",
+    "repo": "portal-pas",
     "branch": "master",
     "author": "asrofilnadib",
     "prefixes": ["smart-lab", "smartlab", "lab-eksternal", "lab eksternal"]
   },
   "tms": {
     "title": "TMS",
-    "owner": "PT-PAS-Dev",
-    "repo": "newpas",
+    "owner": "asrofilnadib",
+    "repo": "portal-pas",
     "branch": "master",
     "author": "asrofilnadib",
     "prefixes": ["tms"]
   },
   "ecafe": {
     "title": "E-Cafe Invoice",
-    "owner": "PT-PAS-Dev",
-    "repo": "newpas",
+    "owner": "asrofilnadib",
+    "repo": "portal-pas",
     "branch": "master",
     "author": "asrofilnadib",
     "prefixes": ["ecafe", "e-cafe", "cafe"]
   },
   "ga-stock": {
     "title": "Stock Opname GA",
-    "owner": "PT-PAS-Dev",
-    "repo": "newpas",
+    "owner": "asrofilnadib",
+    "repo": "portal-pas",
     "branch": "master",
     "author": "asrofilnadib",
     "prefixes": ["ga-stock", "stock-opname", "gastock"]
   },
   "scada": {
     "title": "SCADA to Tablet",
-    "owner": "PT-PAS-Dev",
-    "repo": "newpas",
+    "owner": "asrofilnadib",
+    "repo": "portal-pas",
     "branch": "master",
     "author": "asrofilnadib",
     "prefixes": ["scada"]
   },
   "logbook": {
     "title": "Logbook Magang",
-    "owner": "PT-PAS-Dev",
-    "repo": "newpas",
+    "owner": "asrofilnadib",
+    "repo": "portal-pas",
     "branch": "master",
     "author": "asrofilnadib",
     "prefixes": ["logbook", "magang"]
   },
   "p2h": {
     "title": "Digitalisasi P2H",
-    "owner": "PT-PAS-Dev",
-    "repo": "newpas",
+    "owner": "asrofilnadib",
+    "repo": "portal-pas",
     "branch": "master",
     "author": "asrofilnadib",
     "prefixes": ["p2h"]
   },
   "chatbot": {
     "title": "PAS AI Chatbot",
-    "owner": "PT-PAS-Dev",
-    "repo": "newpas",
+    "owner": "asrofilnadib",
+    "repo": "portal-pas",
     "branch": "master",
     "author": "asrofilnadib",
     "prefixes": ["chatbot", "pas-ai", "gemini"]
   },
   "kapas": {
     "title": "KAPAS",
-    "owner": "PT-PAS-Dev",
-    "repo": "newpas",
+    "owner": "asrofilnadib",
+    "repo": "portal-pas",
     "branch": "master",
     "author": "asrofilnadib",
     "prefixes": ["kapas"]
   },
   "timbangin": {
     "title": "TimbanginIN",
-    "owner": "PT-PAS-Dev",
-    "repo": "newpas",
+    "owner": "asrofilnadib",
+    "repo": "portal-pas",
     "branch": "master",
     "author": "asrofilnadib",
     "prefixes": ["timbangin", "timbangan"]
   },
   "prayer": {
     "title": "Prayer Portal",
-    "owner": "PT-PAS-Dev",
-    "repo": "newpas",
+    "owner": "asrofilnadib",
+    "repo": "portal-pas",
     "branch": "master",
     "author": "asrofilnadib",
     "prefixes": ["prayer"]

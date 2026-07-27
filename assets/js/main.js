@@ -329,6 +329,9 @@ Description: Gerold - Personal Portfolio HTML5 Template
 			margin: 30,
 			nav: false,
 			dots: true,
+			mouseDrag: false,
+			touchDrag: true,
+			pullDrag: false,
 			responsive: {
 				// breakpoint from 0 up
 				0: {
@@ -345,6 +348,11 @@ Description: Gerold - Personal Portfolio HTML5 Template
 					margin: 30,
 				},
 			},
+		});
+
+		// Clicks on zoomable gallery images must not start a drag/slide
+		$(document).on("mousedown touchstart", ".portfolio_gallery a.portfolio-pswp-link, .popup_modal_img a.portfolio-pswp-link", function (e) {
+			e.stopPropagation();
 		});
 
 		/*------------------------------------------------------

@@ -121,10 +121,16 @@
       renderGroups(data);
     } catch (err) {
       subtitleEl.textContent = "Could not load commits";
+      var hint =
+        location.protocol === "file:"
+          ? "Jangan buka via file://. Jalankan <code>npm run dev</code> lalu buka http://localhost:3000 (token dari .env)."
+          : "Lokal: pastikan <code>npm run dev</code> jalan + GITHUB_TOKEN di .env. Vercel: set Environment Variable GITHUB_TOKEN lalu redeploy.";
       bodyEl.innerHTML =
         '<div class="gh-commits-error">' +
         escapeHtml(err.message || String(err)) +
-        "<br><small>Make sure the site is deployed on Vercel with GITHUB_TOKEN set.</small></div>";
+        "<br><small>" +
+        hint +
+        "</small></div>";
     }
   }
 

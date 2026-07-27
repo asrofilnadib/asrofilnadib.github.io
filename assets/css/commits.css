@@ -1,22 +1,43 @@
 /* GitHub-style commits modal (portfolio) */
 
-.btn-commits {
-	margin-left: 10px;
-	background: transparent !important;
-	border: 1px solid var(--tj-theme-primary);
-	color: #fff !important;
-}
-
-.btn-commits:hover {
-	background: var(--tj-theme-primary) !important;
-}
-
 .portfolio-modal-actions {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 10px;
+	gap: 12px;
 	align-items: center;
-	margin-top: 4px;
+	margin-top: 12px;
+}
+
+.portfolio-modal-actions .btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	min-height: 44px;
+	padding: 10px 20px;
+	border-radius: 999px;
+	font-weight: 600;
+	line-height: 1.2;
+	text-decoration: none;
+}
+
+/* Outline button readable on white modal content */
+.btn-commits {
+	background: #fff !important;
+	border: 1.5px solid var(--tj-theme-primary) !important;
+	color: var(--tj-theme-primary) !important;
+	box-shadow: none !important;
+}
+
+.btn-commits i {
+	color: inherit !important;
+}
+
+.btn-commits:hover,
+.btn-commits:focus {
+	background: var(--tj-theme-primary) !important;
+	color: #fff !important;
+	border-color: var(--tj-theme-primary) !important;
 }
 
 .gh-commits-overlay {

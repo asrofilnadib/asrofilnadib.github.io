@@ -1,6 +1,6 @@
 /**
- * Portfolio PhotoSwipe — click-to-zoom for modal hero + gallery images.
- * Assets copied from newpas-master/public/portal/assets/{css,js}/photoswipe/
+ * PhotoSwipe module layer (needs http/https — not file://).
+ * Falls back is handled by portfolio-image-zoom.js
  */
 import PhotoSwipeLightbox from "./photoswipe/photoswipe-lightbox.esm.min.js";
 import PhotoSwipe from "./photoswipe/photoswipe.esm.min.js";
@@ -8,56 +8,35 @@ import PhotoSwipe from "./photoswipe/photoswipe.esm.min.js";
 const GALLERY_SELECTOR = ".popup_content_area";
 const LINK_CLASS = "portfolio-pswp-link";
 
-function wrapImage(img) {
-  if (!img || img.closest("a." + LINK_CLASS)) return null;
-
-  const src = img.currentSrc || img.src;
-  if (!src) return null;
-
-  const link = document.createElement("a");
-  link.href = src;
-  link.className = LINK_CLASS;
-  link.setAttribute("data-pswp-src", src);
-  link.style.cursor = "zoom-in";
-  link.style.display = "inline-block";
-  link.style.maxWidth = "100%";
-
-  const caption = img.getAttribute("alt") || "";
-  if (caption) link.dataset.pswpCaption = caption;
-
-  img.parentNode.insertBefore(link, img);
-  link.appendChild(img);
-
-  const applySize = () => {
-    if (img.naturalWidth) {
-      link.dataset.pswpWidth = String(img.naturalWidth);
-      link.dataset.pswpHeight = String(img.naturalHeight);
-    } else {
-      link.dataset.pswpWidth = link.dataset.pswpWidth || "1600";
-      link.dataset.pswpHeight = link.dataset.pswpHeight || "1000";
-    }
-  };
-
-  if (img.complete) applySize();
-  else img.addEventListener("load", applySize, { once: true });
-
-  return link;
-}
-
-function prepareContainer(container) {
+function prepareViaShared(container) {
+  if (window.PortfolioImageZoom && typeof window.PortfolioImageZoom.prepare === "function") {
+    window.PortfolioImageZoom.prepare(container);
+    return;
+  }
   if (!container) return;
-
-  container.querySelectorAll(".popup_modal_img img, .portfolio_gallery .gallery_item img, .gallery_item img").forEach(wrapImage);
-
-  // Also allow plain images inside popup content that aren't wrapped yet
-  container.querySelectorAll("img").forEach((img) => {
-    if (img.closest("a." + LINK_CLASS)) return;
-    if (img.closest(".portfolio_info_items")) return;
-    if (img.width < 80 && img.height < 80) return;
-    if (img.closest(".popup_modal_img, .portfolio_gallery, .gallery_item")) {
-      wrapImage(img);
-    }
-  });
+  container
+    .querySelectorAll(".popup_modal_img img, .portfolio_gallery .gallery_item img, .gallery_item img")
+    .forEach((img) => {
+      if (img.closest("a." + LINK_CLASS)) return;
+      const src = img.currentSrc || img.src;
+      if (!src) return;
+      const link = document.createElement("a");
+      link.href = src;
+      link.className = LINK_CLASS;
+      link.dataset.pswpSrc = src;
+      link.style.cursor = "zoom-in";
+      link.style.display = "block";
+      link.style.maxWidth = "100%";
+      if (img.alt) link.dataset.pswpCaption = img.alt;
+      img.parentNode.insertBefore(link, img);
+      link.appendChild(img);
+      const apply = () => {
+        link.dataset.pswpWidth = String(img.naturalWidth || 1600);
+        link.dataset.pswpHeight = String(img.naturalHeight || 1000);
+      };
+      if (img.complete) apply();
+      else img.addEventListener("load", apply, { once: true });
+    });
 }
 
 window.PortfolioPhotoSwipe = {
@@ -66,24 +45,19 @@ window.PortfolioPhotoSwipe = {
     this.lightboxes.forEach((lb) => {
       try {
         lb.destroy();
-      } catch (_) {
-        /* ignore */
-      }
+      } catch (_) {}
     });
     this.lightboxes = [];
     document.querySelectorAll(".pswp").forEach((el) => el.remove());
   },
   initIn(container) {
     if (!container) return;
-    prepareContainer(container);
+    prepareViaShared(container);
 
-    // One lightbox per popup_content_area so gallery slides work together
     const galleries = [];
-    if (container.matches && container.matches(GALLERY_SELECTOR)) {
-      galleries.push(container);
-    } else {
-      container.querySelectorAll(GALLERY_SELECTOR).forEach((el) => galleries.push(el));
-    }
+    if (container.matches && container.matches(GALLERY_SELECTOR)) galleries.push(container);
+    else container.querySelectorAll(GALLERY_SELECTOR).forEach((el) => galleries.push(el));
+    if (!galleries.length && container.querySelector("a." + LINK_CLASS)) galleries.push(container);
 
     galleries.forEach((galleryEl) => {
       if (!galleryEl.querySelector("a." + LINK_CLASS)) return;
@@ -128,27 +102,25 @@ window.PortfolioPhotoSwipe = {
 };
 
 function boot() {
+  if (typeof window.__enablePortfolioPhotoSwipe === "function") {
+    window.__enablePortfolioPhotoSwipe();
+  }
   window.PortfolioPhotoSwipe.initAll();
 
-  // Re-init when Magnific Popup opens (content moved into mfp container)
   if (window.jQuery) {
-    jQuery(document).on("mfpOpen", function () {
+    jQuery(document).on("mfpOpen.portfolioPswp", function () {
       setTimeout(function () {
         const content = document.querySelector(".mfp-content .popup_content_area, .mfp-content");
-        if (content && window.PortfolioPhotoSwipe) {
-          window.PortfolioPhotoSwipe.destroyAll();
-          window.PortfolioPhotoSwipe.initIn(content);
-        }
-      }, 50);
-    });
-    jQuery(document).on("mfpClose", function () {
-      if (window.PortfolioPhotoSwipe) {
+        if (!content) return;
         window.PortfolioPhotoSwipe.destroyAll();
-        // Restore for inline hidden templates
-        setTimeout(function () {
-          window.PortfolioPhotoSwipe.initAll();
-        }, 100);
-      }
+        window.PortfolioPhotoSwipe.initIn(content);
+      }, 60);
+    });
+    jQuery(document).on("mfpClose.portfolioPswp", function () {
+      window.PortfolioPhotoSwipe.destroyAll();
+      setTimeout(function () {
+        window.PortfolioPhotoSwipe.initAll();
+      }, 120);
     });
   }
 }
