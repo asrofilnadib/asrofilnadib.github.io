@@ -133,7 +133,7 @@
     "owner": "asrofilnadib",
     "repo": "playback_command_center",
     "branch": "main",
-    "author": "asrofilnadib",
+    "authors": ["asrofilnadib", "codemysister"],
     "prefixes": []
   },
   "psikotes": {

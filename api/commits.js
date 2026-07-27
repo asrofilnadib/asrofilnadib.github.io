@@ -114,10 +114,11 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  const { owner, repo, branch = "dev", author = "asrofilnadib", prefixes = [], title } = projectConfig;
+  const { owner, repo, branch = "dev", prefixes = [], title } = projectConfig;
+  const authors = normalizeAuthors(projectConfig);
   // Pull extra when filtering by module prefixes; paginate until limit is filled
   const perPage = prefixes.length ? 100 : Math.min(100, limit);
-  const maxPages = prefixes.length ? 8 : 1;
+  const maxPages = prefixes.length ? 8 : Math.max(2, authors.length > 1 ? 3 : 1);
 
   const branchCandidates = [branch, "dev", "main", "master"].filter(
     (b, i, arr) => b && arr.indexOf(b) === i
@@ -128,33 +129,40 @@ module.exports = async function handler(req, res) {
   let rawCommits = null;
 
   for (const candidate of branchCandidates) {
-    const pages = [];
+    const bySha = new Map();
     let pageFailed = null;
 
-    for (let page = 1; page <= maxPages; page++) {
-      const params = new URLSearchParams({
-        sha: candidate,
-        per_page: String(perPage),
-        page: String(page),
-      });
-      if (author) params.set("author", author);
+    // GitHub accepts one author per request — fetch each listed author then merge
+    const authorQueries = authors.length ? authors : [null];
 
-      const url = `https://api.github.com/repos/${owner}/${repo}/commits?${params}`;
-      last = await githubGet(url, token);
-      usedBranch = candidate;
+    for (const authorLogin of authorQueries) {
+      for (let page = 1; page <= maxPages; page++) {
+        const params = new URLSearchParams({
+          sha: candidate,
+          per_page: String(perPage),
+          page: String(page),
+        });
+        if (authorLogin) params.set("author", authorLogin);
 
-      if (!last.ok) {
-        pageFailed = last;
-        break;
+        const url = `https://api.github.com/repos/${owner}/${repo}/commits?${params}`;
+        last = await githubGet(url, token);
+        usedBranch = candidate;
+
+        if (!last.ok) {
+          pageFailed = last;
+          break;
+        }
+
+        const batch = Array.isArray(last.data) ? last.data : [];
+        for (const item of batch) {
+          if (item && item.sha) bySha.set(item.sha, item);
+        }
+        if (batch.length < perPage) break;
+
+        const preview = filterCommits([...bySha.values()], { prefixes, limit, authors });
+        if (preview.length >= limit) break;
       }
-
-      const batch = Array.isArray(last.data) ? last.data : [];
-      pages.push(...batch);
-      if (batch.length < perPage) break;
-
-      // Early stop if we already have enough matches after filtering
-      const preview = filterCommits(pages, { prefixes, limit, author });
-      if (preview.length >= limit) break;
+      if (pageFailed) break;
     }
 
     if (pageFailed) {
@@ -172,7 +180,11 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    rawCommits = pages;
+    rawCommits = [...bySha.values()].sort((a, b) => {
+      const da = new Date(a.commit?.author?.date || a.commit?.committer?.date || 0).getTime();
+      const db = new Date(b.commit?.author?.date || b.commit?.committer?.date || 0).getTime();
+      return db - da;
+    });
     break;
   }
 
@@ -186,8 +198,25 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  return respond(res, rawCommits, { owner, repo, title, prefixes, limit, branch: usedBranch, author });
+  return respond(res, rawCommits, {
+    owner,
+    repo,
+    title,
+    prefixes,
+    limit,
+    branch: usedBranch,
+    authors,
+  });
 };
+
+function normalizeAuthors(projectConfig) {
+  if (Array.isArray(projectConfig.authors) && projectConfig.authors.length) {
+    return projectConfig.authors.map((a) => String(a).trim()).filter(Boolean);
+  }
+  if (projectConfig.author === null || projectConfig.author === "") return [];
+  if (projectConfig.author) return [String(projectConfig.author).trim()];
+  return ["asrofilnadib"];
+}
 
 function filterCommits(rawCommits, meta) {
   const commits = [];
@@ -210,7 +239,9 @@ function filterCommits(rawCommits, meta) {
       date,
       day: date ? formatDay(date) : "Unknown",
       author: item.commit?.author?.name || item.author?.login || "unknown",
-      avatar: item.author?.avatar_url || `https://github.com/${meta.author || "asrofilnadib"}.png`,
+      avatar:
+        item.author?.avatar_url ||
+        `https://github.com/${item.author?.login || (meta.authors && meta.authors[0]) || "asrofilnadib"}.png`,
       login: item.author?.login || null,
       url: item.html_url,
     });

@@ -68,16 +68,12 @@
       html += '<h4 class="gh-day-title">Commits on ' + escapeHtml(group.day) + "</h4>";
       html += '<ul class="gh-commit-list">';
       group.commits.forEach(function (c) {
-        html += '<li class="gh-commit-item"><div class="gh-commit-row">';
+        var type = escapeHtml(c.type || "other");
+        html += '<li class="gh-commit-item gh-type-' + type + '"><div class="gh-commit-row">';
         html += '<div class="gh-commit-main">';
         html += '<p class="gh-commit-msg">';
-        html += '<span class="gh-badge gh-badge-' + escapeHtml(c.type) + '">' + escapeHtml(c.label) + "</span>";
-        html +=
-          '<a href="' +
-          escapeHtml(c.url) +
-          '" target="_blank" rel="noopener noreferrer">' +
-          escapeHtml(c.message) +
-          "</a></p>";
+        html += '<span class="gh-badge gh-badge-' + type + '">' + escapeHtml(c.label) + "</span>";
+        html += '<span class="gh-commit-text">' + escapeHtml(c.message) + "</span></p>";
         html += '<div class="gh-commit-meta">';
         html += '<img src="' + escapeHtml(c.avatar) + '" alt="">';
         html += "<span>" + escapeHtml(c.login || c.author) + "</span>";
@@ -87,7 +83,7 @@
         html +=
           '<a class="gh-sha" href="' +
           escapeHtml(c.url) +
-          '" target="_blank" rel="noopener noreferrer">' +
+          '" target="_blank" rel="noopener noreferrer" title="Open on GitHub">' +
           escapeHtml(c.shortSha) +
           "</a>";
         html += "</div></div></li>";
