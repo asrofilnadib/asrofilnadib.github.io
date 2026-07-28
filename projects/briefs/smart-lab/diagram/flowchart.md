@@ -11,6 +11,7 @@ tier: S
 slug: smart-lab
 platform: MyPAS
 created: 2026-07-27
+updated: 2026-07-28
 ---
 
 # Smart Lab — PA + Lab Eksternal
@@ -29,45 +30,78 @@ User dept · Approval/Lab · QA Admin/ETO · GAWI · Purchasing · Master admin
 
 ## Flow A — Permintaan Analisis (PA)
 
+Status sample (derived dari flag `is_approve` / `is_simpan` / `is_approve_hasil`):
+
+| Status | Artinya |
+|--------|---------|
+| Waiting Receive | Sample baru, menunggu lab terima |
+| Waiting Check | Sample diterima, lab input hasil |
+| Waiting Approve | Hasil tersimpan, menunggu approve hasil |
+| Finish | Hasil disetujui |
+| Rejected | Ditolak saat receive **atau** saat approve hasil |
+
+User boleh **edit** sample selama status `Waiting Receive` atau `Waiting Approve`.
+
 ```mermaid
 ---
 config:
-  theme: redux
+  theme: dark
 ---
 flowchart TB
-  U[User dept submit PA kimia/mikro] --> WR[Waiting Receive]
-  WR --> R{Receive sample?}
-  R -->|Reject| RJ([Rejected])
-  R -->|Approve| WC[Lab input hasil → Waiting Check]
-  WC --> A{Approve hasil?}
-  A -->|Reject| RJ
-  A -->|Approve| FIN([Finish])
+  U["User submit PA<br/>kimia / mikro"] -->|Waiting Receive| WR["Lab: Waiting Receive"]
+  WR -->|Reject sample| RJ(["Rejected"])
+  WR -->|Approve sample| WC["Lab input hasil<br/>Waiting Check"]
+  WC --> WA["Hasil tersimpan<br/>Waiting Approve"]
+  WA -->|Reject hasil| RJ
+  WA -->|Approve hasil| FIN(["Finish"])
+  U -. edit selama<br/>Waiting Receive / Waiting Approve .-> U
 ```
+
+**SVG:** `flowchart.svg` (gallery: Permintaan Analisis)
 
 ---
 
 ## Flow B — Lab Eksternal
 
+Status dari `App\SmartLab\LabEksternalStatus`:
+
+| Code | Label UI |
+|------|----------|
+| `waiting_admin` | Diproses Admin |
+| `approve_admin` | Diproses Gawi |
+| `approve_gawi` | Admin buat PR |
+| `create_pr` | Diproses Purchasing |
+| `create_po` | Diproses Purchasing |
+| `input_im_gr_ttb` | Admin Input No IM GR |
+| `gawi_release` | Gawi Release (menunggu Admin TTB) |
+| `gawi_hold` | Ditolak |
+| `rejected` | Ditolak |
+| `selesai` | Selesai |
+
+**Loop perbaikan:** Admin QA reject **atau** GAWI reject → `rejected` → user edit sample → reset ke `waiting_admin` (bisa berulang sampai approve). `gawi_hold` juga bisa diedit user → `waiting_admin`.
+
 ```mermaid
 ---
 config:
-  theme: redux
+  theme: dark
 ---
 flowchart TB
-  U[User ajukan sample lab eksternal] --> WA[waiting_admin]
-  WA --> QA{QA Admin approve + assign vendor?}
-  QA -->|Reject| RJ([rejected])
-  QA -->|Approve| AG[approve_admin]
-  AG --> GW{GAWI input penawaran?}
+  U["User create / edit sample<br/>waiting_admin"] --> QA["Admin QA receive sample<br/>foto awal + label"]
+  QA -->|Reject| RJ["rejected / gawi_hold<br/>User perbaiki"]
+  RJ -->|edit → waiting_admin| U
+  QA -->|Approve → approve_admin| GW["GAWI penawaran & dokumen<br/>approve_admin"]
   GW -->|Reject| RJ
-  GW -->|Approve| AP[approve_gawi]
-  AP --> PR[Admin create_pr]
-  PR --> PO[Purchasing create_po / IM-GR-TTB]
-  PO --> CK{GAWI cek PO sesuai?}
-  CK -->|Tidak| HOLD([gawi_hold])
-  CK -->|Ya| REL[gawi_release]
-  REL --> DONE([selesai])
+  GW -->|Approve → approve_gawi| PR["Admin input nomor PR<br/>approve_gawi → create_pr"]
+  PR --> PO["Purchasing buat nomor PO<br/>create_po"]
+  PO --> IM["Admin input IM / GR / TTB<br/>input_im_gr_ttb"]
+  PO --> ETO["GAWI input hasil ETO & 2CE<br/>cek kesesuaian PO"]
+  ETO -->|Tidak sesuai| RJ
+  ETO -->|Sesuai → gawi_release| REL["gawi_release"]
+  IM --> FIN(["selesai"])
+  REL --> FIN
 ```
+
+**SVG:** `flowchart_lab-eksternal.svg` (gallery: Lab Eksternal)
 
 ---
 
@@ -76,7 +110,7 @@ flowchart TB
 ```mermaid
 ---
 config:
-  theme: redux
+  theme: dark
 ---
 flowchart LR
   U[User input sample DA] --> Q[Queue approval]
@@ -85,15 +119,8 @@ flowchart LR
   AP -->|Belum| Q
 ```
 
-## Status cheat sheet
-
-| Flow | Status |
-|------|--------|
-| PA | Waiting Receive → Waiting Check → Waiting Approve → Finish / Rejected |
-| Lab eksternal | waiting_admin → … → gawi_release → selesai (branch: rejected, gawi_hold) |
-
 ## Entry points
 
 - Routes: `routes/smart_lab/`
 - Controllers: `app/Http/Controllers/SmartLab/`
-- Status: `app/SmartLab/LabEksternalStatus.php`
+- Status LE: `app/SmartLab/LabEksternalStatus.php`

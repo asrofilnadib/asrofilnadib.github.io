@@ -546,7 +546,7 @@
     }
 
     try {
-      var res = await fetch(src, { cache: "force-cache" });
+      var res = await fetch(src, { cache: "no-cache" });
       if (!res.ok) throw new Error("HTTP " + res.status + " fetching " + src);
       var text = await res.text();
       var svgHtml = extractSvgMarkup(text);
