@@ -2292,7 +2292,7 @@
         <div class="gallery_item" data-type="image">
           <img src="./assets/images/ecafe-invoice/dashboard.webp" alt="E-Cafe Invoice">
         </div>
-        <div class="gallery_item" data-type="flowchart" data-flowchart-src="./projects/briefs/ecafe-invoice/diagram/flowchart.svg">
+        <div class="gallery_item" data-type="flowchart" data-flowchart-src="./projects/briefs/ecafe-invoice/diagram/flowchart.svg?v=2">
           <div class="flowchart-host" aria-label="E-Cafe Invoice process flowchart"></div>
           <p class="gallery_caption">Flowchart</p>
         </div>
@@ -2310,7 +2310,7 @@
 
       <div class="portfolio_description">
         <h2 class="title">Project Description</h2>
-        <div class="desc"><p>Approval chain: Dibuat → Diperiksa → Diketahui (2 levels) → Disetujui, with email notifications and PDF invoice export.</p></div>
+        <div class="desc"><p>Approval chain: Foreman GA → Supervisor GA → Chief Supervisor GA → Manager HRD → Factory Manager Noodle &amp; Seasoning, with email notifications and PDF invoice export.</p></div>
       </div>
       <div class="portfolio_story_approach">
         <div class="portfolio_story">
@@ -2326,7 +2326,7 @@
             <h4 class="title">My Approach</h4>
           </div>
           <div class="approach_content">
-            <p>I implemented a sequential 5-level approval flow (Dibuat → Diperiksa → Diketahui ×2 → Disetujui) with email notifications at each hop and PDF export, so Finance/HR can audit the trail without leaving MyPAS.</p>
+            <p>I implemented a sequential 5-level approval flow (Foreman GA → Supervisor GA → Chief Supervisor GA → Manager HRD → Factory Manager Noodle &amp; Seasoning) with email notifications at each hop and PDF export, so Finance/HR can audit the trail without leaving MyPAS.</p>
           </div>
         </div>
       </div>
@@ -3203,6 +3203,24 @@
       <div class="portfolio_description">
         <h2 class="title">Project Description</h2>
         <div class="desc"><p>Admin imports question banks and enrolls faces; candidates verify identity, take exams with proctoring, and results are scored digitally. Tokens can be issued via WhatsApp (Fonnte).</p></div>
+      </div>
+      <div class="portfolio_story_approach">
+        <div class="portfolio_story">
+          <div class="story_title">
+            <h4 class="title">The Story</h4>
+          </div>
+          <div class="story_content">
+            <p>The idea started from the psikotes app already used at PT Prakarsa Alam Segar. It worked for internal hiring, but I wanted a version that outsiders could take safely—with stronger identity checks and live anti-cheat—without opening the private company server to the public internet.</p>
+          </div>
+        </div>
+        <div class="portfolio_approach">
+          <div class="approach_title">
+            <h4 class="title">My Approach</h4>
+          </div>
+          <div class="approach_content">
+            <p>I rebuilt the flow on React + Laravel + MySQL, then added server-side computer vision: InsightFace for face enrollment/verify and a YOLO agent for person-count proctoring during the exam. Because candidates are external while the inference host stays private, public access goes through a Cloudflare-tunneled domain. Exam tokens can be sent via WhatsApp (Fonnte), and scoring stays digital end-to-end.</p>
+          </div>
+        </div>
       </div>
 
       <div class="portfolio_navigation">

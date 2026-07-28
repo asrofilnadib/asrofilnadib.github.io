@@ -11,6 +11,7 @@ tier: A
 slug: ecafe-invoice
 platform: MyPAS
 created: 2026-07-27
+updated: 2026-07-28
 ---
 
 # E-Cafe Invoice — Approval 5 Level
@@ -23,11 +24,11 @@ created: 2026-07-27
 
 ## Approver chain (per section)
 
-1. Dibuat oleh — Melati
-2. Diperiksa Oleh — Musahidin
-3. Diketahui oleh — Nancy
-4. Diketahui oleh — Yongki
-5. Disetujui Oleh — Linda
+1. Dibuat oleh — Foreman GA
+2. Diperiksa oleh — Supervisor GA
+3. Diketahui oleh — Chief Supervisor GA
+4. Diketahui oleh — Manager HRD
+5. Disetujui oleh — Factory Manager Noodle & Seasoning
 
 ---
 
@@ -36,21 +37,21 @@ created: 2026-07-27
 ```mermaid
 ---
 config:
-  theme: redux
+  theme: dark
 ---
 flowchart TB
   U[User hr_ecafesedaap] --> PRE[Preview aggregasi via GaStockEcafeIntegration]
   PRE --> GEN[Generate invoice + 2 sections]
   GEN --> ATT[Upload lampiran FilePond]
-  ATT --> S1[Section Makan & Frozen → 5 slots]
-  ATT --> S2[Section Scan Produk → 5 slots]
+  ATT --> S1[Section Makan & Frozen → 5 approval]
+  ATT --> S2[Section Scan Produk → 5 approval]
 
   subgraph APPROVAL_SECTION["Approval sequential per section"]
-    A1[Slot 1 tanda tangan + email next]
-    A2[Slot 2]
-    A3[Slot 3]
-    A4[Slot 4]
-    A5[Slot 5]
+    A1["Dibuat oleh<br/>Foreman GA<br/>tanda tangan + email next"]
+    A2["Diperiksa oleh<br/>Supervisor GA"]
+    A3["Diketahui oleh<br/>Chief Supervisor GA"]
+    A4["Diketahui oleh<br/>Manager HRD"]
+    A5["Disetujui oleh<br/>Factory Manager<br/>Noodle & Seasoning"]
     A1 --> A2 --> A3 --> A4 --> A5
   end
 
@@ -65,7 +66,7 @@ flowchart TB
 
 ## Catatan penting
 
-- Slot N aktif **hanya** jika slot N−1 sudah tanda tangan.
+- Level N aktif **hanya** jika level N−1 sudah tanda tangan.
 - Section Makan & Produk **independen**; invoice approved = AND semua section.
 - Integrasi: `GaStockEcafeIntegrationService`, email queue, FilePond storage.
 
