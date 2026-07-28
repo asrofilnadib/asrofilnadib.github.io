@@ -39,6 +39,7 @@ const MIME = {
   ".woff2": "font/woff2",
   ".ttf": "font/ttf",
   ".map": "application/json",
+  ".pdf": "application/pdf",
 };
 
 function send(res, status, body, headers = {}) {
