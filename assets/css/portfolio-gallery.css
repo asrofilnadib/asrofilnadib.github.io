@@ -51,29 +51,301 @@
 	background: transparent;
 }
 
+/* High-contrast Mermaid flowchart on dark host/lightbox */
+svg.flowchart-diagram .node rect,
+svg.flowchart-diagram .node circle,
+svg.flowchart-diagram .node ellipse,
+svg.flowchart-diagram .node polygon,
+svg.flowchart-diagram .node path {
+	fill: #3a4556 !important;
+	stroke: #d4b5ff !important;
+	stroke-width: 2.25px !important;
+}
+
+svg.flowchart-diagram .edgePath .path,
+svg.flowchart-diagram .flowchart-link {
+	stroke: #e6edf3 !important;
+	stroke-width: 2.25px !important;
+	fill: none !important;
+}
+
+svg.flowchart-diagram .marker,
+svg.flowchart-diagram marker path {
+	fill: #e6edf3 !important;
+	stroke: #e6edf3 !important;
+}
+
+svg.flowchart-diagram,
+svg.flowchart-diagram .label,
+svg.flowchart-diagram .label text,
+svg.flowchart-diagram span,
+svg.flowchart-diagram .cluster-label text,
+svg.flowchart-diagram .cluster text,
+svg.flowchart-diagram .flowchartTitleText {
+	fill: #ffffff !important;
+	color: #ffffff !important;
+}
+
+svg.flowchart-diagram foreignObject div,
+svg.flowchart-diagram foreignObject span,
+svg.flowchart-diagram foreignObject p,
+svg.flowchart-diagram .edgeLabel,
+svg.flowchart-diagram .edgeLabel span,
+svg.flowchart-diagram .edgeLabel p,
+svg.flowchart-diagram .nodeLabel,
+svg.flowchart-diagram .nodeLabel p {
+	color: #ffffff !important;
+}
+
+svg.flowchart-diagram .edgeLabel rect,
+svg.flowchart-diagram .labelBkg {
+	fill: #4b5568 !important;
+	opacity: 0.98 !important;
+	background-color: #4b5568 !important;
+}
+
+svg.flowchart-diagram .edgeLabel p {
+	background-color: #4b5568 !important;
+	color: #f8fafc !important;
+}
+
+svg.flowchart-diagram .cluster rect {
+	fill: #1c2128 !important;
+	stroke: rgba(212, 181, 255, 0.55) !important;
+}
+
 .portfolio_gallery .flowchart-host .svg-pan-zoom_viewport {
 	cursor: grab;
 }
 
-.portfolio_gallery .flowchart-host .svg-pan-zoom-control {
-	opacity: 0.9;
-	pointer-events: all;
+.portfolio_gallery .flowchart-zoom-controls {
+	position: absolute;
+	right: 10px;
+	bottom: 10px;
+	z-index: 5;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	pointer-events: auto;
 }
 
-.portfolio_gallery .flowchart-host .svg-pan-zoom-control:hover {
+.portfolio_gallery .flowchart-zoom-btn {
+	appearance: none;
+	border: 1px solid rgba(135, 80, 247, 0.45);
+	background: rgba(18, 16, 26, 0.92);
+	color: #e6edf3;
+	font-family: Sora, sans-serif;
+	font-size: 13px;
+	font-weight: 700;
+	line-height: 1;
+	min-width: 36px;
+	min-height: 36px;
+	padding: 8px 10px;
+	border-radius: 10px;
+	cursor: pointer;
+	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+	transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.portfolio_gallery .flowchart-zoom-btn:hover {
+	background: rgba(135, 80, 247, 0.28);
+	border-color: rgba(183, 148, 246, 0.7);
+	color: #fff;
+}
+
+.portfolio_gallery .flowchart-zoom-btn[data-zoom="reset"] {
+	font-size: 11px;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.portfolio_gallery .flowchart-zoom-btn[data-zoom="expand"] {
+	font-size: 15px;
+	order: -1;
+}
+
+.portfolio_gallery .flowchart-host[data-lightbox-open="1"] {
+	cursor: zoom-in;
+}
+
+/* PhotoSwipe-like fullscreen for flowchart SVG */
+.flowchart-lightbox {
+	--flb-bg: rgba(0, 0, 0, 0.92);
+	--flb-icon: #fff;
+	position: fixed;
+	inset: 0;
+	z-index: 100100;
+	display: flex;
+	flex-direction: column;
+	background: var(--flb-bg);
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transition: opacity 0.28s ease, visibility 0.28s ease;
+	touch-action: none;
+	outline: 0;
+}
+
+.flowchart-lightbox.is-open {
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+}
+
+.flowchart-lightbox__top {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 3;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 14px 16px;
+	pointer-events: none;
+}
+
+.flowchart-lightbox__counter {
+	color: rgba(255, 255, 255, 0.85);
+	font-family: Sora, sans-serif;
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	pointer-events: none;
+}
+
+.flowchart-lightbox__actions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	pointer-events: auto;
+}
+
+.flowchart-lightbox__btn {
+	appearance: none;
+	border: 0;
+	background: transparent;
+	color: var(--flb-icon);
+	width: 44px;
+	height: 44px;
+	border-radius: 0;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0.85;
+	transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.flowchart-lightbox__btn:hover {
 	opacity: 1;
 }
 
-.portfolio_gallery .flowchart-host .svg-pan-zoom-control-background {
-	fill: rgba(18, 16, 26, 0.82) !important;
-	fill-opacity: 1 !important;
-	stroke: rgba(135, 80, 247, 0.45);
-	stroke-width: 1;
+.flowchart-lightbox__btn svg {
+	width: 22px;
+	height: 22px;
+	fill: currentColor;
 }
 
-.portfolio_gallery .flowchart-host .svg-pan-zoom-control-element {
-	fill: #e6edf3 !important;
-	fill-opacity: 1 !important;
+.flowchart-lightbox__stage {
+	flex: 1;
+	position: relative;
+	min-height: 0;
+	margin: 56px 48px 72px;
+	display: flex;
+	align-items: stretch;
+	justify-content: stretch;
+}
+
+.flowchart-lightbox__host {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	background: #161b22;
+	border: 1px solid rgba(135, 80, 247, 0.35);
+	border-radius: 4px;
+	overflow: hidden;
+	box-shadow: 0 0 0 1px rgba(135, 80, 247, 0.15), 0 24px 80px rgba(0, 0, 0, 0.55);
+	cursor: grab;
+}
+
+.flowchart-lightbox__host:active {
+	cursor: grabbing;
+}
+
+.flowchart-lightbox__host svg {
+	width: 100%;
+	height: 100%;
+	display: block;
+	background: transparent;
+}
+
+.flowchart-lightbox__zoom {
+	position: absolute;
+	right: 14px;
+	bottom: 14px;
+	z-index: 4;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.flowchart-lightbox__zoom .flowchart-zoom-btn {
+	appearance: none;
+	border: 1px solid rgba(135, 80, 247, 0.45);
+	background: rgba(18, 16, 26, 0.92);
+	color: #e6edf3;
+	font-family: Sora, sans-serif;
+	font-size: 13px;
+	font-weight: 700;
+	line-height: 1;
+	min-width: 40px;
+	min-height: 40px;
+	padding: 8px 10px;
+	border-radius: 10px;
+	cursor: pointer;
+	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.flowchart-lightbox__zoom .flowchart-zoom-btn[data-zoom="reset"] {
+	font-size: 11px;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.flowchart-lightbox__zoom .flowchart-zoom-btn:hover {
+	background: rgba(135, 80, 247, 0.28);
+	border-color: rgba(183, 148, 246, 0.7);
+	color: #fff;
+}
+
+.flowchart-lightbox__caption {
+	position: absolute;
+	left: 50%;
+	bottom: 18px;
+	transform: translateX(-50%);
+	z-index: 3;
+	max-width: min(90vw, 480px);
+	padding: 8px 14px;
+	border-radius: 999px;
+	background: rgba(0, 0, 0, 0.72);
+	color: #fff;
+	font-family: Sora, sans-serif;
+	font-size: 13px;
+	font-weight: 600;
+	text-align: center;
+	pointer-events: none;
+}
+
+@media (max-width: 767px) {
+	.flowchart-lightbox__stage {
+		margin: 52px 12px 64px;
+	}
+}
+
+html.flowchart-lightbox-open,
+html.flowchart-lightbox-open body {
+	overflow: hidden !important;
 }
 
 .portfolio_gallery .gallery_caption {

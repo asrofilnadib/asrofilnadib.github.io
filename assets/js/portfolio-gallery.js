@@ -1,6 +1,6 @@
 /**
  * PAS portfolio media gallery extras (flowchart / youtube / ppt)
- * Flowcharts: static local SVG + svg-pan-zoom (no Mermaid runtime).
+ * Flowcharts: static local SVG + svg-pan-zoom (custom zoom controls).
  * Owl Carousel stays owned by main.js — this only hydrates media then refreshes.
  */
 (function ($) {
@@ -10,6 +10,9 @@
   var panZoomList = [];
   var hydrating = false;
   var hydratedModal = false;
+  var lightboxEl = null;
+  var lightboxPz = null;
+  var lightboxSourceHost = null;
 
   function youtubeId(url) {
     if (!url) return "";
@@ -28,30 +31,327 @@
     });
     panZoomList = [];
     panZoomByHost = new WeakMap();
+    document.querySelectorAll(".flowchart-host").forEach(function (host) {
+      try {
+        delete host._flowchartPz;
+      } catch (_) {}
+    });
     hydratedModal = false;
   }
 
-  function attachPanZoom(host, svg) {
-    if (!window.svgPanZoom || !svg || !host) return null;
-    // Don't double-init the same host
-    if (panZoomByHost.get(host)) return panZoomByHost.get(host);
+  function getPanZoom(host) {
+    if (!host) return null;
+    return host._flowchartPz || panZoomByHost.get(host) || null;
+  }
+
+  function setPanZoom(host, pz) {
+    if (!host) return;
+    if (!pz) {
+      try {
+        delete host._flowchartPz;
+      } catch (_) {
+        host._flowchartPz = null;
+      }
+      return;
+    }
+    host._flowchartPz = pz;
+    panZoomByHost.set(host, pz);
+  }
+
+  function unwrapPanZoomSvg(svg) {
+    if (!svg) return;
+    var vp = null;
+    for (var i = 0; i < svg.children.length; i += 1) {
+      var child = svg.children[i];
+      if (child.classList && child.classList.contains("svg-pan-zoom_viewport")) {
+        vp = child;
+        break;
+      }
+    }
+    if (!vp) return;
+    while (vp.firstChild) svg.insertBefore(vp.firstChild, vp);
+    vp.remove();
+    var legacy = svg.querySelector("#svg-pan-zoom-controls");
+    if (legacy) legacy.remove();
+  }
+
+  function getFlowchartCaption(host) {
+    if (!host) return "Flowchart";
+    var modal = host.closest(".tj-modal-box, .white-popup, .mfp-content, .popup-content");
+    var title =
+      (modal &&
+        modal.querySelector(
+          ".modal_title, .portfolio_info_text .title, .portfolio_title, h2.title, h3.portfolio-title"
+        )) ||
+      null;
+    if (title && title.textContent.trim()) return title.textContent.trim();
+    var item = host.closest(".gallery_item");
+    var cap = item && item.querySelector(".gallery_caption");
+    if (cap && cap.textContent.trim()) return cap.textContent.trim();
+    return "Flowchart";
+  }
+
+  function getSvgCache(host) {
+    if (!host) return "";
+    if (host.dataset.svgCache) return host.dataset.svgCache;
+    var svg = host.querySelector("svg");
+    if (!svg) return "";
+    var clone = svg.cloneNode(true);
+    unwrapPanZoomSvg(clone);
+    clone.removeAttribute("width");
+    clone.removeAttribute("height");
+    clone.removeAttribute("id");
+    clone.removeAttribute("style");
+    return clone.outerHTML;
+  }
+
+  function destroyLightboxPz() {
+    if (lightboxPz) {
+      try {
+        lightboxPz.destroy();
+      } catch (_) {}
+      lightboxPz = null;
+    }
+  }
+
+  function closeFlowchartLightbox() {
+    if (!lightboxEl || !lightboxEl.classList.contains("is-open")) return;
+    lightboxEl.classList.remove("is-open");
+    lightboxEl.setAttribute("aria-hidden", "true");
+    destroyLightboxPz();
+    var host = lightboxEl.querySelector(".flowchart-lightbox__host");
+    if (host) host.innerHTML = "";
+    if (lightboxSourceHost) {
+      delete lightboxSourceHost.dataset.lightboxOpen;
+      lightboxSourceHost = null;
+    }
+    document.documentElement.classList.remove("flowchart-lightbox-open");
+    document.removeEventListener("keydown", onLightboxKeydown);
+  }
+
+  function onLightboxKeydown(e) {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      closeFlowchartLightbox();
+    }
+  }
+
+  function wireLightboxZoom(controls, getPz) {
+    if (!controls || controls.dataset.wired === "1") return;
+    controls.dataset.wired = "1";
+    controls.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var btn = e.target.closest("[data-zoom]");
+      if (!btn) return;
+      var pz = getPz();
+      if (!pz) return;
+      try {
+        var action = btn.getAttribute("data-zoom");
+        if (action === "in") pz.zoomIn();
+        else if (action === "out") pz.zoomOut();
+        else if (action === "reset") {
+          pz.fit();
+          pz.center();
+        }
+      } catch (err) {
+        console.warn("lightbox zoom failed", err);
+      }
+    });
+  }
+
+  function ensureLightbox() {
+    if (lightboxEl) return lightboxEl;
+    var el = document.createElement("div");
+    el.className = "flowchart-lightbox";
+    el.setAttribute("role", "dialog");
+    el.setAttribute("aria-modal", "true");
+    el.setAttribute("aria-hidden", "true");
+    el.innerHTML =
+      '<div class="flowchart-lightbox__top">' +
+      '<div class="flowchart-lightbox__counter">1 / 1</div>' +
+      '<div class="flowchart-lightbox__actions">' +
+      '<button type="button" class="flowchart-lightbox__btn" data-flb="close" title="Close" aria-label="Close">' +
+      '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M24 10.2L21.8 8 16 13.8 10.2 8 8 10.2 13.8 16 8 21.8 10.2 24 16 18.2 21.8 24 24 21.8 18.2 16z"/></svg>' +
+      "</button>" +
+      "</div></div>" +
+      '<div class="flowchart-lightbox__stage">' +
+      '<div class="flowchart-lightbox__host" tabindex="-1"></div>' +
+      '<div class="flowchart-lightbox__zoom">' +
+      '<button type="button" class="flowchart-zoom-btn" data-zoom="in" title="Zoom in" aria-label="Zoom in">+</button>' +
+      '<button type="button" class="flowchart-zoom-btn" data-zoom="reset" title="Reset view" aria-label="Reset view">Reset</button>' +
+      '<button type="button" class="flowchart-zoom-btn" data-zoom="out" title="Zoom out" aria-label="Zoom out">−</button>' +
+      "</div></div>" +
+      '<div class="flowchart-lightbox__caption"></div>';
+    document.body.appendChild(el);
+
+    el.addEventListener("click", function (e) {
+      if (e.target === el || e.target.classList.contains("flowchart-lightbox__stage")) {
+        closeFlowchartLightbox();
+      }
+    });
+    el.querySelector('[data-flb="close"]').addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      closeFlowchartLightbox();
+    });
+    wireLightboxZoom(el.querySelector(".flowchart-lightbox__zoom"), function () {
+      return lightboxPz;
+    });
+
+    lightboxEl = el;
+    return el;
+  }
+
+  function openFlowchartLightbox(sourceHost) {
+    if (!sourceHost || !window.svgPanZoom) return;
+    var svgHtml = getSvgCache(sourceHost);
+    if (!svgHtml) return;
+
+    var el = ensureLightbox();
+    destroyLightboxPz();
+
+    var host = el.querySelector(".flowchart-lightbox__host");
+    var caption = el.querySelector(".flowchart-lightbox__caption");
+    caption.textContent = getFlowchartCaption(sourceHost);
+    host.innerHTML = svgHtml;
+
+    var svg = host.querySelector("svg");
+    if (!svg) return;
+    unwrapPanZoomSvg(svg);
+    prepareFlowchartSvg(svg);
+
+    lightboxSourceHost = sourceHost;
+    sourceHost.dataset.lightboxOpen = "1";
+    el.classList.add("is-open");
+    el.setAttribute("aria-hidden", "false");
+    document.documentElement.classList.add("flowchart-lightbox-open");
+    document.addEventListener("keydown", onLightboxKeydown);
+
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        try {
+          lightboxPz = window.svgPanZoom(svg, {
+            zoomEnabled: true,
+            controlIconsEnabled: false,
+            fit: true,
+            center: true,
+            minZoom: 0.1,
+            maxZoom: 20,
+            zoomScaleSensitivity: 0.4,
+            mouseWheelZoomEnabled: true,
+            dblClickZoomEnabled: true,
+            preventMouseEventsDefault: true,
+          });
+        } catch (err) {
+          console.warn("lightbox panzoom failed", err);
+        }
+      });
+    });
+  }
+
+  function applyZoomAction(host, action) {
+    var pz = getPanZoom(host);
+    if (!pz || !pz.getZoom) {
+      pz = ensurePanZoom(host, true);
+    }
+    if (!pz) return;
+    try {
+      if (action === "in") pz.zoomIn();
+      else if (action === "out") pz.zoomOut();
+      else if (action === "reset") {
+        pz.fit();
+        pz.center();
+      } else if (action === "expand") {
+        openFlowchartLightbox(host);
+      }
+    } catch (err) {
+      console.warn("flowchart zoom failed", err);
+      try {
+        pz.destroy();
+      } catch (_) {}
+      setPanZoom(host, null);
+      host._flowchartPz = null;
+      ensurePanZoom(host, true);
+    }
+  }
+
+  function ensureControls(host) {
+    if (!host) return;
+    var existing = host.querySelector(".flowchart-zoom-controls");
+    if (existing) {
+      if (!existing.querySelector('[data-zoom="expand"]')) {
+        var expandBtn = document.createElement("button");
+        expandBtn.type = "button";
+        expandBtn.className = "flowchart-zoom-btn";
+        expandBtn.setAttribute("data-zoom", "expand");
+        expandBtn.title = "Fullscreen";
+        expandBtn.setAttribute("aria-label", "Fullscreen");
+        expandBtn.textContent = "⛶";
+        existing.insertBefore(expandBtn, existing.firstChild);
+      }
+      return;
+    }
+
+    var controls = document.createElement("div");
+    controls.className = "flowchart-zoom-controls";
+    controls.innerHTML =
+      '<button type="button" class="flowchart-zoom-btn" data-zoom="expand" title="Fullscreen" aria-label="Fullscreen">⛶</button>' +
+      '<button type="button" class="flowchart-zoom-btn" data-zoom="in" title="Zoom in" aria-label="Zoom in">+</button>' +
+      '<button type="button" class="flowchart-zoom-btn" data-zoom="reset" title="Reset view" aria-label="Reset view">Reset</button>' +
+      '<button type="button" class="flowchart-zoom-btn" data-zoom="out" title="Zoom out" aria-label="Zoom out">−</button>';
+    host.appendChild(controls);
+
+    ["mousedown", "touchstart", "pointerdown"].forEach(function (evt) {
+      controls.addEventListener(
+        evt,
+        function (e) {
+          e.stopPropagation();
+        },
+        { passive: true }
+      );
+    });
+  }
+
+  function wireHostOpenGesture(host) {
+    // Kept for call-sites; gestures are delegated in boot()
+    if (host) host.dataset.openGesture = "1";
+  }
+
+  /**
+   * @param {HTMLElement} host
+   * @param {boolean} doFit
+   */
+  function ensurePanZoom(host, doFit) {
+    if (!host || !window.svgPanZoom) return null;
+    var existing = getPanZoom(host);
+    if (existing && typeof existing.zoomIn === "function") return existing;
+
+    var svg = host.querySelector("svg");
+    if (!svg) return null;
+    if (host.clientWidth < 40 || host.clientHeight < 40) return null;
 
     try {
+      // Owl may clone an already-wrapped SVG — unwrap before re-init
+      unwrapPanZoomSvg(svg);
+
+      var shouldFit = doFit !== false;
       var pz = window.svgPanZoom(svg, {
         zoomEnabled: true,
-        controlIconsEnabled: true,
-        fit: true,
-        center: true,
-        minZoom: 0.2,
-        maxZoom: 12,
-        zoomScaleSensitivity: 0.3,
-        // Keep mouse wheel zooming the chart, not the page
+        controlIconsEnabled: false,
+        fit: shouldFit,
+        center: shouldFit,
+        minZoom: 0.15,
+        maxZoom: 16,
+        zoomScaleSensitivity: 0.4,
         mouseWheelZoomEnabled: true,
-        // Prevent dbl-click zoom fighting Owl
-        dblClickZoomEnabled: true,
+        dblClickZoomEnabled: false,
+        preventMouseEventsDefault: true,
       });
-      panZoomByHost.set(host, pz);
+      setPanZoom(host, pz);
       panZoomList.push(pz);
+      ensureControls(host);
+      wireHostOpenGesture(host);
       return pz;
     } catch (err) {
       console.warn("svgPanZoom init failed", err);
@@ -62,7 +362,7 @@
   function blockOwlOnHost(host) {
     if (!host || host.dataset.owlBlocked) return;
     host.dataset.owlBlocked = "1";
-    ["mousedown", "touchstart", "pointerdown", "click", "wheel"].forEach(function (evt) {
+    ["mousedown", "touchstart", "pointerdown", "wheel"].forEach(function (evt) {
       host.addEventListener(
         evt,
         function (e) {
@@ -82,29 +382,140 @@
     return raw.slice(start, end + 6);
   }
 
-  function applySvgToHost(host, svgHtml) {
-    if (!host) return;
-    // Already live — never wipe (that destroys zoom state)
-    if (host.dataset.rendered === "1" && host.querySelector("svg") && panZoomByHost.get(host)) {
-      return;
-    }
-
-    host.innerHTML = svgHtml;
-    var svg = host.querySelector("svg");
-    if (!svg) {
-      host.innerHTML = '<div class="flowchart-error">Invalid SVG flowchart</div>';
-      return;
-    }
+  function prepareFlowchartSvg(svg) {
+    if (!svg) return;
+    var oldId = svg.getAttribute("id") || "my-svg";
     svg.removeAttribute("width");
     svg.removeAttribute("height");
+    svg.removeAttribute("id");
+    svg.classList.add("flowchart-diagram");
     svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
     svg.style.width = "100%";
     svg.style.height = "100%";
     svg.style.maxWidth = "100%";
     svg.style.maxHeight = "100%";
-    attachPanZoom(host, svg);
-    blockOwlOnHost(host);
+
+    // Mermaid scopes CSS to #my-svg — keep rules alive after id removal
+    var style = svg.querySelector("style");
+    if (style && style.textContent) {
+      var esc = oldId.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      var css = style.textContent
+        .replace(new RegExp("#" + esc + "(?![\\w-])", "g"), "svg.flowchart-diagram")
+        .replace(/#my-svg(?![\\w-])/g, "svg.flowchart-diagram");
+      css = css
+        .replace(/fill:#1f2020/gi, "fill:#3a4556")
+        .replace(/stroke:#ccc/gi, "stroke:#d4b5ff")
+        .replace(/fill:#ccc/gi, "fill:#ffffff")
+        .replace(/color:#ccc/gi, "color:#ffffff")
+        .replace(/stroke:lightgrey/gi, "stroke:#e6edf3")
+        .replace(/fill:lightgrey/gi, "fill:#e6edf3")
+        .replace(/stroke-width:1px/gi, "stroke-width:2.25px");
+      style.textContent = css;
+    }
+
+    // Bump inline dark-theme paints so contrast holds even if CSS fails
+    svg
+      .querySelectorAll(".node rect, .node circle, .node ellipse, .node polygon, .node path")
+      .forEach(function (el) {
+        var fill = (el.getAttribute("fill") || "").toLowerCase();
+        if (
+          !fill ||
+          fill === "#1f2020" ||
+          fill === "#2a3140" ||
+          fill === "#000" ||
+          fill === "#000000"
+        ) {
+          el.setAttribute("fill", "#3a4556");
+        }
+        var stroke = (el.getAttribute("stroke") || "").toLowerCase();
+        if (
+          !stroke ||
+          stroke === "#ccc" ||
+          stroke === "#cccccc" ||
+          stroke === "#b794f6" ||
+          stroke === "lightgrey" ||
+          stroke === "lightgray"
+        ) {
+          el.setAttribute("stroke", "#d4b5ff");
+        }
+        el.setAttribute("stroke-width", "2.25");
+      });
+
+    svg.querySelectorAll(".edgePath .path, .flowchart-link, path.path").forEach(function (el) {
+      var stroke = (el.getAttribute("stroke") || "").toLowerCase();
+      if (
+        !stroke ||
+        stroke === "#ccc" ||
+        stroke === "lightgrey" ||
+        stroke === "lightgray" ||
+        stroke === "#c9d1d9" ||
+        stroke === "#999" ||
+        stroke === "#666"
+      ) {
+        el.setAttribute("stroke", "#e6edf3");
+      }
+      el.setAttribute("stroke-width", "2.25");
+    });
+
+    svg.querySelectorAll("marker path, .marker").forEach(function (el) {
+      if (el.getAttribute("fill") && el.getAttribute("fill") !== "none") {
+        el.setAttribute("fill", "#e6edf3");
+      }
+      if (el.getAttribute("stroke") && el.getAttribute("stroke") !== "none") {
+        el.setAttribute("stroke", "#e6edf3");
+      }
+    });
+
+    // Edge labels (Ya / Tidak) often inherit near-invisible colors
+    svg.querySelectorAll(".edgeLabel rect").forEach(function (el) {
+      el.setAttribute("fill", "#4b5568");
+      el.setAttribute("opacity", "0.98");
+    });
+    svg.querySelectorAll(".edgeLabel span, .edgeLabel p, .edgeLabel div").forEach(function (el) {
+      el.style.color = "#f8fafc";
+      el.style.backgroundColor = "#4b5568";
+    });
+    svg.querySelectorAll(".label foreignObject div, .label foreignObject span, .nodeLabel").forEach(function (el) {
+      el.style.color = "#ffffff";
+    });
+  }
+
+  function applySvgToHost(host, svgHtml) {
+    if (!host) return;
+
+    // Cloned Owl node: has SVG viewport wrap but no live instance → reinject clean SVG
+    var svgExisting = host.querySelector("svg");
+    var hasViewport =
+      svgExisting && svgExisting.querySelector(".svg-pan-zoom_viewport");
+    var hasLive = !!getPanZoom(host);
+    if (host.dataset.rendered === "1" && svgExisting && hasLive) {
+      ensureControls(host);
+      return;
+    }
+    if (host.dataset.rendered === "1" && svgExisting && hasViewport && !hasLive) {
+      if (host.dataset.svgCache) svgHtml = host.dataset.svgCache;
+    } else if (host.dataset.rendered === "1" && svgExisting && !hasViewport && !hasLive) {
+      ensureControls(host);
+      ensurePanZoom(host, true);
+      return;
+    }
+
+    if (svgHtml) host.dataset.svgCache = svgHtml;
+    host.innerHTML = svgHtml || host.dataset.svgCache || "";
+    // restore controls after innerHTML wipe
+    var svg = host.querySelector("svg");
+    if (!svg) {
+      host.innerHTML = '<div class="flowchart-error">Invalid SVG flowchart</div>';
+      return;
+    }
+    prepareFlowchartSvg(svg);
     host.dataset.rendered = "1";
+    host.title = "Double-click for fullscreen";
+    delete host._flowchartPz;
+    blockOwlOnHost(host);
+    ensureControls(host);
+    wireHostOpenGesture(host);
+    ensurePanZoom(host, true);
   }
 
   async function renderFlowchartSlide($item) {
@@ -112,7 +523,9 @@
     var src = $item.attr("data-flowchart-src");
     var host = $item.find(".flowchart-host")[0];
     if (!host || !src) return;
-    if (host.dataset.rendered === "1" && host.querySelector("svg") && panZoomByHost.get(host)) {
+    if (host.dataset.rendered === "1" && host.querySelector("svg")) {
+      ensureControls(host);
+      ensurePanZoom(host, !getPanZoom(host));
       return;
     }
 
@@ -245,21 +658,33 @@
     });
   }
 
-  /** Only resize pan-zoom to new box size — never fit/center (that resets user zoom). */
-  function softResizePanZooms() {
-    panZoomList.forEach(function (pz) {
+  function softResizeActivePanZooms($scope) {
+    var root = $scope && $scope.length ? $scope[0] : document;
+    var actives = root.querySelectorAll(".mfp-content .owl-item.active .flowchart-host");
+    if (!actives.length) {
+      actives = root.querySelectorAll(".mfp-content .flowchart-host");
+    }
+    actives.forEach(function (host) {
+      if (!host.querySelector("svg")) return;
+      var pz = getPanZoom(host);
+      if (!pz) {
+        // Cloned slide: rebuild a clean panzoom once
+        ensurePanZoom(host, true);
+        return;
+      }
       try {
         pz.resize();
-      } catch (_) {}
+      } catch (_) {
+        setPanZoom(host, null);
+        ensurePanZoom(host, true);
+      }
     });
   }
 
   function hostsNeedHydrate($galleries) {
     var need = false;
     $galleries.find(".flowchart-host").each(function () {
-      if (this.dataset.rendered !== "1" || !this.querySelector("svg") || !panZoomByHost.get(this)) {
-        need = true;
-      }
+      if (this.dataset.rendered !== "1" || !this.querySelector("svg")) need = true;
     });
     return need;
   }
@@ -273,8 +698,8 @@
     var $galleries = $content.find(".portfolio_gallery.owl-carousel");
     if (!$galleries.length) return;
 
-    // Already good — do nothing (CRITICAL: don't refreshOwl/fit, that resets zoom)
     if (hydratedModal && !hostsNeedHydrate($galleries)) {
+      softResizeActivePanZooms($content);
       return;
     }
 
@@ -282,29 +707,28 @@
     try {
       if (hostsNeedHydrate($galleries)) {
         $galleries.find(".flowchart-host").each(function () {
-          if (this.dataset.rendered === "1" && this.querySelector("svg") && panZoomByHost.get(this)) {
-            return;
-          }
+          if (this.dataset.rendered === "1" && this.querySelector("svg")) return;
           delete this.dataset.rendered;
           this.innerHTML = '<div class="flowchart-loading">Loading flowchart…</div>';
         });
 
         await hydrateGallery($galleries);
+        // Refresh Owl ONCE before panzoom is relied on by the user
         refreshOwlLayout($galleries);
 
-        // One soft resize after Owl settles — no fit/center
         setTimeout(function () {
-          softResizePanZooms();
-          // Owl may clone nodes after refresh; re-apply SVG to empty clones only
           hydrateGallery($galleries).then(function () {
-            softResizePanZooms();
+            softResizeActivePanZooms($content);
+            hydratedModal = true;
           });
-        }, 220);
+        }, 250);
+      } else {
+        softResizeActivePanZooms($content);
+        hydratedModal = true;
       }
-
-      hydratedModal = true;
     } catch (e) {
       console.warn("gallery hydrate failed", e);
+      hydratedModal = true;
     } finally {
       hydrating = false;
     }
@@ -316,33 +740,49 @@
     var hydrateTimer = null;
     function scheduleHydrate() {
       clearTimeout(hydrateTimer);
-      hydrateTimer = setTimeout(function () {
-        onModalOpen();
-      }, 150);
+      hydrateTimer = setTimeout(onModalOpen, 180);
     }
+
+    // Delegated: works for Owl clones too
+    $(document).on("click.portfolioGalleryFs", ".flowchart-zoom-controls [data-zoom]", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var btn = e.currentTarget;
+      var host = btn.closest(".flowchart-host");
+      if (!host || host.closest(".flowchart-lightbox")) return;
+      applyZoomAction(host, btn.getAttribute("data-zoom"));
+    });
+
+    $(document).on("dblclick.portfolioGalleryFs", ".flowchart-host", function (e) {
+      if (e.target.closest(".flowchart-zoom-controls")) return;
+      if (e.target.closest(".flowchart-lightbox")) return;
+      var host = e.currentTarget;
+      if (!host.querySelector("svg")) return;
+      e.preventDefault();
+      e.stopPropagation();
+      openFlowchartLightbox(host);
+    });
 
     $(document).on("mfpOpen.portfolioGallery", function () {
       hydratedModal = false;
       scheduleHydrate();
-      // One delayed retry for late Owl init — still no fit/center loop
-      setTimeout(scheduleHydrate, 500);
     });
 
     $(document).on("click.portfolioGallery", ".modal-popup", function () {
       hydratedModal = false;
       scheduleHydrate();
-      setTimeout(scheduleHydrate, 500);
     });
 
     $(document).on("mfpClose.portfolioGallery", function () {
+      closeFlowchartLightbox();
       destroyPanZooms();
     });
 
-    // Re-hydrate empty Owl clones after slide change — never fit/center
     $(document).on("translated.owl.carousel.portfolioGallery", ".portfolio_gallery", function () {
       var $g = $(this);
       if (!$g.closest(".mfp-content").length) return;
-      hydrateGallery($g).then(softResizePanZooms);
+      // New active slide: init panzoom if needed, resize only
+      softResizeActivePanZooms($g);
     });
   }
 
