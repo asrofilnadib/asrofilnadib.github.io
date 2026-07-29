@@ -44,6 +44,7 @@
   var syncingRows = false;
   var resizeObserver = null;
   var wheelBound = false;
+  var rangePinned = true;
   var WRAPPER_MAP = {
     "smart-lab": "smart-lab",
     tms: "tms",
@@ -288,6 +289,7 @@
 
   function syncRangeUi(win) {
     lastWin = win;
+    rangePinned = true;
     var label = $("#works-range-label");
     if (label) label.textContent = win.label;
 
@@ -302,9 +304,39 @@
     if (expand) expand.disabled = rangeIndex >= RANGE_STEPS.length - 1;
   }
 
+  function clearRangePillSelection(min, max) {
+    rangePinned = false;
+    document.querySelectorAll(".works-range-pill").forEach(function (btn) {
+      btn.classList.remove("is-active");
+    });
+    var label = $("#works-range-label");
+    if (label && min != null && max != null) {
+      var days = Math.max(1, Math.round((max - min) / DAY_MS));
+      label.textContent = "Custom · ~" + days + " days";
+    }
+  }
+
+  function isUserDrivenExtremes(e) {
+    if (!e) return false;
+    if (e.trigger === "range-pill") return false;
+    // Browser event present ⇒ scrub / drag / zoom from UI
+    if (e.DOMEvent) return true;
+    var t = e.trigger;
+    return (
+      t === "zoom" ||
+      t === "pan" ||
+      t === "navigator" ||
+      t === "scrollbar" ||
+      t === "mousewheel" ||
+      t === "user-view"
+    );
+  }
+
   function applyViewExtremes(animate) {
     if (!chart || !lastWin) return;
-    chart.xAxis[0].setExtremes(lastWin.min, lastWin.max, true, animate !== false);
+    chart.xAxis[0].setExtremes(lastWin.min, lastWin.max, true, animate !== false, {
+      trigger: "range-pill",
+    });
   }
 
   function zoomAt(axis, center, factor) {
@@ -324,7 +356,7 @@
       nextMin = nextMax - nextSpan;
       if (nextMin < dataBounds.min) nextMin = dataBounds.min;
     }
-    axis.setExtremes(nextMin, nextMax, true, false);
+    axis.setExtremes(nextMin, nextMax, true, false, { trigger: "user-view" });
   }
 
   function onChartWheel(e) {
@@ -594,6 +626,9 @@
             afterSetExtremes: function (e) {
               if (syncingRows) return;
               if (e.min == null || e.max == null) return;
+              if (isUserDrivenExtremes(e)) {
+                clearRangePillSelection(e.min, e.max);
+              }
               scheduleSyncFromExtremes(e.min, e.max);
             },
           },
@@ -801,6 +836,8 @@
     if (reset) {
       reset.addEventListener("click", function () {
         if (!lastWin) return;
+        // Restore last pill preset (not the scrubbed custom window)
+        syncRangeUi(lastWin);
         applyViewExtremes(true);
         scheduleSyncFromExtremes(lastWin.min, lastWin.max);
       });
