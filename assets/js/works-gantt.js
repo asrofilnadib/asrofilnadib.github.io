@@ -36,6 +36,7 @@
   var allProjects = null;
   var activePool = [];
   var currentCompany = "all";
+  var currentStack = "all";
   var rangeIndex = 0;
   var lastWin = null;
   var dataBounds = null;
@@ -73,6 +74,35 @@
     "sistem-pakar": "sistem_pakar",
   };
 
+  // Mirror portfolio-item stack-* classes for timeline filtering
+  var STACK_TAGS_BY_KEY = {
+    "smart-lab": ["laravel"],
+    tms: ["laravel"],
+    ecafe: ["laravel"],
+    "ga-stock": ["laravel"],
+    scada: ["laravel"],
+    logbook: ["laravel"],
+    p2h: ["laravel"],
+    chatbot: ["laravel", "ai"],
+    kapas: ["laravel"],
+    timbangin: ["laravel", "nodejs"],
+    prayer: ["laravel", "react"],
+    "kms-form": ["react", "firebase"],
+    "command-center": ["react", "webrtc"],
+    psikotes: ["laravel", "react", "ai"],
+    labqc: ["laravel"],
+    "log-customer": ["laravel"],
+    checksheet: ["laravel"],
+    "log-internal": ["laravel"],
+    "pending-qc": ["laravel"],
+    "testing-report": ["laravel"],
+    "investigation-report": ["laravel"],
+    "grace-period": ["laravel"],
+    okration: ["laravel"],
+    kastara: ["laravel"],
+    "sistem-pakar": ["laravel", "ai"],
+  };
+
   function $(sel, root) {
     return (root || document).querySelector(sel);
   }
@@ -103,6 +133,20 @@
   function companyFromFilter(filter) {
     if (!filter || filter === "*") return "all";
     return String(filter).replace(/^\./, "").toLowerCase();
+  }
+
+  function stackFromFilter(filter) {
+    if (!filter || filter === "*") return "all";
+    return String(filter)
+      .replace(/^\./, "")
+      .replace(/^stack-/, "")
+      .toLowerCase();
+  }
+
+  function projectHasStack(projectKey, stack) {
+    if (!stack || stack === "all") return true;
+    var tags = STACK_TAGS_BY_KEY[projectKey] || [];
+    return tags.indexOf(stack) !== -1;
   }
 
   function parseDay(day) {
@@ -181,12 +225,21 @@
     };
   }
 
-  function filterProjects(company) {
+  function filterProjects(company, stack) {
     var list = allProjects || [];
-    if (!company || company === "all") return list;
-    return list.filter(function (p) {
-      return String(p.company || "").toLowerCase() === company;
-    });
+    var companyKey = company || currentCompany || "all";
+    var stackKey = stack || currentStack || "all";
+    if (companyKey && companyKey !== "all") {
+      list = list.filter(function (p) {
+        return String(p.company || "").toLowerCase() === companyKey;
+      });
+    }
+    if (stackKey && stackKey !== "all") {
+      list = list.filter(function (p) {
+        return projectHasStack(p.key, stackKey);
+      });
+    }
+    return list;
   }
 
   /** Projects that have at least one commit segment inside [min, max]. */
@@ -440,7 +493,7 @@
       return;
     }
 
-    activePool = filterProjects(company).filter(function (p) {
+    activePool = filterProjects(company, currentStack).filter(function (p) {
       return p.segments && p.segments.length;
     });
 
@@ -813,10 +866,21 @@
     renderChart(currentCompany);
   }
 
+  function applyStack(stack) {
+    currentStack = stack || "all";
+    if (!allProjects) return;
+    renderChart(currentCompany);
+  }
+
   function bindFilters() {
     document.querySelectorAll(".filter-button-group button[data-filter]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         applyCompany(companyFromFilter(btn.getAttribute("data-filter")));
+      });
+    });
+    document.querySelectorAll(".stack-filter-button-group button[data-stack-filter]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        applyStack(stackFromFilter(btn.getAttribute("data-stack-filter")));
       });
     });
   }

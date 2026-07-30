@@ -700,9 +700,22 @@
 	.portfolio-filter .button-group {
 		padding: 0 8px;
 	}
+	.portfolio-filter {
+		gap: 10px;
+	}
+	.portfolio-filter .stack-filter-button-group {
+		max-width: 100%;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		white-space: nowrap;
+	}
 	.portfolio-filter .button-group button {
 		font-size: 14px;
 		padding: 10px 6px;
+	}
+	.portfolio-filter .stack-filter-button-group button {
+		font-size: 12px;
+		padding: 8px 10px;
 	}
 	.portfolio-box {
 		padding-top: 40px;

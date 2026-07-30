@@ -1223,6 +1223,27 @@ body.loaded {
 	padding: 6px 8px;
 	display: inline-block;
 }
+.portfolio-filter {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 12px;
+}
+.portfolio-filter .stack-filter-button-group {
+	background-color: transparent;
+	border: 1px solid rgba(135, 80, 247, 0.35);
+	border-radius: 48px;
+	padding: 5px 6px;
+}
+.portfolio-filter .stack-filter-button-group button {
+	font-size: 13px;
+	padding: 9px 16px;
+	letter-spacing: 0.02em;
+	color: rgba(230, 237, 243, 0.88);
+}
+.portfolio-filter .stack-filter-button-group .active-bg {
+	opacity: 0.92;
+}
 .portfolio-filter .button-group button {
 	background: transparent;
 	border: none;

@@ -298,19 +298,59 @@ Description: Gerold - Personal Portfolio HTML5 Template
 			".others": "Personal and client projects outside PNM, CBI, and PAS.",
 		};
 
-		// filter items on button click
+		var stackFilterCopy = {
+			"*": null,
+			".stack-laravel": "Highlight: Laravel apps",
+			".stack-react": "Highlight: React apps",
+			".stack-ai": "Highlight: AI / computer-vision work (Gemini, Qdrant, InsightFace, YOLO)",
+			".stack-webrtc": "Highlight: WebRTC / JavaFX live media",
+			".stack-firebase": "Highlight: Firebase / Firestore",
+			".stack-nodejs": "Highlight: Node.js / industrial I/O",
+		};
+
+		var companyFilter = "*";
+		var stackFilter = "*";
+
+		function updatePortfolioFilterDesc() {
+			var $desc = $("#portfolio-filter-desc");
+			if (!$desc.length) return;
+			var companyText = portfolioFilterCopy[companyFilter] || portfolioFilterCopy["*"];
+			var stackText = stackFilterCopy[stackFilter];
+			if (stackFilter !== "*" && stackText) {
+				$desc.text(stackText + " · " + companyText);
+			} else {
+				$desc.text(companyText);
+			}
+		}
+
+		function combinedPortfolioFilter() {
+			var $item = $(this);
+			var companyOk = companyFilter === "*" || $item.is(companyFilter);
+			var stackOk = stackFilter === "*" || $item.is(stackFilter);
+			return companyOk && stackOk;
+		}
+
+		function applyPortfolioFilters() {
+			portfolioVisibleCount = getPortfolioItemsPerRow() * PORTFOLIO_INITIAL_ROWS;
+			$portfolioShowcase.removeClass("is-fully-expanded").addClass("is-collapsed");
+			updatePortfolioFilterDesc();
+			$grid.isotope({ filter: combinedPortfolioFilter });
+		}
+
+		// Company filter
 		$(".filter-button-group").on("click", "button", function () {
 			$(".filter-button-group button").removeClass("active");
 			$(this).addClass("active");
+			companyFilter = $(this).attr("data-filter") || "*";
+			applyPortfolioFilters();
+		});
 
-			var filterValue = $(this).attr("data-filter");
-			var $desc = $("#portfolio-filter-desc");
-			if ($desc.length && portfolioFilterCopy[filterValue]) {
-				$desc.text(portfolioFilterCopy[filterValue]);
-			}
-			portfolioVisibleCount = getPortfolioItemsPerRow() * PORTFOLIO_INITIAL_ROWS;
-			$portfolioShowcase.removeClass("is-fully-expanded").addClass("is-collapsed");
-			$grid.isotope({ filter: filterValue });
+		// Stack filter (AND with company)
+		$(".stack-filter-button-group").on("click", "button", function () {
+			$(".stack-filter-button-group button").removeClass("active");
+			$(this).addClass("active");
+			stackFilter = $(this).attr("data-stack-filter") || "*";
+			applyPortfolioFilters();
 		});
 
 		/*------------------------------------------------------
@@ -575,27 +615,25 @@ Description: Gerold - Personal Portfolio HTML5 Template
   	/  Portfolio Filter BG Color
   	/------------------------------------------------------*/
 		function filter_animation() {
-			var active_bg = $(".portfolio-filter .button-group .active-bg");
-			var element = $(".portfolio-filter .button-group .active");
-			$(".portfolio-filter .button-group button").on("click", function () {
-				var e = $(this);
-				activeFilterBtn(active_bg, e);
+			$(".portfolio-filter .button-group").each(function () {
+				var $group = $(this);
+				var active_bg = $group.find(".active-bg");
+				var element = $group.find("button.active");
+				$group.find("button").on("click", function () {
+					activeFilterBtn(active_bg, $(this), $group);
+				});
+				activeFilterBtn(active_bg, element, $group);
 			});
-			activeFilterBtn(active_bg, element);
 		}
 		filter_animation();
 
-		function activeFilterBtn(active_bg, e) {
-			if (!e.length) {
+		function activeFilterBtn(active_bg, e, $group) {
+			if (!e.length || !$group || !$group.length) {
 				return false;
 			}
 			var leftOff = e.offset().left;
 			var width = e.outerWidth();
-			var menuLeft = $(".portfolio-filter .button-group").offset().left;
-			e.closest("button").removeClass("active");
-			e.closest("button")
-				.siblings()
-				.addClass(".portfolio-filter .button-group");
+			var menuLeft = $group.offset().left;
 			active_bg.css({ left: leftOff - menuLeft + "px", width: width + "px" });
 		}
 
