@@ -44,6 +44,7 @@ notes.md → diagram/ → ppt/ → video/ → case study page
 | `p2h` | P2H (MHE + downtime) | A | MyPAS |
 | `kms-form` | KMS Form compliance | A | `/Project/compliance-form-app` |
 | `prayer` | Prayer (masjid display) | B | MyPAS |
+| `car-pool` | Car Pool (peminjaman mobil dinas) | A | MyPAS |
 
 ## Flowcharts (Mermaid)
 

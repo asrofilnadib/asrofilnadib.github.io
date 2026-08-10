@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 980" width="100%" role="img" aria-label="Car Pool process flowchart">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#c9c9c9"/>
+    </marker>
+  </defs>
+  <style>
+    .box { fill: #1f2020; stroke: #ccc; stroke-width: 1.5; }
+    .decision { fill: #1f2020; stroke: #ccc; stroke-width: 1.5; }
+    .label { fill: #e8e8e8; font-family: "Trebuchet MS", Verdana, Arial, sans-serif; font-size: 15px; text-anchor: middle; }
+    .edge { stroke: #c9c9c9; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+    .edge-label { fill: #b0b0b0; font-family: "Trebuchet MS", Verdana, Arial, sans-serif; font-size: 12px; text-anchor: middle; }
+  </style>
+
+  <!-- Start -->
+  <rect class="box" x="160" y="24" width="200" height="48" rx="8"/>
+  <text class="label" x="260" y="53">Pemohon buka Car Pool</text>
+  <path class="edge" d="M260 72 V100"/>
+
+  <!-- Form -->
+  <rect class="box" x="110" y="100" width="300" height="64" rx="8"/>
+  <text class="label" x="260" y="128">Isi form pemakaian</text>
+  <text class="label" x="260" y="148" style="font-size:13px">jadwal · mobil · driver · tujuan</text>
+  <path class="edge" d="M260 164 V192"/>
+
+  <!-- Submit + auto resolve -->
+  <rect class="box" x="100" y="192" width="320" height="64" rx="8"/>
+  <text class="label" x="260" y="220">Submit ’ doc no CPP/&</text>
+  <text class="label" x="260" y="240" style="font-size:13px">auto-resolve Dept Head + GA</text>
+  <path class="edge" d="M260 256 V284"/>
+
+  <!-- Waiting diketahui -->
+  <rect class="box" x="120" y="284" width="280" height="48" rx="8"/>
+  <text class="label" x="260" y="313">Status: waiting_diketahui</text>
+  <path class="edge" d="M260 332 V360"/>
+
+  <!-- Decision Dept Head -->
+  <polygon class="decision" points="260,360 340,420 260,480 180,420"/>
+  <text class="label" x="260" y="424">Diketahui?</text>
+  <text class="edge-label" x="150" y="420">Reject</text>
+  <text class="edge-label" x="380" y="420">Approve</text>
+
+  <!-- Reject left -->
+  <path class="edge" d="M180 420 H90 V560"/>
+  <rect class="box" x="20" y="560" width="140" height="48" rx="8"/>
+  <text class="label" x="90" y="589">rejected + alasan</text>
+
+  <!-- Approve to diterima -->
+  <path class="edge" d="M340 420 H430 V500 H260 V520"/>
+
+  <!-- Waiting diterima -->
+  <rect class="box" x="120" y="520" width="280" height="48" rx="8"/>
+  <text class="label" x="260" y="549">Status: waiting_diterima</text>
+  <path class="edge" d="M260 568 V596"/>
+
+  <!-- Decision GA -->
+  <polygon class="decision" points="260,596 340,656 260,716 180,656"/>
+  <text class="label" x="260" y="660">Diterima?</text>
+  <text class="edge-label" x="150" y="656">Reject</text>
+  <text class="edge-label" x="380" y="656">Approve</text>
+
+  <!-- Reject merge left -->
+  <path class="edge" d="M180 656 H90 V608"/>
+
+  <!-- Approve to done -->
+  <path class="edge" d="M340 656 H430 V760 H260 V780"/>
+
+  <!-- Approved -->
+  <rect class="box" x="120" y="780" width="280" height="48" rx="8"/>
+  <text class="label" x="260" y="809">approved + TTD digital</text>
+  <path class="edge" d="M260 828 V856"/>
+
+  <!-- Master / notif -->
+  <rect class="box" x="90" y="856" width="340" height="72" rx="8"/>
+  <text class="label" x="260" y="884">Home notif + Master Data</text>
+  <text class="label" x="260" y="906" style="font-size:13px">monitor request · CRUD mobil · chart</text>
+</svg>

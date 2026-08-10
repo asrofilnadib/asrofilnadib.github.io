@@ -136,6 +136,19 @@
     ],
     "company": "pas"
   },
+  "car-pool": {
+    "title": "Car Pool",
+    "owner": "asrofilnadib",
+    "repo": "portal-pas",
+    "branch": "dev",
+    "author": "asrofilnadib",
+    "prefixes": [
+      "car-pool",
+      "car pool",
+      "carpool"
+    ],
+    "company": "pas"
+  },
   "kms-form": {
     "title": "KMS Form",
     "owner": "asrofilnadib",

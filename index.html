@@ -713,6 +713,19 @@
               </div>
             </div>
 
+            <!-- PAS — Car Pool (recent) -->
+            <div class="portfolio-item pas stack-laravel">
+              <div class="image-box">
+                <img src="projects/briefs/car-pool/screenshots/thumbnail_car_pool.png" alt="Car Pool">
+              </div>
+              <div class="content-box">
+                <h3 class="portfolio-title">Car Pool</h3>
+                <p>Official vehicle booking in MyPAS: schedule + unit + driver, then Dept Head → GA digital approval.</p>
+                <i class="flaticon-up-right-arrow"></i>
+                <button data-mfp-src="#portfolio-wrapper-car-pool" class="portfolio-link modal-popup"></button>
+              </div>
+            </div>
+
             <!-- PAS — Smart Lab -->
             <div class="portfolio-item pas stack-laravel">
               <div class="image-box">
@@ -3309,6 +3322,98 @@
           </div>
           <div class="approach_content">
             <p>I built a command center with JWT + camera ACL, MediaMTX WebRTC live grids (SD/HD), and seamless playback seek/speed—delivered for both web and JavaFX desktop clients so operators keep the same mental model on wall displays and desks.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="portfolio_navigation">
+        <div class="navigation_item prev-project">
+          <a href="#" class="project">
+            <div class="nav_project">
+            </div>
+          </a>
+        </div>
+
+        <div class="navigation_item next-project">
+          <a href="#" class="project">
+            <div class="nav_project">
+            </div>
+          </a>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+
+  <div id="portfolio-wrapper-car-pool" class="popup_content_area zoom-anim-dialog mfp-hide">
+    <div class="popup_modal_img"><img src="projects/briefs/car-pool/screenshots/thumbnail_car_pool.png" alt="Car Pool"></div>
+    <div class="popup_modal_content">
+      <div class="portfolio_info">
+        <div class="portfolio_info_text">
+          <h2 class="title">Car Pool</h2>
+          <div class="desc"><p>Digital form for official vehicle usage (peminjaman mobil dinas): schedule, unit, driver, then two-step approval with signatures.</p></div>
+          <div class="portfolio-modal-actions">
+          <a href="#" class="btn tj-btn-primary btn-watch-demo is-disabled" data-demo-youtube="" aria-disabled="true" title="Demo coming soon">Watch Demo <i class="fab fa-youtube"></i><span class="btn-watch-demo-soon">coming soon</span></a>
+          <a href="#" class="btn tj-btn-primary btn-commits" data-commits-project="car-pool" data-commits-title="Car Pool">View Commits <i class="fab fa-github"></i></a>
+        </div>
+        </div>
+        <div class="portfolio_info_items">
+          <div class="info_item"><div class="key">Category</div><div class="value">MyPAS — GA / Fleet</div></div>
+          <div class="info_item"><div class="key">Client</div><div class="value">PT Prakarsa Alam Segar</div></div>
+          <div class="info_item"><div class="key">Delivery Date</div><div class="value">2026</div></div>
+          <div class="info_item"><div class="key">Stack</div><div class="value">Laravel, Blade, FilePond, Highcharts, RBAC</div></div>
+        </div>
+      </div>
+
+      <div class="portfolio_gallery owl-carousel">
+        <div class="gallery_item" data-type="coming-soon">
+          <div class="coming-soon-host" role="img" aria-label="Business process video coming soon">
+            <p class="coming-soon-title">video sistem Car Pool coming soon</p>
+            <p class="coming-soon-client">PT Prakarsa Alam Segar</p>
+          </div>
+          <p class="gallery_caption">Business Process</p>
+        </div>
+        <div class="gallery_item" data-type="flowchart" data-flowchart-src="./projects/briefs/car-pool/diagram/flowchart.svg?v=1">
+          <div class="flowchart-host" aria-label="Car Pool process flowchart"></div>
+          <p class="gallery_caption">Flowchart</p>
+        </div>
+        <!-- When ready: add data-type="youtube" slide (replaces coming-soon) -->
+</div>
+
+      <div class="portfolio_description">
+        <h2 class="title">Project Description</h2>
+        <div class="desc"><p>Car Pool replaces the paper “Request Pemakaian Kendaraan Dinas” form inside MyPAS. Requesters pick schedule, vehicle, and driver; the system issues a document number, resolves approvers, and tracks status from Diketahui → Diterima with digital signatures.</p></div>
+      
+      <div class="portfolio_key_features">
+        <div class="key_features_title">
+          <h4 class="title">Key Features</h4>
+        </div>
+        <ul class="key_features_list">
+          <li>2-step approval: Diketahui → Diterima</li>
+          <li>Digital signature from Master TTD</li>
+          <li>Auto-resolve Dept Head + GA approver</li>
+          <li>Doc no CPP/… + public detail code</li>
+          <li>SIM photo upload (FilePond) for Other driver</li>
+          <li>Master vehicles + status chart + home notif</li>
+        </ul>
+      </div>
+      </div>
+      <div class="portfolio_story_approach">
+        <div class="portfolio_story">
+          <div class="story_title">
+            <h4 class="title">The Story</h4>
+          </div>
+          <div class="story_content">
+            <p>Booking official cars at PAS was still paper-based: hard to see who still owed Diketahui/Diterima, unclear vehicle availability, and weak proof of approval when schedules collided.</p>
+          </div>
+        </div>
+        <div class="portfolio_approach">
+          <div class="approach_title">
+            <h4 class="title">My Approach</h4>
+          </div>
+          <div class="approach_content">
+            <p>I built an end-to-end Laravel module in the existing MyPAS RBAC: request form with Flatpickr scheduling, status machine with signature pointers, HR/PKW-based Dept Head resolution, SIM upload for non-roster drivers, plus Master Data (vehicles CRUD + Highcharts status) and pending-approval notifications on Home.</p>
           </div>
         </div>
       </div>
