@@ -1230,8 +1230,8 @@ body.loaded {
 	gap: 12px;
 }
 .portfolio-filter .stack-filter-button-group {
-	background-color: transparent;
-	border: 1px solid rgba(135, 80, 247, 0.35);
+	background-color: var(--tj-black-2);
+	border: none;
 	border-radius: 48px;
 	padding: 5px 6px;
 }
