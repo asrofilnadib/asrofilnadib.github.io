@@ -10,8 +10,8 @@
 (function () {
   "use strict";
 
-  // Optional hard-coded key (client-side by design). Prefer .env via /api/hire-config.
-  var ACCESS_KEY = "";
+  // Web3Forms access key (client-side by design). Recipient: asrofilnadibs28@gmail.com
+  var ACCESS_KEY = "4929b1b2-7ec5-42f9-9af3-9b550331d9b0";
 
   var overlay = null;
   var formEl = null;
@@ -151,13 +151,22 @@
     statusEl.classList.toggle("is-success", !!isSuccess && !isError);
   }
 
-  function messageHtml() {
+  function messagePlain() {
     if (!quill) return "";
-    var html = String(quill.root.innerHTML || "").trim();
-    var text = String(quill.getText() || "")
+    return String(quill.getText() || "")
       .replace(/\u00a0/g, " ")
       .trim();
+  }
+
+  function messageHtml() {
+    if (!quill) return "";
+    var text = messagePlain();
     if (!text) return "";
+    // Clean Quill HTML (drop theme inline colors) so Gmail is less likely to junk it
+    var html = String(quill.root.innerHTML || "")
+      .replace(/\sstyle="[^"]*"/gi, "")
+      .replace(/\sclass="[^"]*"/gi, "")
+      .trim();
     if (html === "<p><br></p>" || html === "<p></p>") return "";
     return html;
   }
@@ -174,9 +183,10 @@
     var email = String(formEl.querySelector("#hire-email").value || "").trim();
     var subject = String(formEl.querySelector("#hire-subject").value || "").trim();
     var message = messageHtml();
+    var messageText = messagePlain();
     var botcheck = formEl.querySelector('[name="botcheck"]');
 
-    if (!name || !email || !subject || !message) {
+    if (!name || !email || !subject || !messageText) {
       setStatus("Lengkapi name, email, subject, dan message.", true);
       return;
     }
@@ -201,13 +211,15 @@
           );
         }
 
+        // Prefer plain text in `message` for deliverability; keep light HTML as extra field
         var payload = {
           access_key: key,
           name: name,
           email: email,
           subject: subject,
-          message: message,
-          from_name: name,
+          message: messageText,
+          message_html: message || messageText,
+          from_name: "Portfolio Hire Me",
           replyto: email,
         };
 
