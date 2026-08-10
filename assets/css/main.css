@@ -1849,13 +1849,14 @@ body.loaded {
 	max-width: 600px;
 	width: 100%;
 	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 12px 20px;
+	grid-template-columns: 1fr;
+	gap: 10px;
 }
 .portfolio_key_features .key_features_list li {
 	position: relative;
 	padding-left: 16px;
 	font-size: 15px;
+	font-weight: 700;
 	line-height: 1.4;
 	letter-spacing: 0.02em;
 	color: var(--tj-theme-accent-1);
