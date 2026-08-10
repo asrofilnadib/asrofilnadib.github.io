@@ -1821,6 +1821,56 @@ body.loaded {
 .portfolio_story .story_content p:last-child {
 	margin: 0;
 }
+
+.portfolio_key_features {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-wrap: wrap;
+	flex-wrap: wrap;
+	gap: 50px;
+	margin-top: 36px;
+	align-items: flex-start;
+}
+.portfolio_key_features .key_features_title {
+	max-width: 265px;
+	width: 100%;
+}
+.portfolio_key_features .key_features_title .title {
+	font-size: 20px;
+	text-transform: uppercase;
+	color: var(--tj-black-2);
+	margin-bottom: 0;
+}
+.portfolio_key_features .key_features_list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	max-width: 600px;
+	width: 100%;
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 12px 20px;
+}
+.portfolio_key_features .key_features_list li {
+	position: relative;
+	padding-left: 16px;
+	font-size: 15px;
+	line-height: 1.4;
+	letter-spacing: 0.02em;
+	color: var(--tj-theme-accent-1);
+}
+.portfolio_key_features .key_features_list li::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0.55em;
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: var(--tj-theme-primary);
+}
+
 .popup_modal_content .portfolio_navigation {
 	background-color: var(--tj-theme-primary);
 	padding: 10px 50px;

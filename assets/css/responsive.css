@@ -366,6 +366,14 @@
 	.portfolio_story_approach .portfolio_story {
 		gap: 15px;
 	}
+	.portfolio_key_features {
+		gap: 15px;
+		margin-top: 28px;
+	}
+	.portfolio_key_features .key_features_list {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 10px 16px;
+	}
 	.portfolio_description .title,
 	.portfolio_info .portfolio_info_text .title {
 		font-size: 35px;
@@ -767,6 +775,14 @@
 	.portfolio_story_approach .portfolio_story {
 		gap: 15px;
 		margin-bottom: 40px;
+	}
+	.portfolio_key_features {
+		gap: 12px;
+		margin-top: 24px;
+	}
+	.portfolio_key_features .key_features_list {
+		grid-template-columns: 1fr;
+		gap: 10px;
 	}
 	.portfolio_description .title,
 	.portfolio_info .portfolio_info_text .title {
