@@ -18,6 +18,7 @@ dotenv.config({ path: path.join(__dirname, ".env") });
 
 const commitsHandler = require("./api/commits.js");
 const activityHandler = require("./api/activity.js");
+const hireConfigHandler = require("./api/hire-config.js");
 
 const PORT = Number(process.env.PORT || 3000);
 const ROOT = __dirname;
@@ -100,6 +101,10 @@ const server = http.createServer(async (req, res) => {
       return handleApi(activityHandler, req, res, url);
     }
 
+    if (url.pathname === "/api/hire-config" || url.pathname === "/api/hire-config.js") {
+      return handleApi(hireConfigHandler, req, res, url);
+    }
+
     let filePath = safeJoin(ROOT, url.pathname === "/" ? "/index.html" : url.pathname);
     if (!filePath) return send(res, 403, "Forbidden");
 
@@ -122,6 +127,10 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   const hasToken = Boolean(process.env.GITHUB_TOKEN);
+  const hasHireKey = Boolean(process.env.WEB3FORMS_ACCESS_KEY);
   console.log(`Portfolio local server → http://localhost:${PORT}`);
   console.log(`GITHUB_TOKEN: ${hasToken ? "loaded from .env" : "MISSING — set in .env"}`);
+  console.log(
+    `WEB3FORMS_ACCESS_KEY: ${hasHireKey ? "loaded from .env" : "MISSING — Hire Me form needs it"}`
+  );
 });
