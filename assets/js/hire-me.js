@@ -158,17 +158,69 @@
       .trim();
   }
 
-  function messageHtml() {
+  /**
+   * Convert Quill HTML → email-safe plain text.
+   * Web3Forms escapes HTML in fields, so we send readable text + newlines
+   * (their backend turns newlines into <br> for Gmail).
+   */
+  function messageForEmail() {
     if (!quill) return "";
-    var text = messagePlain();
-    if (!text) return "";
-    // Clean Quill HTML (drop theme inline colors) so Gmail is less likely to junk it
-    var html = String(quill.root.innerHTML || "")
-      .replace(/\sstyle="[^"]*"/gi, "")
-      .replace(/\sclass="[^"]*"/gi, "")
+    var root = quill.root;
+    if (!root) return messagePlain();
+
+    function walk(node, ctx) {
+      ctx = ctx || { list: null };
+      var out = "";
+      if (node.nodeType === 3) {
+        return String(node.nodeValue || "").replace(/\u00a0/g, " ");
+      }
+      if (node.nodeType !== 1) return "";
+
+      var tag = String(node.tagName || "").toLowerCase();
+      var kids = Array.prototype.slice.call(node.childNodes || []);
+
+      if (tag === "br") return "\n";
+
+      if (tag === "a") {
+        var label = kids.map(function (c) {
+          return walk(c, ctx);
+        }).join("").trim();
+        var href = node.getAttribute("href") || "";
+        if (href && label && label !== href) return label + " (" + href + ")";
+        return label || href;
+      }
+
+      if (tag === "li") {
+        var bullet = ctx.list === "ol" ? "1. " : "• ";
+        var liText = kids.map(function (c) {
+          return walk(c, ctx);
+        }).join("").replace(/\s+/g, " ").trim();
+        return bullet + liText + "\n";
+      }
+
+      if (tag === "ul" || tag === "ol") {
+        var next = { list: tag === "ol" ? "ol" : "ul" };
+        return kids.map(function (c) {
+          return walk(c, next);
+        }).join("") + "\n";
+      }
+
+      if (tag === "p" || tag === "div" || tag === "h1" || tag === "h2" || tag === "h3") {
+        var block = kids.map(function (c) {
+          return walk(c, ctx);
+        }).join("");
+        return block.replace(/\s+$/g, "") + "\n\n";
+      }
+
+      return kids.map(function (c) {
+        return walk(c, ctx);
+      }).join("");
+    }
+
+    return walk(root)
+      .replace(/[ \t]+\n/g, "\n")
+      .replace(/\n{3,}/g, "\n\n")
       .trim();
-    if (html === "<p><br></p>" || html === "<p></p>") return "";
-    return html;
   }
 
   function validEmail(value) {
@@ -182,11 +234,10 @@
     var name = String(formEl.querySelector("#hire-name").value || "").trim();
     var email = String(formEl.querySelector("#hire-email").value || "").trim();
     var subject = String(formEl.querySelector("#hire-subject").value || "").trim();
-    var message = messageHtml();
-    var messageText = messagePlain();
+    var message = messageForEmail();
     var botcheck = formEl.querySelector('[name="botcheck"]');
 
-    if (!name || !email || !subject || !messageText) {
+    if (!name || !email || !subject || !message) {
       setStatus("Lengkapi name, email, subject, dan message.", true);
       return;
     }
@@ -211,14 +262,12 @@
           );
         }
 
-        // Prefer plain text in `message` for deliverability; keep light HTML as extra field
         var payload = {
           access_key: key,
           name: name,
           email: email,
-          subject: subject,
-          message: messageText,
-          message_html: message || messageText,
+          subject: "Hire Me — " + subject,
+          message: message,
           from_name: "Portfolio Hire Me",
           replyto: email,
         };
