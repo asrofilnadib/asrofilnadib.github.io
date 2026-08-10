@@ -21,6 +21,8 @@
   var sending = false;
   var resolvedKey = "";
   var keyPromise = null;
+  var lastSentAt = 0;
+  var MIN_SEND_GAP_MS = 45000; // basic client rate-limit
 
   function looksLikeKey(value) {
     var k = String(value || "").trim();
@@ -84,7 +86,10 @@
       "<label>Message</label>" +
       '<div class="hire-me-editor-wrap"><div id="hire-message-editor"></div></div>' +
       "</div>" +
-      '<input class="hire-me-hp" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off">' +
+      '<div class="hire-me-field hire-me-captcha-field">' +
+      '<div class="h-captcha" data-captcha="true" data-theme="dark"></div>' +
+      "</div>" +
+      '<input class="hire-me-hp" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">' +
       '<div class="hire-me-actions">' +
       '<button type="submit" class="hire-me-submit">Send Message</button>' +
       '<p class="hire-me-status" aria-live="polite"></p>' +
@@ -96,6 +101,15 @@
     formEl = overlay.querySelector(".hire-me-form");
     statusEl = overlay.querySelector(".hire-me-status");
     submitBtn = overlay.querySelector(".hire-me-submit");
+
+    if (!document.querySelector('script[data-hire-hcaptcha]')) {
+      var s = document.createElement("script");
+      s.src = "https://web3forms.com/client/script.js";
+      s.async = true;
+      s.defer = true;
+      s.setAttribute("data-hire-hcaptcha", "1");
+      document.body.appendChild(s);
+    }
 
     overlay.addEventListener("click", function (e) {
       if (e.target === overlay) closeOverlay();
@@ -158,66 +172,128 @@
       .trim();
   }
 
+  // Web3Forms free escapes HTML — use Unicode letterforms so Gmail still shows bold/italic.
+  function styleChar(ch, bold, italic) {
+    var code = ch.codePointAt(0);
+    if (code == null) return ch;
+
+    // A-Z
+    if (code >= 65 && code <= 90) {
+      var i = code - 65;
+      if (bold && italic) return String.fromCodePoint(0x1d468 + i);
+      if (bold) return String.fromCodePoint(0x1d400 + i);
+      if (italic) return String.fromCodePoint(0x1d434 + i);
+    }
+    // a-z (italic h is special-cased)
+    if (code >= 97 && code <= 122) {
+      var j = code - 97;
+      if (bold && italic) return String.fromCodePoint(0x1d482 + j);
+      if (bold) return String.fromCodePoint(0x1d41a + j);
+      if (italic) {
+        if (ch === "h") return "\u210e"; // ℎ
+        return String.fromCodePoint(0x1d44e + j);
+      }
+    }
+    // 0-9 bold only
+    if (bold && code >= 48 && code <= 57) {
+      return String.fromCodePoint(0x1d7ce + (code - 48));
+    }
+    return ch;
+  }
+
+  function styleText(text, attrs) {
+    attrs = attrs || {};
+    var bold = !!attrs.bold;
+    var italic = !!attrs.italic;
+    var underline = !!attrs.underline;
+    // Combining underline (U+0332) breaks on Mathematical Italic/Bold glyphs in Gmail → tofu boxes.
+    // Only apply combining underline on plain ASCII; otherwise wrap with underscores.
+    var useCombiningUnderline = underline && !bold && !italic;
+    var useWrapUnderline = underline && (bold || italic);
+    var out = "";
+    for (var i = 0; i < text.length; ) {
+      var cp = text.codePointAt(i);
+      var ch = String.fromCodePoint(cp);
+      i += cp > 0xffff ? 2 : 1;
+      if (ch === "\n") {
+        out += ch;
+        continue;
+      }
+      var styled = styleChar(ch, bold, italic);
+      if (useCombiningUnderline && styled !== " " && styled !== "\t") {
+        styled += "\u0332";
+      }
+      out += styled;
+    }
+    if (useWrapUnderline && out) {
+      out = "_" + out + "_";
+    }
+    return out;
+  }
+
   /**
-   * Convert Quill HTML → email-safe plain text.
-   * Web3Forms escapes HTML in fields, so we send readable text + newlines
-   * (their backend turns newlines into <br> for Gmail).
+   * Quill delta → email-safe text with visible bold/italic/underline + lists/links.
+   * Web3Forms escapes HTML tags, so Unicode styling is the free-plan workaround.
    */
   function messageForEmail() {
-    if (!quill) return "";
-    var root = quill.root;
-    if (!root) return messagePlain();
+    if (!quill || typeof quill.getContents !== "function") return messagePlain();
 
-    function walk(node, ctx) {
-      ctx = ctx || { list: null };
-      var out = "";
-      if (node.nodeType === 3) {
-        return String(node.nodeValue || "").replace(/\u00a0/g, " ");
+    var ops = (quill.getContents() && quill.getContents().ops) || [];
+    var lines = [];
+    var line = "";
+    var olCount = 0;
+    var pendingList = null;
+
+    function flushLine(lineAttrs) {
+      lineAttrs = lineAttrs || {};
+      var list = lineAttrs.list;
+      var content = line;
+      if (list === "ordered") {
+        if (pendingList !== "ordered") olCount = 0;
+        olCount += 1;
+        pendingList = "ordered";
+        content = olCount + ". " + content;
+      } else if (list === "bullet") {
+        pendingList = "bullet";
+        content = "• " + content;
+      } else {
+        pendingList = null;
+        olCount = 0;
       }
-      if (node.nodeType !== 1) return "";
-
-      var tag = String(node.tagName || "").toLowerCase();
-      var kids = Array.prototype.slice.call(node.childNodes || []);
-
-      if (tag === "br") return "\n";
-
-      if (tag === "a") {
-        var label = kids.map(function (c) {
-          return walk(c, ctx);
-        }).join("").trim();
-        var href = node.getAttribute("href") || "";
-        if (href && label && label !== href) return label + " (" + href + ")";
-        return label || href;
-      }
-
-      if (tag === "li") {
-        var bullet = ctx.list === "ol" ? "1. " : "• ";
-        var liText = kids.map(function (c) {
-          return walk(c, ctx);
-        }).join("").replace(/\s+/g, " ").trim();
-        return bullet + liText + "\n";
-      }
-
-      if (tag === "ul" || tag === "ol") {
-        var next = { list: tag === "ol" ? "ol" : "ul" };
-        return kids.map(function (c) {
-          return walk(c, next);
-        }).join("") + "\n";
-      }
-
-      if (tag === "p" || tag === "div" || tag === "h1" || tag === "h2" || tag === "h3") {
-        var block = kids.map(function (c) {
-          return walk(c, ctx);
-        }).join("");
-        return block.replace(/\s+$/g, "") + "\n\n";
-      }
-
-      return kids.map(function (c) {
-        return walk(c, ctx);
-      }).join("");
+      lines.push(content);
+      line = "";
     }
 
-    return walk(root)
+    ops.forEach(function (op) {
+      var insert = op.insert;
+      var attrs = op.attributes || {};
+      if (typeof insert !== "string") {
+        if (insert && insert.image) line += "[image]";
+        return;
+      }
+
+      var parts = insert.split("\n");
+      for (var p = 0; p < parts.length; p++) {
+        if (p > 0) {
+          // newline attributes apply to the line that just ended
+          flushLine(attrs);
+        }
+        if (parts[p]) {
+          var chunk = parts[p];
+          if (attrs.link) {
+            var labeled = styleText(chunk, attrs);
+            line += labeled + " (" + attrs.link + ")";
+          } else {
+            line += styleText(chunk, attrs);
+          }
+        }
+      }
+    });
+
+    if (line) flushLine({});
+
+    return lines
+      .join("\n")
       .replace(/[ \t]+\n/g, "\n")
       .replace(/\n{3,}/g, "\n\n")
       .trim();
@@ -250,6 +326,19 @@
       return;
     }
 
+    var now = Date.now();
+    if (now - lastSentAt < MIN_SEND_GAP_MS) {
+      setStatus("Tunggu sebentar sebelum kirim lagi (anti-spam).", true);
+      return;
+    }
+
+    var captchaEl = formEl.querySelector('[name="h-captcha-response"]');
+    var captchaToken = captchaEl ? String(captchaEl.value || "").trim() : "";
+    if (!captchaToken) {
+      setStatus("Centang hCaptcha dulu sebelum kirim.", true);
+      return;
+    }
+
     sending = true;
     submitBtn.disabled = true;
     setStatus("Sending…", false);
@@ -270,6 +359,7 @@
           message: message,
           from_name: "Portfolio Hire Me",
           replyto: email,
+          "h-captcha-response": captchaToken,
         };
 
         return fetch("https://api.web3forms.com/submit", {
@@ -287,9 +377,15 @@
       })
       .then(function (result) {
         if (result.ok && result.data && result.data.success) {
+          lastSentAt = Date.now();
           setStatus("Message sent. I’ll get back to you via email.", false, true);
           formEl.reset();
           if (quill) quill.setText("");
+          if (window.hcaptcha && typeof window.hcaptcha.reset === "function") {
+            try {
+              window.hcaptcha.reset();
+            } catch (_) {}
+          }
           return;
         }
         var err =

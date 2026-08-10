@@ -175,13 +175,14 @@
 	fill: #8750f7;
 }
 
-.hire-me-actions {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	gap: 12px;
-	margin-top: 4px;
+.hire-me-captcha-field {
+	margin-top: 2px;
 }
+
+.hire-me-captcha-field .h-captcha {
+	transform-origin: left top;
+}
+
 
 .hire-me-submit {
 	min-height: 44px;
