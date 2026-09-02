@@ -11,57 +11,45 @@ tier: A
 slug: logbook
 platform: MyPAS
 created: 2026-07-27
+updated: 2026-09-02
 ---
 
-# Logbook — Absensi Scale + Approval 2 Level
+# Logbook — Absensi Scale + Approval 2 Level + Clip Periode
 
 > [!info] One-liner
-> Logbook magang: merge kegiatan harian + tap dari **`t_absensi` (jutaan row)**, lalu approval **SPV → Manager**.
+> Logbook magang/PKL: merge kegiatan + `t_absensi`, approval SPV then Manager, clip join/end mid-periode untuk export & claim uang saku.
 
 **Parent:** [[00-Index|Portfolio Flowcharts]]  
 **Brief:** `portofolio/projects/briefs/logbook/`
 
-> [!note] Modul
-> Ini **Magang Logbook** (`routes/magang.php`), bukan logbook lain.
+Runtime SVGs (portfolio owl-carousel):
 
-## Status
+- `flowchart.svg` — proses lengkap
+- `activity-diagram.svg` — swimlane Intern / SPV / Manager / System
+- `dfd.svg` — actors + stores
 
-`pending_paraf → ready_spv → spv_signed → manager_signed`
+## Status logbook
 
----
+`pending_paraf` → `ready_spv` → `spv_signed` → `manager_signed`
 
-## Flowchart
+## Clip overlap (2026-09-02)
 
-```mermaid
----
-config:
-  theme: redux
----
-flowchart TB
-  I[Intern isi logbook harian] --> ABS[(absensi_server.t_absensi<br/>millions of rows)]
-  ABS --> MERGE[Merge clock in/out<br/>prioritas: logbook > absensi]
-  MERGE --> DAY{Semua hari kerja diparaf?}
-  DAY -->|Belum| SPV1[SPV paraf per hari / paraf-all]
-  SPV1 --> DAY
-  DAY -->|Ya| READY[status ready_spv]
-  READY --> SPV2[SPV sign periode]
-  SPV2 --> SPVS[spv_signed]
-  SPVS --> MGR{Manager sign?}
-  MGR -->|SPV belum| BLOCK([Ditolak])
-  MGR -->|OK| DONE[manager_signed]
-  DONE --> PDF([Print PDF])
-```
+- Periode kalender claim: **21 bulan N s/d 20 bulan N+1**
+- `internStart` = min(`created_at`, MIN tanggal logbook)
+- `clipStart` = max(internStart, start 21)
+- `clipEnd` = min(MAX tanggal log, end 20)
+- Contoh: join **5 Juli**, finish **16 Agustus**
+- Berlaku Magang **dan** PKL di export + claim uang saku (periode + jumlah hari)
+
+## Claim uang saku
+
+- **Magang:** Rp 3.6jt / periode, proporsional x jumlah hari overlap
+- **PKL:** hari hadir x tarif (ENG 100rb / Non-ENG 50rb)
 
 ## Actors
 
-- Magang / Intern
-- PIC / SPV (`role_level=spv`)
-- Manager (`role_level=manager`)
+- Magang / PKL intern
+- PIC / SPV
+- Manager
 - Admin Master Magang
-
-## Entry points
-
-- `routes/magang.php`
-- `app/Http/Controllers/Magang/LogbookController.php`
-- `app/Http/Controllers/Magang/ApprovalController.php`
-- `app/Support/MagangLogbookApprovalRules.php`
+- Absensi server (`t_absensi`)
