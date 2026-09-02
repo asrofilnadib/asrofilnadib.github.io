@@ -45,6 +45,7 @@ notes.md → diagram/ → ppt/ → video/ → case study page
 | `kms-form` | KMS Form compliance | A | `/Project/compliance-form-app` |
 | `prayer` | Prayer (masjid display) | B | MyPAS |
 | `car-pool` | Car Pool (peminjaman mobil dinas) | A | MyPAS |
+| `metal-detector` | Metal Detector Proses (QC Seasoning 2) | A | MyPAS |
 
 ## Flowcharts (Mermaid)
 

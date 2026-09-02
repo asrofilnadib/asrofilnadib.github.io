@@ -201,7 +201,7 @@
         <div class="row">
           <div class="col-6 col-lg-3">
             <div class="funfact-item d-flex flex-column flex-sm-row flex-wrap align-items-center">
-              <div class="number"><span class="odometer" data-count="2">0</span>+</div>
+              <div class="number"><span class="odometer" data-count="1">0</span>+</div>
               <div class="text">Years of <br>Experience</div>
             </div>
           </div>
@@ -706,6 +706,19 @@
                 <p>Online exam with InsightFace enrollment/verify and YOLO proctoring for person-count monitoring.</p>
                 <i class="flaticon-up-right-arrow"></i>
                 <button data-mfp-src="#portfolio-wrapper-psikotes" class="portfolio-link modal-popup"></button>
+              </div>
+            </div>
+
+            <!-- PAS — Metal Detector (recent) -->
+            <div class="portfolio-item pas stack-laravel">
+              <div class="image-box">
+                <img src="projects/briefs/metal-detector/screenshots/thumbnail_metal_detector.png" alt="Metal Detector Proses">
+              </div>
+              <div class="content-box">
+                <h3 class="portfolio-title">Metal Detector Proses</h3>
+                <p>Shop-floor QC for Seasoning 2: Fe / Non-Fe / SUS test pieces across 4 variants, with shift quota and Excel report.</p>
+                <i class="flaticon-up-right-arrow"></i>
+                <button data-mfp-src="#portfolio-wrapper-metal-detector" class="portfolio-link modal-popup"></button>
               </div>
             </div>
 
@@ -3342,6 +3355,98 @@
     </div>
   </div>
 
+  <div id="portfolio-wrapper-metal-detector" class="popup_content_area zoom-anim-dialog mfp-hide">
+    <div class="popup_modal_img"><img src="projects/briefs/metal-detector/screenshots/thumbnail_metal_detector.png" alt="Metal Detector Proses"></div>
+    <div class="popup_modal_content">
+      <div class="portfolio_info">
+        <div class="portfolio_info_text">
+          <h2 class="title">Metal Detector Proses</h2>
+          <div class="desc"><p>Seasoning 2 / PRS2 QC logging: operators record metal-detector test-piece results per line and shift, then supervisors filter and export.</p></div>
+          <div class="portfolio-modal-actions">
+          <a href="#" class="btn tj-btn-primary btn-watch-demo is-disabled" data-demo-youtube="" aria-disabled="true" title="Demo coming soon">Watch Demo <i class="fab fa-youtube"></i><span class="btn-watch-demo-soon">coming soon</span></a>
+          <a href="#" class="btn tj-btn-primary btn-commits" data-commits-project="metal-detector" data-commits-title="Metal Detector Proses">View Commits <i class="fab fa-github"></i></a>
+        </div>
+        </div>
+        <div class="portfolio_info_items">
+          <div class="info_item"><div class="key">Category</div><div class="value">MyPAS — QC / Production</div></div>
+          <div class="info_item"><div class="key">Client</div><div class="value">PT Prakarsa Alam Segar</div></div>
+          <div class="info_item"><div class="key">Delivery Date</div><div class="value">2026</div></div>
+          <div class="info_item"><div class="key">Stack</div><div class="value">Laravel, Blade, DataTables, Excel, Flatpickr</div></div>
+        </div>
+      </div>
+
+      <div class="portfolio_gallery owl-carousel">
+        <div class="gallery_item" data-type="coming-soon">
+          <div class="coming-soon-host" role="img" aria-label="Business process video coming soon">
+            <p class="coming-soon-title">video sistem Metal Detector coming soon</p>
+            <p class="coming-soon-client">PT Prakarsa Alam Segar</p>
+          </div>
+          <p class="gallery_caption">Business Process</p>
+        </div>
+        <div class="gallery_item" data-type="flowchart" data-flowchart-src="./projects/briefs/metal-detector/diagram/flowchart.svg?v=2">
+          <div class="flowchart-host" aria-label="Metal Detector Proses flowchart"></div>
+          <p class="gallery_caption">Flowchart</p>
+        </div>
+        <!-- When ready: add data-type="youtube" slide (replaces coming-soon) -->
+</div>
+
+      <div class="portfolio_description">
+        <h2 class="title">Project Description</h2>
+        <div class="desc"><p>Metal Detector Proses replaces paper QC logs on the Seasoning 2 floor. Each check covers four unique variants (Bagor, Koya, Kremes, SO4) with Fe 0.7 / Non-Fe 1.0 / SUS 1.5 results, capped at 3 checks per line per shift, then reviewed on a filterable report with Excel export that matches the form headers.</p></div>
+      
+      <div class="portfolio_key_features">
+        <div class="key_features_title">
+          <h4 class="title">Key Features</h4>
+        </div>
+        <ul class="key_features_list">
+          <li>Auto shift + sequential pengecekan_ke</li>
+          <li>Max 3 checks per line per shift (DB lock)</li>
+          <li>4 unique variants × Fe / Non-Fe / SUS</li>
+          <li>Normalized checks + items schema</li>
+          <li>DataTables filters: date, shift, variant, line</li>
+          <li>Excel export matching form headers</li>
+        </ul>
+      </div>
+      </div>
+      <div class="portfolio_story_approach">
+        <div class="portfolio_story">
+          <div class="story_title">
+            <h4 class="title">The Story</h4>
+          </div>
+          <div class="story_content">
+            <p>Metal-detector sensitivity checks on Seasoning 2 were still paper or informal notes. Shift quotas were informal, and supervisors had no fast way to filter by line/variant/shift or export evidence for QA.</p>
+          </div>
+        </div>
+        <div class="portfolio_approach">
+          <div class="approach_title">
+            <h4 class="title">My Approach</h4>
+          </div>
+          <div class="approach_content">
+            <p>I built a Laravel module at <code>/cek-md-proses</code>: a mobile-friendly form with auto shift, sequential check numbers, and transactional quota (max 3 per line/shift), plus a normalized 3-table schema (variants, checks, items) and a DataTables report with filtered Excel export under existing portal auth.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="portfolio_navigation">
+        <div class="navigation_item prev-project">
+          <a href="#" class="project">
+            <div class="nav_project">
+            </div>
+          </a>
+        </div>
+
+        <div class="navigation_item next-project">
+          <a href="#" class="project">
+            <div class="nav_project">
+            </div>
+          </a>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+
   <div id="portfolio-wrapper-car-pool" class="popup_content_area zoom-anim-dialog mfp-hide">
     <div class="popup_modal_img"><img src="projects/briefs/car-pool/screenshots/thumbnail_car_pool.png" alt="Car Pool"></div>
     <div class="popup_modal_content">
@@ -3716,7 +3821,7 @@
               <div class="time">
                 2025 October - Present
               </div>
-              <h3 class="resume-title">Fullstack Developer Intern</h3>
+              <h3 class="resume-title">Fullstack Developer</h3>
               <div class="institute">
                 PT Prakarsa Alam Segar (Wingsfood Sedaap)
               </div>

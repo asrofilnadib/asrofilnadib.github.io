@@ -149,6 +149,19 @@
     ],
     "company": "pas"
   },
+  "metal-detector": {
+    "title": "Metal Detector Proses",
+    "owner": "asrofilnadib",
+    "repo": "portal-pas",
+    "branch": "dev",
+    "author": "asrofilnadib",
+    "prefixes": [
+      "md-proses",
+      "cek-md-proses",
+      "metal detector"
+    ],
+    "company": "pas"
+  },
   "kms-form": {
     "title": "KMS Form",
     "owner": "asrofilnadib",

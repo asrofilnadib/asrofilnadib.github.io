@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 1080" width="100%" role="img" aria-label="Metal Detector Proses flowchart">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#c9c9c9"/>
+    </marker>
+  </defs>
+  <style>
+    .box { fill: #1f2020; stroke: #ccc; stroke-width: 1.5; }
+    .decision { fill: #1f2020; stroke: #ccc; stroke-width: 1.5; }
+    .label { fill: #e8e8e8; font-family: "Trebuchet MS", Verdana, Arial, sans-serif; font-size: 15px; text-anchor: middle; }
+    .sub { font-size: 13px; }
+    .fa { font-family: "Font Awesome 6 Pro", "Font Awesome 6 Free", sans-serif; font-weight: 900; font-size: 9px; fill: #8750f7; }
+    .edge { stroke: #c9c9c9; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+    .edge-label { fill: #b0b0b0; font-family: "Trebuchet MS", Verdana, Arial, sans-serif; font-size: 12px; text-anchor: middle; }
+  </style>
+
+  <rect class="box" x="160" y="24" width="240" height="48" rx="8"/>
+  <text class="label" x="280" y="53">Operator buka /cek-md-proses</text>
+  <path class="edge" d="M280 72 V100"/>
+
+  <rect class="box" x="110" y="100" width="340" height="64" rx="8"/>
+  <text class="label" x="280" y="128">Load meta: shift + cek ke</text>
+  <text class="label sub" x="280" y="148">variants <tspan class="fa">&#xf054;</tspan> kuota line/shift</text>
+  <path class="edge" d="M280 164 V192"/>
+
+  <rect class="box" x="120" y="192" width="320" height="48" rx="8"/>
+  <text class="label" x="280" y="221">Isi Line + Tanggal (auto shift)</text>
+  <path class="edge" d="M280 240 V268"/>
+
+  <polygon class="decision" points="280,268 368,328 280,388 192,328"/>
+  <text class="label" x="280" y="332">Kuota &lt; 3?</text>
+  <text class="edge-label" x="150" y="328">Tidak</text>
+  <text class="edge-label" x="410" y="328">Ya</text>
+
+  <path class="edge" d="M192 328 H80 V400"/>
+  <rect class="box" x="10" y="400" width="140" height="56" rx="8"/>
+  <text class="label sub" x="80" y="424">Blokir simpan</text>
+  <text class="label" x="80" y="442" style="font-size:12px">kuota shift penuh</text>
+
+  <path class="edge" d="M368 328 H470 V460 H280 V480"/>
+
+  <rect class="box" x="90" y="480" width="380" height="64" rx="8"/>
+  <text class="label" x="280" y="508">4 section: pilih varian unik</text>
+  <text class="label sub" x="280" y="528">Bagor <tspan class="fa">&#xf054;</tspan> Koya <tspan class="fa">&#xf054;</tspan> Kremes <tspan class="fa">&#xf054;</tspan> SO4</text>
+  <path class="edge" d="M280 544 V572"/>
+
+  <rect class="box" x="80" y="572" width="400" height="64" rx="8"/>
+  <text class="label" x="280" y="600">Test piece per varian</text>
+  <text class="label sub" x="280" y="620">Fe 0.7 <tspan class="fa">&#xf054;</tspan> Non Fe 1.0 <tspan class="fa">&#xf054;</tspan> SUS 1.5 <tspan class="fa">&#xf061;</tspan> OK / NOT OK</text>
+  <path class="edge" d="M280 636 V664"/>
+
+  <rect class="box" x="100" y="664" width="360" height="56" rx="8"/>
+  <text class="label" x="280" y="688">Save + lockForUpdate quota</text>
+  <text class="label sub" x="280" y="706">pengecekan_ke sequential</text>
+  <path class="edge" d="M280 720 V748"/>
+
+  <rect class="box" x="110" y="748" width="340" height="56" rx="8"/>
+  <text class="label" x="280" y="772">Report: filter DataTables</text>
+  <text class="label sub" x="280" y="790">tanggal <tspan class="fa">&#xf054;</tspan> shift <tspan class="fa">&#xf054;</tspan> varian <tspan class="fa">&#xf054;</tspan> line</text>
+  <path class="edge" d="M280 804 V832"/>
+
+  <rect class="box" x="90" y="832" width="380" height="64" rx="8"/>
+  <text class="label" x="280" y="860">Export Excel</text>
+  <text class="label sub" x="280" y="880">header sama seperti form QC</text>
+  <path class="edge" d="M280 896 V924"/>
+
+  <rect class="box" x="140" y="924" width="280" height="48" rx="8"/>
+  <text class="label" x="280" y="953">Audit trail created_by</text>
+</svg>
