@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 1100" width="100%" role="img" aria-label="TMS data flow diagram">
+  <defs>
+    <marker id="tms-d-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#c9c9c9"/>
+    </marker>
+  </defs>
+  <style>
+    .ent { fill: #1f2020; stroke: #8750f7; stroke-width: 1.6; }
+    .proc { fill: #1f2020; stroke: #ccc; stroke-width: 1.5; }
+    .store { fill: #16161a; stroke: #aaa; stroke-width: 1.5; }
+    .label { fill: #e8e8e8; font-family: "Trebuchet MS", Verdana, Arial, sans-serif; font-size: 12px; text-anchor: middle; }
+    .sub { font-size: 10px; fill: #c9c9c9; }
+    .flow { stroke: #c9c9c9; stroke-width: 1.3; fill: none; marker-end: url(#tms-d-arrow); }
+    .flab { fill: #b0b0b0; font-family: "Trebuchet MS", Verdana, Arial, sans-serif; font-size: 10px; }
+    .title { fill: #f0e6ff; font-family: "Trebuchet MS", Verdana, Arial, sans-serif; font-size: 16px; font-weight: 700; text-anchor: middle; }
+  </style>
+
+  <text class="title" x="590" y="28">DFD TMS - aktor, proses, data store</text>
+
+  <!-- external entities -->
+  <rect class="ent" x="16" y="60" width="150" height="44" rx="4"/>
+  <text class="label" x="91" y="87">SAP</text>
+
+  <rect class="ent" x="16" y="124" width="150" height="44" rx="4"/>
+  <text class="label" x="91" y="151">Produksi</text>
+
+  <rect class="ent" x="16" y="188" width="150" height="44" rx="4"/>
+  <text class="label" x="91" y="215">Admin WSM</text>
+
+  <rect class="ent" x="16" y="252" width="150" height="44" rx="4"/>
+  <text class="label" x="91" y="279">Staging</text>
+
+  <rect class="ent" x="16" y="316" width="150" height="44" rx="4"/>
+  <text class="label" x="91" y="343">Pengawas</text>
+
+  <rect class="ent" x="16" y="400" width="150" height="44" rx="4"/>
+  <text class="label" x="91" y="427">Driver</text>
+
+  <rect class="ent" x="16" y="500" width="150" height="52" rx="4"/>
+  <text class="label" x="91" y="522">Operator</text>
+  <text class="sub" x="91" y="538">maps / monitoring</text>
+
+  <!-- processes -->
+  <ellipse class="proc" cx="360" cy="82" rx="118" ry="40"/>
+  <text class="label" x="360" y="76">1 Upload Reservasi</text>
+  <text class="sub" x="360" y="94">Excel SAP / RSV</text>
+
+  <ellipse class="proc" cx="360" cy="198" rx="118" ry="40"/>
+  <text class="label" x="360" y="192">2 Picking WSM</text>
+  <text class="sub" x="360" y="210">MID + palet</text>
+
+  <ellipse class="proc" cx="360" cy="314" rx="118" ry="40"/>
+  <text class="label" x="360" y="308">3 Staging Confirm</text>
+  <text class="sub" x="360" y="326">gate material aktif</text>
+
+  <ellipse class="proc" cx="360" cy="430" rx="118" ry="40"/>
+  <text class="label" x="360" y="424">4 Draft / Request</text>
+  <text class="sub" x="360" y="442">max 12 palet SJ</text>
+
+  <ellipse class="proc" cx="640" cy="82" rx="118" ry="40"/>
+  <text class="label" x="640" y="76">5 Race Accept</text>
+  <text class="sub" x="640" y="94">SJ jadi DO</text>
+
+  <ellipse class="proc" cx="640" cy="220" rx="118" ry="44"/>
+  <text class="label" x="640" y="214">6 QR Muat / Bongkar</text>
+  <text class="sub" x="640" y="232">dual-party scan</text>
+
+  <ellipse class="proc" cx="640" cy="370" rx="118" ry="40"/>
+  <text class="label" x="640" y="364">7 Maps / Notif</text>
+  <text class="sub" x="640" y="382">Leaflet + WebSocket</text>
+
+  <ellipse class="proc" cx="640" cy="510" rx="118" ry="42"/>
+  <text class="label" x="640" y="504">8 Confirm / Komplain</text>
+  <text class="sub" x="640" y="522">NTI + Request BAK</text>
+
+  <!-- data stores -->
+  <rect class="store" x="880" y="50" width="280" height="44"/>
+  <line x1="892" y1="50" x2="892" y2="94" stroke="#aaa" stroke-width="3"/>
+  <text class="label" x="1024" y="76">tms_material_reservasi</text>
+
+  <rect class="store" x="880" y="114" width="280" height="52"/>
+  <line x1="892" y1="114" x2="892" y2="166" stroke="#aaa" stroke-width="3"/>
+  <text class="label" x="1024" y="136">tms_material_reservasi_wsm</text>
+  <text class="sub" x="1024" y="152">picking / MID</text>
+
+  <rect class="store" x="880" y="186" width="280" height="52"/>
+  <line x1="892" y1="186" x2="892" y2="238" stroke="#aaa" stroke-width="3"/>
+  <text class="label" x="1024" y="208">merge tables</text>
+  <text class="sub" x="1024" y="224">RSV + WSM aktif</text>
+
+  <rect class="store" x="880" y="258" width="280" height="52"/>
+  <line x1="892" y1="258" x2="892" y2="310" stroke="#aaa" stroke-width="3"/>
+  <text class="label" x="1024" y="280">tms_transaction</text>
+  <text class="sub" x="1024" y="296">SJ / DO + status</text>
+
+  <rect class="store" x="880" y="330" width="280" height="52"/>
+  <line x1="892" y1="330" x2="892" y2="382" stroke="#aaa" stroke-width="3"/>
+  <text class="label" x="1024" y="352">tms_driver / tms_car</text>
+  <text class="sub" x="1024" y="368">aktif QR gedung</text>
+
+  <rect class="store" x="880" y="402" width="280" height="52"/>
+  <line x1="892" y1="402" x2="892" y2="454" stroke="#aaa" stroke-width="3"/>
+  <text class="label" x="1024" y="424">tms_master_konversi_palet</text>
+  <text class="sub" x="1024" y="440">MID palet cap</text>
+
+  <!-- entity to process -->
+  <path class="flow" d="M166 82 H242"/>
+  <text class="flab" x="178" y="74">Excel RSV</text>
+  <path class="flow" d="M166 146 H242 V82"/>
+  <text class="flab" x="176" y="138">upload / confirm</text>
+  <path class="flow" d="M166 210 H242"/>
+  <text class="flab" x="176" y="202">picking list</text>
+  <path class="flow" d="M166 274 H242 V314"/>
+  <text class="flab" x="176" y="266">checklist</text>
+  <path class="flow" d="M166 338 H242 V430"/>
+  <text class="flab" x="176" y="360">draft SJ</text>
+  <path class="flow" d="M166 422 H242 V430"/>
+  <path class="flow" d="M166 422 H522 V82"/>
+  <text class="flab" x="430" y="70">accept / reject</text>
+  <path class="flow" d="M166 422 H522 V220"/>
+  <text class="flab" x="430" y="200">QR scan</text>
+  <path class="flow" d="M166 526 H522 V370"/>
+  <text class="flab" x="280" y="548">track trip</text>
+  <path class="flow" d="M166 146 H522 V510"/>
+  <text class="flab" x="280" y="500">kedatangan / komplain</text>
+
+  <!-- process to store -->
+  <path class="flow" d="M478 82 H880 V72"/>
+  <path class="flow" d="M478 198 H880 V140"/>
+  <path class="flow" d="M478 198 H880 V428"/>
+  <path class="flow" d="M478 314 H880 V212"/>
+  <path class="flow" d="M478 430 H880 V284"/>
+  <path class="flow" d="M758 82 H880 V356"/>
+  <path class="flow" d="M758 82 H880 V284"/>
+  <path class="flow" d="M758 220 H880 V284"/>
+  <path class="flow" d="M758 370 H880 V356"/>
+  <path class="flow" d="M758 510 H880 V284"/>
+  <path class="flow" d="M478 210 H640 V176"/>
+
+  <text class="flab" x="760" y="100">lock DO</text>
+  <text class="flab" x="760" y="250">muat / bongkar</text>
+  <text class="flab" x="760" y="400">posisi truk</text>
+  <text class="flab" x="760" y="490">close / NTI</text>
+
+  <!-- legend -->
+  <rect class="ent" x="16" y="1020" width="24" height="18" rx="2"/>
+  <text class="sub" x="116" y="1034">external entity</text>
+  <ellipse class="proc" cx="280" cy="1029" rx="18" ry="12"/>
+  <text class="sub" x="360" y="1034">process</text>
+  <rect class="store" x="430" y="1020" width="36" height="18"/>
+  <line x1="436" y1="1020" x2="436" y2="1038" stroke="#aaa" stroke-width="2"/>
+  <text class="sub" x="530" y="1034">data store</text>
+  <text class="sub" x="860" y="1034">Race-accept lock SJ ke DO; reject tetap request</text>
+</svg>

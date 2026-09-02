@@ -2366,7 +2366,7 @@
       <div class="portfolio_info">
         <div class="portfolio_info_text">
           <h2 class="title">TMS — Transportation Management</h2>
-          <div class="desc"><p>Most complex MyPAS module: SAP → staging → pengawas request → driver muat/bongkar → selesai (+ maps realtime).</p></div>
+          <div class="desc"><p>Most complex MyPAS module: SAP Excel and WSM picking through staging, then pengawas request, driver race-accept, QR muat/bongkar, and Leaflet maps.</p></div>
           <div class="portfolio-modal-actions">
           <a href="#" class="btn tj-btn-primary btn-watch-demo is-disabled" data-demo-youtube="" aria-disabled="true" title="Demo coming soon">Watch Demo <i class="fab fa-youtube"></i><span class="btn-watch-demo-soon">coming soon</span></a>
           <a href="#" class="btn tj-btn-primary btn-commits" data-commits-project="tms" data-commits-title="TMS">View Commits <i class="fab fa-github"></i></a>
@@ -2376,7 +2376,7 @@
           <div class="info_item"><div class="key">Category</div><div class="value">MyPAS — Logistics</div></div>
           <div class="info_item"><div class="key">Client</div><div class="value">PT Prakarsa Alam Segar</div></div>
           <div class="info_item"><div class="key">Delivery Date</div><div class="value">2026</div></div>
-          <div class="info_item"><div class="key">Stack</div><div class="value">Laravel, MySQL, SAP integration</div></div>
+          <div class="info_item"><div class="key">Stack</div><div class="value">Laravel, MySQL, SAP, WebSocket, Leaflet</div></div>
         </div>
       </div>
 
@@ -2388,27 +2388,36 @@
           </div>
           <p class="gallery_caption">Business Process</p>
         </div>
-        <div class="gallery_item" data-type="flowchart" data-flowchart-src="./projects/briefs/tms/diagram/flowchart.svg">
+        <div class="gallery_item" data-type="flowchart" data-flowchart-src="./projects/briefs/tms/diagram/flowchart.svg?v=3">
           <div class="flowchart-host" aria-label="TMS process flowchart"></div>
           <p class="gallery_caption">Flowchart</p>
+        </div>
+        <div class="gallery_item" data-type="flowchart" data-flowchart-src="./projects/briefs/tms/diagram/activity-diagram.svg?v=1">
+          <div class="flowchart-host" aria-label="TMS activity diagram"></div>
+          <p class="gallery_caption">Activity Diagram</p>
+        </div>
+        <div class="gallery_item" data-type="flowchart" data-flowchart-src="./projects/briefs/tms/diagram/dfd.svg?v=1">
+          <div class="flowchart-host" aria-label="TMS data flow diagram"></div>
+          <p class="gallery_caption">DFD</p>
         </div>
         <!-- When ready: add data-type="youtube" slide (replaces coming-soon) -->
 </div>
 
       <div class="portfolio_description">
         <h2 class="title">Project Description</h2>
-        <div class="desc"><p>Status flow: draft → request → pengambilan → pengiriman → selesai (plus reject/tunda). Involves Produksi, Admin WSM, Staging, Pengawas, Driver, and Maps operators.</p></div>
+        <div class="desc"><p>Status machine: draft, request, on_proses, otw_pengambilan, tiba_pengambilan, muat, otw_pengiriman, tiba_pengiriman, bongkar, pulang, selesai. Actors: Produksi, Admin WSM, Staging, Pengawas, Driver, and maps operators. Reject stays request; tunda/tolak and multi-tujuan are first-class branches.</p></div>
       
       <div class="portfolio_key_features">
         <div class="key_features_title">
           <h4 class="title">Key Features</h4>
         </div>
         <ul class="key_features_list">
-          <li>End-to-end transport status machine</li>
-          <li>SAP staging data integration</li>
-          <li>Role actions: Produksi → Driver → Maps</li>
-          <li>Realtime maps for pickup / delivery</li>
-          <li>Reject & tunda branches</li>
+          <li>SAP Excel + picking WSM + staging gate</li>
+          <li>12 palet cap, SJ to DO race-accept</li>
+          <li>QR dual-party muat/bongkar</li>
+          <li>Leaflet + WebSocket maps</li>
+          <li>Confirm/komplain kedatangan</li>
+          <li>Reject, tunda, and multi-tujuan</li>
         </ul>
       </div>
       </div>
@@ -2426,7 +2435,7 @@
             <h4 class="title">My Approach</h4>
           </div>
           <div class="approach_content">
-            <p>I built TMS as an end-to-end status machine (draft → request → pengambilan → pengiriman → selesai, plus reject/tunda), wired to SAP staging data and role-based actions for each actor. Maps/realtime visibility sits on top so operators track active trips without chasing WhatsApp updates.</p>
+            <p>I gated material through SAP Excel, WSM picking, and staging aktif before a pengawas draft (max 12 palet) could go request. Race-accept turns SJ into DO; QR muat/bongkar is dual-party (pengawas or gedung). Leaflet + WebSocket maps track the trip, then Produksi confirms kedatangan or files a komplain for WSM.</p>
           </div>
         </div>
       </div>

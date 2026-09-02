@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 1760" width="100%" role="img" aria-label="TMS activity diagram swimlanes">
+  <defs>
+    <marker id="tms-a-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#c9c9c9"/>
+    </marker>
+  </defs>
+  <style>
+    .lane { fill: #16161a; stroke: #555; stroke-width: 1; }
+    .head { fill: #1f2020; stroke: #8750f7; stroke-width: 1.5; }
+    .box { fill: #1f2020; stroke: #ccc; stroke-width: 1.2; }
+    .dec { fill: #1f2020; stroke: #ccc; stroke-width: 1.2; }
+    .label { fill: #e8e8e8; font-family: "Trebuchet MS", Verdana, Arial, sans-serif; font-size: 12px; text-anchor: middle; }
+    .headt { fill: #f0e6ff; font-family: "Trebuchet MS", Verdana, Arial, sans-serif; font-size: 13px; font-weight: 700; text-anchor: middle; }
+    .sub { font-size: 10px; fill: #c9c9c9; }
+    .edge { stroke: #c9c9c9; stroke-width: 1.4; fill: none; marker-end: url(#tms-a-arrow); }
+    .note { fill: #b0b0b0; font-family: "Trebuchet MS", Verdana, Arial, sans-serif; font-size: 10px; text-anchor: middle; }
+  </style>
+
+  <rect class="lane" x="16" y="70" width="196" height="1660" rx="6"/>
+  <rect class="lane" x="220" y="70" width="196" height="1660" rx="6"/>
+  <rect class="lane" x="424" y="70" width="196" height="1660" rx="6"/>
+  <rect class="lane" x="628" y="70" width="196" height="1660" rx="6"/>
+  <rect class="lane" x="832" y="70" width="196" height="1660" rx="6"/>
+  <rect class="lane" x="1036" y="70" width="188" height="1660" rx="6"/>
+
+  <rect class="head" x="16" y="16" width="196" height="44" rx="6"/>
+  <text class="headt" x="114" y="43">Produksi</text>
+  <rect class="head" x="220" y="16" width="196" height="44" rx="6"/>
+  <text class="headt" x="318" y="43">Admin WSM</text>
+  <rect class="head" x="424" y="16" width="196" height="44" rx="6"/>
+  <text class="headt" x="522" y="43">Staging</text>
+  <rect class="head" x="628" y="16" width="196" height="44" rx="6"/>
+  <text class="headt" x="726" y="43">Pengawas</text>
+  <rect class="head" x="832" y="16" width="196" height="44" rx="6"/>
+  <text class="headt" x="930" y="43">Driver</text>
+  <rect class="head" x="1036" y="16" width="188" height="44" rx="6"/>
+  <text class="headt" x="1130" y="43">System</text>
+
+  <!-- 1 upload SAP -->
+  <rect class="box" x="30" y="90" width="168" height="48" rx="6"/>
+  <text class="label" x="114" y="110">Upload Excel SAP</text>
+  <text class="label sub" x="114" y="126">RSV reservasi</text>
+  <path class="edge" d="M198 114 H1130 V160"/>
+
+  <rect class="box" x="1048" y="170" width="164" height="48" rx="6"/>
+  <text class="label" x="1130" y="190">Persist RSV</text>
+  <text class="label sub" x="1130" y="206">tms_material_reservasi</text>
+  <path class="edge" d="M1048 194 H318 V240"/>
+
+  <!-- 2 picking WSM -->
+  <rect class="box" x="234" y="250" width="168" height="52" rx="6"/>
+  <text class="label" x="318" y="270">Upload picking list</text>
+  <text class="label sub" x="318" y="288">per no_reservasi</text>
+  <path class="edge" d="M402 276 H1130 V328"/>
+
+  <rect class="box" x="1048" y="338" width="164" height="52" rx="6"/>
+  <text class="label" x="1130" y="358">MID + konversi palet</text>
+  <text class="label sub" x="1130" y="376">tms_material_reservasi_wsm</text>
+  <path class="edge" d="M1048 364 H522 V420"/>
+
+  <!-- 3 staging -->
+  <rect class="box" x="438" y="430" width="168" height="52" rx="6"/>
+  <text class="label" x="522" y="450">Checklist dokumen</text>
+  <text class="label sub" x="522" y="468">material = aktif</text>
+  <path class="edge" d="M606 456 H726 V500"/>
+
+  <!-- 4 draft / request -->
+  <rect class="box" x="642" y="510" width="168" height="52" rx="6"/>
+  <text class="label" x="726" y="530">Draft max 12 palet</text>
+  <text class="label sub" x="726" y="548">SJ-... to / to_2 / to_3</text>
+  <path class="edge" d="M810 536 H1130 V590"/>
+
+  <rect class="box" x="1048" y="600" width="164" height="52" rx="6"/>
+  <text class="label" x="1130" y="620">Store-request</text>
+  <text class="label sub" x="1130" y="638">WebSocket / Telegram</text>
+  <path class="edge" d="M1048 626 H930 V680"/>
+
+  <!-- 5 driver aktif + race -->
+  <rect class="box" x="846" y="690" width="168" height="52" rx="6"/>
+  <text class="label" x="930" y="710">QR gedung aktif</text>
+  <text class="label sub" x="930" y="728">race-accept / reject</text>
+  <path class="edge" d="M1014 716 H1130 V770"/>
+  <text class="note" x="790" y="708">reject: tetap request</text>
+
+  <rect class="box" x="1048" y="780" width="164" height="52" rx="6"/>
+  <text class="label" x="1130" y="800">on_proses + SJ-DO</text>
+  <text class="label sub" x="1130" y="818">lock transaksi</text>
+  <path class="edge" d="M1048 806 H930 V860"/>
+
+  <!-- 6 OTW pengambilan + QR muat -->
+  <rect class="box" x="846" y="870" width="168" height="48" rx="6"/>
+  <text class="label" x="930" y="890">OTW / tiba ambil</text>
+  <text class="label sub" x="930" y="906">otw_pengambilan</text>
+  <path class="edge" d="M846 894 H810 V950"/>
+  <path class="edge" d="M930 918 V950"/>
+
+  <rect class="box" x="642" y="960" width="168" height="48" rx="6"/>
+  <text class="label" x="726" y="980">QR muat (pengawas)</text>
+  <text class="label sub" x="726" y="996">atau scan gedung</text>
+  <rect class="box" x="846" y="960" width="168" height="48" rx="6"/>
+  <text class="label" x="930" y="980">Mulai / selesai muat</text>
+  <text class="label sub" x="930" y="996">durasi tercatat</text>
+  <path class="edge" d="M930 1008 V1048"/>
+
+  <!-- 7 OTW kirim + QR bongkar -->
+  <rect class="box" x="846" y="1058" width="168" height="52" rx="6"/>
+  <text class="label" x="930" y="1078">OTW / tiba kirim</text>
+  <text class="label sub" x="930" y="1096">multi tujuan loop</text>
+  <path class="edge" d="M846 1084 H810 V1140"/>
+  <path class="edge" d="M930 1110 V1140"/>
+
+  <rect class="box" x="642" y="1150" width="168" height="48" rx="6"/>
+  <text class="label" x="726" y="1170">QR bongkar</text>
+  <text class="label sub" x="726" y="1186">pengawas / gedung</text>
+  <rect class="box" x="846" y="1150" width="168" height="48" rx="6"/>
+  <text class="label" x="930" y="1170">Mulai / selesai bongkar</text>
+  <text class="label sub" x="930" y="1186">tunda / tolak / EJO</text>
+  <path class="edge" d="M1014 1174 H1130 V1228"/>
+
+  <rect class="box" x="1048" y="1238" width="164" height="52" rx="6"/>
+  <text class="label" x="1130" y="1258">TrackTruck maps</text>
+  <text class="label sub" x="1130" y="1276">Leaflet + WebSocket</text>
+  <path class="edge" d="M1048 1264 H114 V1320"/>
+
+  <!-- 8 confirm / komplain -->
+  <rect class="box" x="30" y="1330" width="168" height="52" rx="6"/>
+  <text class="label" x="114" y="1350">Confirm kedatangan</text>
+  <text class="label sub" x="114" y="1368">atau ajukan komplain</text>
+  <path class="edge" d="M198 1356 H318 V1410"/>
+
+  <rect class="box" x="234" y="1420" width="168" height="52" rx="6"/>
+  <text class="label" x="318" y="1440">Approve / reject</text>
+  <text class="label sub" x="318" y="1458">komplain + NTI / BAK</text>
+  <path class="edge" d="M402 1446 H1130 V1500"/>
+
+  <rect class="box" x="1048" y="1510" width="164" height="52" rx="6"/>
+  <text class="label" x="1130" y="1530">Telegram + close</text>
+  <text class="label sub" x="1130" y="1548">status selesai</text>
+  <path class="edge" d="M1048 1536 H522 V1590"/>
+  <path class="edge" d="M1048 1536 H726 V1590"/>
+  <path class="edge" d="M1048 1536 H930 V1590"/>
+
+  <rect class="box" x="438" y="1600" width="168" height="40" rx="6"/>
+  <text class="label" x="522" y="1624">Material balik / done</text>
+  <rect class="box" x="642" y="1600" width="168" height="40" rx="6"/>
+  <text class="label" x="726" y="1624">Trip closed</text>
+  <rect class="box" x="846" y="1600" width="168" height="40" rx="6"/>
+  <text class="label" x="930" y="1624">Driver idle</text>
+
+  <text class="note" x="620" y="1720">Status: draft, request, on_proses, otw_pengambilan, tiba_pengambilan, muat, otw_pengiriman, tiba_pengiriman, bongkar, pulang, selesai</text>
+</svg>

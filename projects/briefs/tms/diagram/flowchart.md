@@ -16,7 +16,7 @@ created: 2026-07-27
 # TMS — Transportation Management System
 
 > [!info] One-liner
-> Sistem transportasi internal paling kompleks: SAP → staging → request pengawas → driver → scan muat/bongkar → selesai (+ maps realtime).
+> Sistem transportasi internal paling kompleks: SAP Excel + picking WSM + staging → draft pengawas → race-accept driver → QR muat/bongkar → maps realtime.
 
 **Parent:** [[00-Index|Portfolio Flowcharts]]  
 **Brief:** `portofolio/projects/briefs/tms/`
@@ -25,20 +25,24 @@ created: 2026-07-27
 
 | Actor | Peran |
 |-------|-------|
-| Produksi | Upload dokumen SAP, konfirmasi kedatangan |
-| Admin WSM | Dokumen reservasi, approve BAK/komplain |
-| Staging | Checklist material siap request |
-| Pengawas | Draft/request order (maks 12 palet) |
-| Driver | Terima order, muat, kirim, bongkar, pulang |
-| Operator / Maps | Monitoring |
+| Produksi | Upload Excel SAP, konfirmasi kedatangan / komplain |
+| Admin WSM | Picking list per `no_reservasi`, NTI, approve BAK/komplain |
+| Staging | Checklist material siap request (`aktif`) |
+| Pengawas | Draft/request order (maks 12 palet), QR muat/bongkar |
+| Driver | Race-accept, OTW/tiba, scan muat/bongkar, pulang |
+| Operator / Maps | TrackTruck Leaflet + WebSocket |
 
-## Status utama
+## Status aktual
 
-`draft → request → pengambilan → pengiriman → selesai` (+ reject / tunda)
+`draft → request → on_proses → otw_pengambilan → tiba_pengambilan → muat → otw_pengiriman → tiba_pengiriman → bongkar → pulang → selesai`
+
+Reject tetap `request`. Tunda / tolak / breakdown + foto EJO sebagai cabang. Multi tujuan: `to` / `to_2` / `to_3`.
 
 ---
 
-## Flowchart — Happy Path Outgoing
+## Flowchart — Outgoing + cabang
+
+SVG: `projects/briefs/tms/diagram/flowchart.svg` (cache `?v=2`)
 
 > [!tip] Copy block di bawah ke Mermaid.ai
 
@@ -49,47 +53,54 @@ config:
 ---
 flowchart TB
   subgraph PRODUKSI
-    P1[Upload dokumen SAP]
-    P2[Konfirmasi kedatangan material]
+    P1[Upload Excel SAP]
+    P2{Confirm kedatangan?}
+    P3[Request BAK]
   end
 
   subgraph ADMIN_WSM
-    W1[Upload / kelola dokumen reservasi]
-    W2{Approve BAK / komplain?}
+    W1[Upload picking list per no_reservasi]
+    W2[NTI opsional]
+    W3{Approve komplain / BAK?}
   end
 
   subgraph STAGING
-    S1[Checklist dokumen & material]
-    S2{Siap request?}
+    S1[Checklist dokumen]
+    S2[Material aktif]
   end
 
   subgraph PENGAWAS
-    G1[Buat draft order max 12 palet]
-    G2[Store request → status request]
-    G3[Broadcast notif ke driver]
+    G1[Draft max 12 palet SJ]
+    G2[Store-request]
+    G3[QR muat / bongkar]
   end
 
   subgraph DRIVER
-    D1{Terima order?}
-    D2[OTW pengambilan]
-    D3[Tiba + scan QR muat]
-    D4[Selesai muat → OTW pengiriman]
-    D5[Tiba + scan QR bongkar]
-    D6[Pulang kosongan → scan selesai]
+    D0{Aktif QR gedung?}
+    D1{Race-accept?}
+    D2[on_proses SJ jadi DO]
+    D3[OTW / tiba pengambilan]
+    D4[OTW / tiba pengiriman]
+    D5[Pulang kosongan / pergi]
   end
 
-  P1 --> W1
-  W1 --> S1
-  S1 --> S2
-  S2 -->|Tidak| S1
-  S2 -->|Ya| G1
-  G1 --> G2 --> G3 --> D1
-  D1 -->|Reject| G1
-  D1 -->|Accept| D2 --> D3 --> D4 --> D5 --> D6
-  D6 --> P2
-  P2 --> W2
-  W2 -->|Reject| P2
-  W2 -->|Approve / close| DONE([Selesai])
+  subgraph SYSTEM
+    SYS[WebSocket / Telegram / Leaflet maps]
+  end
+
+  P1 --> W1 --> S1 --> S2 --> G1 --> G2 --> SYS
+  G2 --> D0
+  D0 -->|Tidak| BLOCK[blokir accept]
+  D0 -->|Ya| D1
+  D1 -->|Reject| G2
+  D1 -->|Accept| D2 --> D3 --> G3
+  G3 --> D4
+  D4 -->|masih ada tujuan| D4
+  D4 --> D5 --> P2
+  P2 -->|Komplain| W3
+  P2 -->|Confirm + foto| W2
+  W3 -->|Reject| S1
+  P3 --> W3
 ```
 
 ---
@@ -104,20 +115,35 @@ config:
 stateDiagram-v2
   [*] --> draft
   draft --> request: pengawas store-request
-  request --> pengambilan: driver terima + OTW
-  request --> draft: driver reject
-  pengambilan --> pengiriman: selesai muat
-  pengiriman --> selesai: selesai bongkar + pulang
-  draft --> [*]: delete draft
-  pengambilan --> pengambilan: tunda / breakdown
-  pengiriman --> pengiriman: tunda / breakdown
+  request --> on_proses: race-accept
+  request --> request: driver reject
+  on_proses --> otw_pengambilan
+  otw_pengambilan --> tiba_pengambilan
+  tiba_pengambilan --> muat: QR muat
+  muat --> otw_pengiriman
+  otw_pengiriman --> tiba_pengiriman
+  tiba_pengiriman --> bongkar: QR bongkar
+  bongkar --> otw_pengiriman: next to_2 / to_3
+  bongkar --> pulang
+  pulang --> selesai
+  otw_pengambilan --> otw_pengambilan: tunda / breakdown
+  otw_pengiriman --> otw_pengiriman: tunda / breakdown
 ```
+
+## Activity + DFD
+
+- Activity swimlane: `projects/briefs/tms/diagram/activity-diagram.svg`
+  Produksi | Admin WSM | Staging | Pengawas | Driver | System
+- DFD: `projects/briefs/tms/diagram/dfd.svg`
+  Store: `tms_material_reservasi`, `tms_material_reservasi_wsm`, merge tables, `tms_transaction`, `tms_driver`/`tms_car`, `tms_master_konversi_palet`
 
 ## Integrasi
 
-- SAP dokumen reservasi
+- SAP dokumen reservasi (Excel)
 - WebSocket notifikasi driver + maps realtime
-- QR scan lokasi muat/bongkar
+- Leaflet TrackTruck / TrackTruckProses
+- QR scan lokasi muat/bongkar (pengawas atau gedung)
+- Telegram sepanjang trip
 - Auto logout shift
 
 ## Entry points
